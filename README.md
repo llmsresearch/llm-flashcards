@@ -68,7 +68,7 @@ The cards are made for the moment between "I have used an LLM API" and "I unders
 
 These 19 are a sample. The complete deck is **180 hand-drawn cards across 19 topics**, delivered as a high-resolution PDF and an **Anki deck** (`.apkg`) for spaced-repetition review. Lifetime updates are included as new cards are added.
 
-**→ [Get the full deck](https://llmsresearch.com/flashcards)**
+**→ [Get the full deck](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=repo&utm_campaign=flashcards_launch)**
 
 ## License
 
