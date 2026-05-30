@@ -1,0 +1,60 @@
+name: "Request a card"
+description: "Suggest a concept you'd like to see drawn as a flashcard."
+title: "[Card request] "
+labels: ["card request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. We keep a running list of requested topics and draw the ones that earn their own card. Every request is read, though we can't promise each one gets made.
+  - type: input
+    id: concept
+    attributes:
+      label: Concept
+      description: What concept should the card explain?
+      placeholder: "e.g. Speculative decoding"
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Topic area
+      description: Which area does it belong to? (Pick the closest, or "Not sure".)
+      options:
+        - Transformer architecture
+        - Tokenization
+        - Embeddings
+        - Training
+        - Fine-tuning
+        - RLHF & alignment
+        - Prompting
+        - Retrieval (RAG)
+        - Agents & tools
+        - Inference & decoding
+        - Scaling laws
+        - Architectures
+        - Quantization & efficiency
+        - Evaluation & benchmarks
+        - Context management
+        - Safety & ethics
+        - APIs & practical
+        - Multimodal & advanced
+        - Reasoning
+        - Not sure
+    validations:
+      required: false
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this one?
+      description: What makes it worth a card? What did you find confusing or hard to find a clear explanation of?
+      placeholder: "Most explanations jump straight to the algorithm without saying why it's needed..."
+    validations:
+      required: false
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference (optional)
+      description: A paper, link, or note that captures what you mean.
+    validations:
+      required: false

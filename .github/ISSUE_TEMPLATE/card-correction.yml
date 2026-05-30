@@ -1,0 +1,31 @@
+name: "Report an error on a card"
+description: "Spotted something wrong, misleading, or unclear on a card? Tell us."
+title: "[Correction] "
+labels: ["correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Accuracy matters to us more than almost anything else, and reader corrections have improved the deck before. Thanks for taking the time.
+  - type: input
+    id: card
+    attributes:
+      label: Which card?
+      description: The card name or topic (e.g. "What is RAG?").
+      placeholder: "e.g. What is a Transformer?"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong?
+      description: Describe the error, the misleading part, or what was unclear.
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Suggested correction (optional)
+      description: How would you phrase or draw it instead?
+    validations:
+      required: false
