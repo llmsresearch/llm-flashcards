@@ -1,6 +1,6 @@
 # LLM Flashcards
 
-Hand-drawn flashcards on how LLMs work. 19 cards in this repo are free. The full deck of 180 cards is at [llmsresearch.com/flashcards](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=repo&utm_campaign=flashcards_launch).
+Hand-drawn flashcards on how LLMs work.
 
 ## The cards
 

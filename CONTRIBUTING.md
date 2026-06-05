@@ -14,4 +14,4 @@ Open an issue describing the concept you would like to see drawn. We keep a runn
 
 The cards are released under [CC BY-NC-ND 4.0](LICENSE). Because the license is NoDerivatives, we cannot accept pull requests that modify the card images themselves. Corrections happen on our side; your issue is what triggers them.
 
-— LLMs Research
+LLMs Research
