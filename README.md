@@ -1,12 +1,6 @@
 # LLM Flashcards
 
-**Hand-drawn flashcards for learning how large language models actually work.**
-
-One concept per card: a clean diagram and a short, plain-English explanation. This repository holds **19 free sample cards**, one from each topic in the full deck, covering the LLM stack from tokenization and attention through RAG, agents, and inference.
-
-Made by [LLMs Research](https://llmsresearch.com), an independent applied research lab.
-
----
+Hand-drawn flashcards on how LLMs work. 19 cards in this repo are free. The full deck of 180 cards is at [llmsresearch.com/flashcards](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=repo&utm_campaign=flashcards_launch).
 
 ## The cards
 
@@ -19,12 +13,12 @@ Made by [LLMs Research](https://llmsresearch.com), an independent applied resear
   <tr>
     <td><a href="cards/04-language-modeling-objective.jpg"><img src="cards/04-language-modeling-objective.jpg" alt="Language Modeling Objective"/></a><p align="center"><b>Training</b></p></td>
     <td><a href="cards/05-full-finetuning-vs-peft.jpg"><img src="cards/05-full-finetuning-vs-peft.jpg" alt="Full Fine-tuning vs PEFT"/></a><p align="center"><b>Fine-tuning</b></p></td>
-    <td><a href="cards/06-rlhf-overview.jpg"><img src="cards/06-rlhf-overview.jpg" alt="RLHF Overview"/></a><p align="center"><b>RLHF &amp; alignment</b></p></td>
+    <td><a href="cards/06-rlhf-overview.jpg"><img src="cards/06-rlhf-overview.jpg" alt="RLHF Overview"/></a><p align="center"><b>RLHF and alignment</b></p></td>
   </tr>
   <tr>
     <td><a href="cards/07-system-vs-user-prompt.jpg"><img src="cards/07-system-vs-user-prompt.jpg" alt="System vs User Prompt"/></a><p align="center"><b>Prompting</b></p></td>
     <td><a href="cards/08-what-is-rag.jpg"><img src="cards/08-what-is-rag.jpg" alt="What is RAG?"/></a><p align="center"><b>Retrieval (RAG)</b></p></td>
-    <td><a href="cards/09-what-is-an-llm-agent.jpg"><img src="cards/09-what-is-an-llm-agent.jpg" alt="What is an LLM Agent?"/></a><p align="center"><b>Agents &amp; tools</b></p></td>
+    <td><a href="cards/09-what-is-an-llm-agent.jpg"><img src="cards/09-what-is-an-llm-agent.jpg" alt="What is an LLM Agent?"/></a><p align="center"><b>Agents and tools</b></p></td>
   </tr>
   <tr>
     <td><a href="cards/10-autoregressive-generation.jpg"><img src="cards/10-autoregressive-generation.jpg" alt="Autoregressive Generation"/></a><p align="center"><b>Inference</b></p></td>
@@ -37,8 +31,8 @@ Made by [LLMs Research](https://llmsresearch.com), an independent applied resear
     <td><a href="cards/15-lost-in-the-middle.jpg"><img src="cards/15-lost-in-the-middle.jpg" alt="Lost in the Middle"/></a><p align="center"><b>Context management</b></p></td>
   </tr>
   <tr>
-    <td><a href="cards/16-hallucination.jpg"><img src="cards/16-hallucination.jpg" alt="Hallucination"/></a><p align="center"><b>Safety &amp; ethics</b></p></td>
-    <td><a href="cards/17-chat-completion-api.jpg"><img src="cards/17-chat-completion-api.jpg" alt="Chat Completion API"/></a><p align="center"><b>APIs &amp; practical</b></p></td>
+    <td><a href="cards/16-hallucination.jpg"><img src="cards/16-hallucination.jpg" alt="Hallucination"/></a><p align="center"><b>Safety and ethics</b></p></td>
+    <td><a href="cards/17-chat-completion-api.jpg"><img src="cards/17-chat-completion-api.jpg" alt="Chat Completion API"/></a><p align="center"><b>APIs and practical</b></p></td>
     <td><a href="cards/18-multimodal-llms.jpg"><img src="cards/18-multimodal-llms.jpg" alt="Multimodal LLMs"/></a><p align="center"><b>Multimodal</b></p></td>
   </tr>
   <tr>
@@ -48,40 +42,44 @@ Made by [LLMs Research](https://llmsresearch.com), an independent applied resear
   </tr>
 </table>
 
-> Click any card to open it full size.
+Click any card to open it full size.
 
----
+## Why I made them
 
-## Why these exist
+I work on LLM efficiency at LLMs Research, and a lot of that work happens on a whiteboard. Drawing a thing forces you to know what you're drawing. A vague hand-wave on a slide hides confusion. A diagram doesn't.
 
-I started drawing these while building [LLMs Research](https://llmsresearch.com). Every time I had to explain a piece of LLM internals on a whiteboard, a diagram worked better than any paragraph. After enough whiteboards it was clear there was a deck hiding in there.
+After enough whiteboards I had a stack of diagrams. The stack turned into a study deck for myself. I tightened the lines, kept the labels honest, and put them on cards. That's the deck.
 
-The cards are made for the moment between "I have used an LLM API" and "I understand what is actually happening underneath." They assume some technical background but no heavy mathematics. They work for revising before an interview, building a first-principles mental model, or keeping open as a reference while reading a paper.
+The cards are for someone who has used an LLM API and wants the layer underneath. Some technical background helps. No heavy math.
 
-## How to use them
+## What's in the full deck
 
-- **Browse** them right here, or click any card to open it full size.
-- **Print** them for physical study.
-- **Read along** with the longer write-ups in our [visual guides](https://llmsresearch.com/learn): the transformer, attention with a worked example, the KV cache, and RAG vs fine-tuning.
+180 cards across 19 topics:
 
-## The full deck
+| | | |
+|---|---|---|
+| Transformer architecture (27) | Tokenization (8) | Embeddings (7) |
+| Training (10) | Fine-tuning (9) | RLHF and alignment (11) |
+| Prompting (11) | RAG (12) | Agents and tools (11) |
+| Inference and decoding (11) | Scaling laws (7) | Architecture variants (8) |
+| Quantization (7) | Evaluation (8) | Context management (6) |
+| Safety (8) | APIs and practical use (6) | Multimodal (6) |
+| Reasoning (7) | | |
 
-These 19 are a sample. The complete deck is **180 hand-drawn cards across 19 topics**, delivered as a high-resolution PDF and an **Anki deck** (`.apkg`) for spaced-repetition review. Lifetime updates are included as new cards are added.
+Two formats: a PDF (180 pages, printable) and an `.apkg` for Anki spaced-repetition review. New cards get added every few weeks. Past buyers get the updates by email.
 
-**→ [Get the full deck](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=repo&utm_campaign=flashcards_launch)**
+[llmsresearch.com/flashcards](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=repo&utm_campaign=flashcards_launch)
 
 ## License
 
-The cards in this repository are released under **[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)**.
-
-You are welcome to **share** them, including in slides, classes, study groups, and social posts, as long as you **credit LLMs Research** and link back. Commercial use, reselling, repackaging, and modified versions are not permitted. See [LICENSE](LICENSE) for details.
+CC BY-NC-ND 4.0. Share the cards with credit and a link back to this repo. No repackaging, no reselling, no modified versions, no commercial use. Full text in [LICENSE](LICENSE).
 
 ## Contributing
 
-Spotted something wrong or confusing on a card? Want to suggest a concept for a future card? Open an [issue](../../issues). Corrections and topic requests genuinely shape what gets drawn next.
+If something on a card is wrong or unclear, [open an issue](../../issues/new). If you want a card on a concept that is not in the deck yet, open one too. I read them.
 
 ## About
 
-[LLMs Research](https://llmsresearch.com) is an independent applied research lab working on LLM efficiency: inference, KV cache compression, adaptive compute, and multi-agent systems. The deck grows alongside the research.
+[LLMs Research](https://llmsresearch.com) is an independent applied research lab. We work on LLM efficiency: inference, KV cache compression, adaptive compute, multi-agent systems. The deck started as study notes for that work.
 
-[Website](https://llmsresearch.com) · [Visual guides](https://llmsresearch.com/learn) · [Newsletter](https://llmsresearch.substack.com) · [X](https://x.com/llmsresearch) · [LinkedIn](https://www.linkedin.com/company/llmsresearch)
+[Website](https://llmsresearch.com) · [Newsletter](https://llmsresearch.substack.com) · [X](https://x.com/llmsresearch) · [LinkedIn](https://www.linkedin.com/company/llmsresearch)
