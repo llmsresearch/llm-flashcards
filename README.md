@@ -44,6 +44,8 @@ Hand-drawn flashcards on how LLMs work.
 
 Click any card to open it full size.
 
+**Study in Anki:** download [`llm-flashcards.apkg`](llm-flashcards.apkg) (these 19 cards) and import it into [Anki](https://apps.ankiweb.net/). Front is the concept, back is the card.
+
 ## Why I made them
 
 I work on LLM efficiency at LLMs Research, and a lot of that work happens on a whiteboard. Drawing a thing forces you to know what you're drawing. A vague hand-wave on a slide hides confusion. A diagram doesn't.
