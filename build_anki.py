@@ -43,6 +43,17 @@ CARDS = [
     ("17-chat-completion-api.jpg", "APIs and practical", "Chat Completion API"),
     ("18-multimodal-llms.jpg", "Multimodal", "Multimodal LLMs"),
     ("19-reasoning-in-llms.jpg", "Reasoning", "Reasoning in LLMs"),
+    ("20-reasoning-models.jpg", "Reasoning", "Reasoning Models (o1/R1)"),
+    ("21-state-space-models-mamba.jpg", "Architectures", "State Space Models and Mamba"),
+    ("22-mixture-of-experts-routing.jpg", "Architectures", "Mixture of Experts Routing"),
+    ("23-model-context-protocol.jpg", "Agents and tools", "Model Context Protocol (MCP)"),
+    ("24-vision-transformer.jpg", "Multimodal", "Vision Transformer (ViT)"),
+    ("25-sparse-autoencoders.jpg", "Interpretability", "Sparse Autoencoders (SAEs)"),
+    ("26-tree-of-thoughts.jpg", "Prompting", "Tree of Thoughts"),
+    ("27-double-descent.jpg", "Training", "Double Descent"),
+    ("28-activation-functions.jpg", "Training", "Activation Functions"),
+    ("29-gpqa.jpg", "Evaluation", "GPQA"),
+    ("30-matryoshka-embeddings.jpg", "Embeddings", "Matryoshka Embeddings"),
 ]
 
 CSS = """

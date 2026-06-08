@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Get the full deck (180 cards)
+  - name: Get the full set (332 cards)
     url: https://llmsresearch.com/flashcards
-    about: The complete deck as a PDF plus an Anki deck, with lifetime updates.
+    about: The complete set as a PDF, an Anki set, and card images, with lifetime updates.
   - name: Read the visual guides
     url: https://llmsresearch.com/learn
     about: Longer, illustrated write-ups of the transformer, attention, the KV cache, and RAG vs fine-tuning.

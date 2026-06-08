@@ -1,6 +1,6 @@
 # LLM Flashcards
 
-Hand-drawn flashcards on how LLMs work.
+Visual flashcards on how LLMs work.
 
 ## The cards
 
@@ -37,38 +37,54 @@ Hand-drawn flashcards on how LLMs work.
   </tr>
   <tr>
     <td><a href="cards/19-reasoning-in-llms.jpg"><img src="cards/19-reasoning-in-llms.jpg" alt="Reasoning in LLMs"/></a><p align="center"><b>Reasoning</b></p></td>
-    <td></td>
-    <td></td>
+    <td><a href="cards/20-reasoning-models.jpg"><img src="cards/20-reasoning-models.jpg" alt="Reasoning Models"/></a><p align="center"><b>Reasoning models</b></p></td>
+    <td><a href="cards/21-state-space-models-mamba.jpg"><img src="cards/21-state-space-models-mamba.jpg" alt="State Space Models and Mamba"/></a><p align="center"><b>Architectures</b></p></td>
+  </tr>
+  <tr>
+    <td><a href="cards/22-mixture-of-experts-routing.jpg"><img src="cards/22-mixture-of-experts-routing.jpg" alt="Mixture of Experts Routing"/></a><p align="center"><b>Architectures</b></p></td>
+    <td><a href="cards/23-model-context-protocol.jpg"><img src="cards/23-model-context-protocol.jpg" alt="Model Context Protocol"/></a><p align="center"><b>Agents and tools</b></p></td>
+    <td><a href="cards/24-vision-transformer.jpg"><img src="cards/24-vision-transformer.jpg" alt="Vision Transformer"/></a><p align="center"><b>Multimodal</b></p></td>
+  </tr>
+  <tr>
+    <td><a href="cards/25-sparse-autoencoders.jpg"><img src="cards/25-sparse-autoencoders.jpg" alt="Sparse Autoencoders"/></a><p align="center"><b>Interpretability</b></p></td>
+    <td><a href="cards/26-tree-of-thoughts.jpg"><img src="cards/26-tree-of-thoughts.jpg" alt="Tree of Thoughts"/></a><p align="center"><b>Prompting</b></p></td>
+    <td><a href="cards/27-double-descent.jpg"><img src="cards/27-double-descent.jpg" alt="Double Descent"/></a><p align="center"><b>Training</b></p></td>
+  </tr>
+  <tr>
+    <td><a href="cards/28-activation-functions.jpg"><img src="cards/28-activation-functions.jpg" alt="Activation Functions"/></a><p align="center"><b>Training</b></p></td>
+    <td><a href="cards/29-gpqa.jpg"><img src="cards/29-gpqa.jpg" alt="GPQA"/></a><p align="center"><b>Evaluation</b></p></td>
+    <td><a href="cards/30-matryoshka-embeddings.jpg"><img src="cards/30-matryoshka-embeddings.jpg" alt="Matryoshka Embeddings"/></a><p align="center"><b>Embeddings</b></p></td>
   </tr>
 </table>
 
 Click any card to open it full size.
 
-**Study in Anki:** download [`llm-flashcards.apkg`](llm-flashcards.apkg) (these 19 cards) and import it into [Anki](https://apps.ankiweb.net/). Front is the concept, back is the card.
+**Study in Anki:** download [`llm-flashcards.apkg`](llm-flashcards.apkg) (these 30 cards) and import it into [Anki](https://apps.ankiweb.net/). Front is the concept, back is the card.
 
 ## Why I made them
 
 I work on LLM efficiency at LLMs Research, and a lot of that work happens on a whiteboard. Drawing a thing forces you to know what you're drawing. A vague hand-wave on a slide hides confusion. A diagram doesn't.
 
-After enough whiteboards I had a stack of diagrams. The stack turned into a study deck for myself. I tightened the lines, kept the labels honest, and put them on cards. That's the deck.
+After enough whiteboards I had a stack of diagrams. The stack turned into a study set for myself. I tightened the lines, kept the labels honest, and put them on cards. That's the set.
 
 The cards are for someone who has used an LLM API and wants the layer underneath. Some technical background helps. No heavy math.
 
-## What's in the full deck
+## What's in the full set
 
-180 cards across 19 topics:
+332 cards across 22 topics:
 
 | | | |
 |---|---|---|
-| Transformer architecture (27) | Tokenization (8) | Embeddings (7) |
-| Training (10) | Fine-tuning (9) | RLHF and alignment (11) |
-| Prompting (11) | RAG (12) | Agents and tools (11) |
-| Inference and decoding (11) | Scaling laws (7) | Architecture variants (8) |
-| Quantization (7) | Evaluation (8) | Context management (6) |
-| Safety (8) | APIs and practical use (6) | Multimodal (6) |
-| Reasoning (7) | | |
+| Tokenization (12) | Embeddings and retrieval (14) | Transformer architecture (30) |
+| Architecture variants (16) | Training (18) | Distributed training (10) |
+| Scaling laws (10) | Fine-tuning (15) | RLHF and alignment (19) |
+| Inference and decoding (19) | Quantization (12) | Prompting (19) |
+| Reasoning (15) | Context management (10) | RAG (24) |
+| Agents and tools (22) | Multimodal (8) | Advanced concepts (6) |
+| Evaluation (16) | Safety (17) | Interpretability (7) |
+| APIs and practical use (13) | | |
 
-Two formats: a PDF (180 pages, printable) and an `.apkg` for Anki spaced-repetition review. New cards get added every few weeks. Past buyers get the updates by email.
+Three formats: a PDF (332 pages, printable), an `.apkg` for Anki spaced-repetition review, and every card as a separate image. New cards get added regularly, and past buyers get every update free.
 
 [llmsresearch.com/flashcards](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=repo&utm_campaign=flashcards_launch)
 
@@ -78,10 +94,10 @@ CC BY-NC-ND 4.0. Share the cards with credit and a link back to this repo. No re
 
 ## Contributing
 
-If something on a card is wrong or unclear, [open an issue](../../issues/new). If you want a card on a concept that is not in the deck yet, open one too. I read them.
+If something on a card is wrong or unclear, [open an issue](../../issues/new). If you want a card on a concept that is not in the set yet, open one too. I read them.
 
 ## About
 
-[LLMs Research](https://llmsresearch.com) is an independent applied research lab. We work on LLM efficiency: inference, KV cache compression, adaptive compute, multi-agent systems. The deck started as study notes for that work.
+[LLMs Research](https://llmsresearch.com) is an independent applied research lab. We work on LLM efficiency: inference, KV cache compression, adaptive compute, multi-agent systems. The set started as study notes for that work.
 
 [Website](https://llmsresearch.com) · [Newsletter](https://llmsresearch.substack.com) · [X](https://x.com/llmsresearch) · [LinkedIn](https://www.linkedin.com/company/llmsresearch)

@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Accuracy matters to us more than almost anything else, and reader corrections have improved the deck before. Thanks for taking the time.
+        Accuracy matters to us more than almost anything else, and reader corrections have improved the set before. Thanks for taking the time.
   - type: input
     id: card
     attributes:

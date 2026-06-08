@@ -4,7 +4,7 @@ Thanks for taking an interest. This repository is a sample set of flashcards, so
 
 ## Found a mistake?
 
-If a card is wrong, misleading, or unclear, please [open an issue](../../issues/new). Include the card name and what you think is off. Accuracy matters more to us than almost anything else, and reader corrections have improved the deck more than once.
+If a card is wrong, misleading, or unclear, please [open an issue](../../issues/new). Include the card name and what you think is off. Accuracy matters more to us than almost anything else, and reader corrections have improved the set more than once.
 
 ## Want a topic covered?
 
