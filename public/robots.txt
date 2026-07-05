@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://llmsresearch.github.io/llm-flashcards/sitemap-index.xml
