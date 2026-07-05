@@ -1,47 +1,63 @@
 # LLMs Visual Card
 
-Large language models are easier to use than to understand. You can write a
-prompt, call an API, or read a model card long before you have a stable picture
-of what tokens, attention, context windows, retrieval, alignment, and inference
-are doing together.
+Preparing for an AI engineering interview often means revising a lot of LLM
+concepts quickly: tokenization, attention, transformers, training, alignment,
+RAG, agents, evaluation, and deployment. You may already know pieces of the
+system, but connecting them under interview pressure is harder than recognizing
+them in isolation.
 
-LLMs Visual Card is a visual map for building that picture. It breaks the LLM
-stack into 180 focused cards, each explaining one concept with a diagram and a
-short written note. The sequence starts with tokenization and moves toward the
-practical questions that appear when models are used in real systems: cost,
-latency, retrieval, evaluation, safety, and deployment.
+LLMs Visual Card is built for that revision loop. It gives you a visual way to
+refresh core large language model concepts without rereading long docs or
+tutorials. Each card explains one idea with a diagram and a short note, so the
+concept is easier to recall when you are answering technical questions.
 
 Public site: <https://llmsresearch.github.io/llm-flashcards/>
 
-Use it when you want a mental model, not just a definition. Open the public site
-and follow the map from the beginning, or jump to a single card when a term keeps
-showing up in papers, docs, product work, or engineering discussions.
+This repository hosts the free open-source foundation: 180+ visual cards covering
+the core mechanics of modern LLM systems. The sequence starts with text becoming
+tokens and moves through transformers, training, inference, retrieval, agents,
+safety, evaluation, APIs, and production tradeoffs.
 
 ## Who It Is For
 
-This is for readers who use or study LLMs and want a clearer picture of how the
-main pieces fit together:
+This is for readers preparing for AI, ML, or LLM-heavy technical interviews who
+need a fast way to reconnect concepts before a screen or onsite:
 
 - developers building with LLM APIs
-- students and self-learners trying to connect scattered concepts
-- product and research readers who need enough technical depth to reason clearly
-- engineers moving from application use toward model behavior, retrieval,
-  evaluation, or deployment
+- engineers moving into AI product or platform work
+- students and self-learners preparing for technical rounds
+- ML practitioners revising architecture, RAG, agents, or deployment concepts
+- product and research readers who need enough technical depth to speak clearly
 
-It is not meant to replace a textbook or a paper. It is meant to give you the
-map you wish you had beside you while reading them.
+It is not meant to replace papers, docs, or textbooks. It is meant to give you a
+high-signal visual map when you need to revise quickly.
 
 ## How To Use It
 
-Read the cards in order if you want a curriculum. Each section builds on the
-last: text becomes tokens, tokens become vectors, transformers process those
-vectors, training shapes the model, and inference turns the trained model into
-responses.
+Treat the map as your interview revision curriculum. Read it in order if you want
+the full system path: text becomes tokens, tokens become vectors, transformers
+process those vectors, training shapes the model, and inference turns the trained
+model into responses.
 
-Use the map non-linearly if you are debugging a specific gap. For example, if
-you are working on RAG, start with embeddings, vector search, chunking, reranking,
-and citation. If you are trying to reduce cost or latency, start with tokens,
-KV cache, quantization, rate limits, and streaming.
+Use it non-linearly when you need to refresh a specific gap. For RAG interviews,
+start with embeddings, vector search, chunking, reranking, and citation. For
+systems and production rounds, start with tokens, KV cache, quantization, rate
+limits, streaming, and latency.
+
+Visual frameworks are easier to recall than text blocks when you are explaining
+architecture tradeoffs out loud.
+
+## Free Foundation And Complete Collection
+
+The public site contains the free foundation: 180+ cards that cover the core LLM
+concepts you should be able to discuss with confidence.
+
+The complete living collection on Gumroad contains 330+ cards and keeps growing
+as new agentic workflows, model patterns, and LLM research become relevant. It
+includes lifetime updates, so it can stay useful as an interview and reference
+tool over time.
+
+Complete collection: <https://llmsresearch.com/flashcards>
 
 ## What Is Inside
 

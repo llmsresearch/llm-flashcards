@@ -46,6 +46,25 @@ const ogUrl = ogImage ? new URL(withBase(ogImage), Astro.site).href : undefined;
         <nav class="nav-links">
           <a href={withBase("/")}>Map</a>
           <a href={withBase("/about")}>About</a>
+          <div class="repo-actions" aria-label="GitHub repository actions">
+            <div class="repo-action-group">
+              <a
+                class="repo-action-main"
+                href="https://github.com/llmsresearch/llm-flashcards"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Star llmsresearch/llm-flashcards on GitHub"
+              >
+                <svg class="repo-icon repo-star" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M8 .25a.75.75 0 0 1 .67.41l1.88 3.8 4.2.61a.75.75 0 0 1 .42 1.28l-3.04 2.96.72 4.18a.75.75 0 0 1-1.09.79L8 12.3l-3.76 1.98a.75.75 0 0 1-1.09-.79l.72-4.18L.83 6.35a.75.75 0 0 1 .42-1.28l4.2-.61L7.33.66A.75.75 0 0 1 8 .25Z"
+                  ></path>
+                </svg>
+                <span>Star</span>
+                <span class="repo-count" data-github-count="stars">64</span>
+              </a>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
@@ -64,5 +83,36 @@ const ogUrl = ogImage ? new URL(withBase(ogImage), Astro.site).href : undefined;
         </footer>
       )
     }
+    <script>
+      const repoCountTargets = document.querySelectorAll<HTMLElement>("[data-github-count]");
+
+      async function hydrateGitHubRepoCounts() {
+        if (!repoCountTargets.length) return;
+
+        try {
+          const response = await fetch("https://api.github.com/repos/llmsresearch/llm-flashcards", {
+            headers: { Accept: "application/vnd.github+json" },
+          });
+          if (!response.ok) return;
+
+          const repo = await response.json();
+          const counts: Record<string, number> = {
+            stars: repo.stargazers_count,
+          };
+
+          repoCountTargets.forEach((target) => {
+            const key = target.dataset.githubCount;
+            const value = key ? counts[key] : undefined;
+            if (typeof value === "number") {
+              target.textContent = new Intl.NumberFormat("en", { notation: "compact" }).format(value);
+            }
+          });
+        } catch {
+          /* Keep the static fallback counts if GitHub is unavailable. */
+        }
+      }
+
+      hydrateGitHubRepoCounts();
+    </script>
   </body>
 </html>

@@ -9,36 +9,135 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
 
 <BaseLayout
   title="About - LLMs Visual Card"
-  description="About the LLMs Visual Card knowledge bank and how the visual cards are organized."
+  description="A visual knowledge bank and interview revision guide for large language models."
 >
   <div class="wrap">
     <p class="eyebrow">About</p>
-    <h1>A visual knowledge bank for large language models.</h1>
+    <h1>A visual knowledge bank and interview revision guide for large language models.</h1>
 
-    <div class="prose">
-      <p>
-        This site collects one concept per card, with a visual explanation and a
-        short written note. The sequence starts with tokenization and moves through
-        transformers, training, alignment, inference, retrieval, agents,
-        evaluation, safety, and deployment.
-      </p>
+    <div class="about-page">
+      <div class="about-copy prose">
+        <p>
+          I built this resource because preparing for an AI engineering interview
+          requires rapid, structured revision. You likely already know bits and
+          pieces of how the technology works. But when you need to connect the dots
+          fast before a technical screen, rereading documentation takes too long.
+          This site gives you a high-signal way to revise core concepts visually.
+        </p>
 
-      <h2>How to use it</h2>
-      <p>
-        Use the map as a curriculum, or open a single card when you need a quick
-        reminder. Each card page keeps related concepts nearby so you can move
-        from a term to the machinery around it without leaving the visual card
-        sequence.
-      </p>
+        <p>
+          These visual cards break down the mechanics of large language models into
+          one visual concept per page. Each card pairs a clear diagram with a short
+          explanation of what the concept is and why it matters in production. The
+          sequence maps the entire pipeline, covering tokenization, transformers,
+          training, alignment, RAG, AI agents, and deployment.
+        </p>
 
-      <h2>Scope</h2>
-      <p>
-        The current knowledge bank covers 180 cards. The focus is practical
-        understanding: what each idea is, where it sits in the system, and what
-        tradeoffs matter when building or using LLMs.
-      </p>
+        <h2>How to use it</h2>
+        <p>
+          Treat the map as your curriculum for end-to-end study. If your interview
+          is tomorrow, use it for last-minute revision to refresh your memory on
+          specific architecture tradeoffs. Visual frameworks are much easier to
+          recall than text blocks when you are answering questions under pressure.
+        </p>
 
-      <a class="btn" href={withBase("/")}>Browse the map</a>
+        <h2>The Open Source Foundation: 180+ cards</h2>
+        <p>
+          This site hosts the core foundational cards completely for free. It
+          provides a solid practical understanding of the system so you can discuss
+          AI architecture with confidence.
+        </p>
+
+        <h2>The Complete Living Collection: 330+ cards and growing</h2>
+        <p>
+          The AI industry moves quickly. A static interview guide becomes outdated
+          the moment new research drops. That is why I keep this project alive.
+        </p>
+
+        <p>
+          The expanded collection on Gumroad currently holds over 330 visual cards.
+          I continuously add new cards as new agentic workflows and LLM breakthroughs
+          emerge. When you get the complete collection, you get all future updates
+          for free. It functions as your permanent, up-to-date visual reference to
+          stay interview ready as the market evolves.
+        </p>
+      </div>
+
+      <aside class="about-side" aria-label="Complete visual cards collection">
+        <figure class="about-cover">
+          <img
+            src={withBase("/covers/cover_01_intro_332.jpg")}
+            alt="LLM Flashcards cover showing example visual cards for transformers, query-key-value, and RAG."
+            width="1024"
+            height="576"
+            loading="eager"
+          />
+        </figure>
+        <div class="about-actions">
+          <a class="btn" href={withBase("/")}>Browse the free map</a>
+          <a class="btn ghost" href="https://llmsresearch.com/flashcards" target="_blank" rel="noopener noreferrer">
+            Get the complete visual cards
+          </a>
+        </div>
+      </aside>
     </div>
   </div>
+
+  <style>
+    .about-page {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      gap: 36px;
+      align-items: start;
+      margin-top: 18px;
+      max-width: 1180px;
+    }
+
+    .about-side {
+      position: sticky;
+      top: 88px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .about-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .about-actions .btn.ghost {
+      margin-left: 0;
+    }
+
+    .about-cover {
+      margin: 0;
+      padding: 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+    }
+
+    .about-cover img {
+      border-radius: 10px;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .about-page {
+        grid-template-columns: 1fr;
+      }
+
+      .about-side {
+        position: static;
+        order: -1;
+      }
+
+      .about-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
 </BaseLayout>

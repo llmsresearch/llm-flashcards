@@ -99,6 +99,95 @@ img {
   margin-left: 22px;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-links > a {
+  margin-left: 0;
+}
+
+.repo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 4px;
+}
+
+.repo-action-group {
+  display: inline-flex;
+  align-items: stretch;
+  height: 32px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #24292f;
+}
+
+.repo-action-main,
+.repo-action-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #d0d7de;
+  background: #f6f8fa;
+  color: #24292f;
+}
+
+.repo-action-main {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.repo-action-menu {
+  width: 32px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 0;
+}
+
+.repo-action-main:hover,
+.repo-action-menu:hover {
+  background: #f3f4f6;
+  border-color: #d0d7de;
+  color: #24292f;
+  text-decoration: none;
+}
+
+.repo-action-main:active,
+.repo-action-menu:active {
+  background: #ebecf0;
+}
+
+.repo-icon {
+  width: 16px;
+  height: 16px;
+  fill: #57606a;
+  flex: none;
+}
+
+.repo-star {
+  fill: #bf8700;
+}
+
+.repo-caret {
+  width: 16px;
+  height: 16px;
+  fill: #57606a;
+}
+
+.repo-count {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eaeef2;
+  color: #24292f;
+  font-weight: 500;
+  text-align: center;
+}
+
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--line);
@@ -295,6 +384,34 @@ h3 {
 @media (max-width: 560px) {
   body {
     font-size: 17px;
+  }
+  .site-header .wrap {
+    height: auto;
+    min-height: 60px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .repo-actions {
+    order: 3;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .repo-action-group {
+    height: 30px;
+    font-size: 13px;
+  }
+  .repo-action-main {
+    padding: 4px 8px;
+  }
+  .repo-action-menu {
+    width: 30px;
   }
   .pager {
     grid-template-columns: 1fr;
