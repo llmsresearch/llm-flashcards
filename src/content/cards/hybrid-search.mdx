@@ -1,0 +1,48 @@
+---
+seq: 226
+title: "Hybrid Search"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "RAG"
+summary: "Runs two retrievers in parallel, a dense vector search and a sparse keyword search like BM25, then merges their results into one ranked list. Catches both paraphrased queries and exact-term queries."
+image: "/cards/91_rag.jpg"
+status: "done"
+related:
+  - "embedding-for-retrieval"
+  - "vector-database"
+  - "top-k-retrieval"
+---
+
+Dense retrieval matches meaning. A query about "refund policy" can find a
+passage that never uses those exact words but describes returns in different
+terms. Sparse retrieval matches terms. It excels when the query contains
+specific identifiers, product codes, or rare words that must appear literally
+in the document. Neither approach covers every query type on its own.
+
+The card draws a Y-shaped fork. A single query splits into two parallel
+retrievers. The dense branch embeds the query and searches by vector
+similarity. The sparse branch runs a lexical method like BM25, scoring
+documents by term overlap with length normalization. Both branches return
+ranked lists over the same corpus, which are then merged and deduplicated into
+one final ranking. Reciprocal Rank Fusion is a common merge strategy that
+combines ranks without requiring scores to be on the same scale.
+
+The examples at the bottom show where each branch wins. A paraphrased question
+like "refund policy" tends to favor dense search, because the relevant passage
+might say "returns within thirty days" without sharing keywords. A query like
+"order #A4710" tends to favor sparse search, because the answer hinges on an
+exact string match that embedding similarity may miss. Production systems
+often see both query shapes in the same traffic.
+
+Hybrid search is not about picking one retriever forever. It is about running
+both and letting the merge step surface candidates that either method alone
+might rank too low. The added complexity is real: two indexes to maintain, two
+query paths, and a merge policy to tune. The benefit is higher recall across
+mixed query types.
+
+The practical takeaway is to consider hybrid retrieval when your corpus
+contains structured identifiers alongside prose, or when users phrase questions
+both literally and loosely. Start with dense-only for a semantic FAQ, add
+sparse when exact-match failures show up in eval, and measure the merged result
+rather than either branch in isolation.

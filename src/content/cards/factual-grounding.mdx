@@ -1,0 +1,41 @@
+---
+seq: 298
+title: "Factual Grounding"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "Every claim in the model's answer should point back to a source the user can check. Achieved by retrieving facts, prompting the model to cite, and verifying citations. Grounding makes answers verifiable, not necessarily correct."
+image: "/cards/155_safety.jpg"
+status: "done"
+related:
+  - "hallucination"
+  - "jailbreaking-guardrails"
+  - "red-teaming"
+---
+
+Hallucination is fluent text without truth. Factual grounding is the structural fix:
+tie each claim to evidence a user can inspect. The card contrasts two answers to the
+same policy question. The ungrounded side states a refund window from memory with no
+source attached. The grounded side gives a number with a citation marker, links to a
+document and line range, and quotes the supporting text. One answer can be checked;
+the other cannot.
+
+Grounding is a system property, not a single prompt trick. The ingredients list names
+three parts. Retrieval brings relevant documents into context so the model is not
+writing only from weights. The prompt instructs the model to cite what it uses. An
+evaluation step checks that citations actually support the claims. That last step
+matters because models can emit citation-shaped text that points nowhere useful.
+
+The mechanism does not guarantee correctness. A grounded answer can still cite the
+wrong passage or misread a table. What grounding buys is verifiability. A user or
+downstream checker can open the source and see whether the claim holds. The card's
+caption states the distinction plainly: grounded does not mean correct, but grounded
+means verifiable.
+
+In product terms, grounding is how you reduce uncheckable assertions in domains where
+errors carry cost: support bots, legal summaries, medical information, internal
+policy lookup. It pairs naturally with retrieval pipelines and with eval suites that
+score citation precision and recall. The takeaway is to design for traceable claims
+when facts matter, and to treat grounding quality as something you measure, not
+something you assume from prompt wording alone.

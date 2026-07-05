@@ -1,0 +1,44 @@
+---
+seq: 47
+title: "KV Cache"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "4. Scaling Attention: Longer & Cheaper"
+category: "Transformer Architecture"
+summary: "During autoregressive generation the key and value vectors for past tokens never change, so they are computed once and stored. Reusing them turns per-step attention from quadratic to linear and is essential for practical decoding."
+image: "/cards/23_transformer.jpg"
+status: "done"
+related:
+  - "grouped-query-attention"
+  - "autoregressive-generation"
+  - "query-key-value-vectors"
+---
+
+Generation happens one token at a time, and a naive implementation redoes an
+enormous amount of work at every step. The KV cache is the observation that most of
+that work is identical from step to step, so it need only be done once.
+
+The key fact is at the top: during autoregressive generation, the key and value
+vectors for past tokens do not change. Token three's K and V are the same whether the
+sequence is three tokens long or three hundred. Only the newest token needs fresh K
+and V computed. The two columns contrast the options. Without the cache, every step
+recomputes K and V for the whole sequence, so each step costs on the order of N
+squared and the model redoes work it already did. With the cache, past K and V are
+stored and only the latest token's are computed, bringing the per-step cost down to
+order N.
+
+The lower box states the bookkeeping precisely. At step t, only token t needs a new
+query, key, and value; the keys and values from steps one through t minus one are
+saved. That saved store is literally the cache the technique is named for. The query
+is not cached, because each new token asks its own question of the stored keys and
+values; only K and V accumulate.
+
+The bottom line is not an overstatement: this is essential for any practical
+decoder-only inference. Without it, generating a long response would repeat the full
+attention computation at every token and slow to a crawl. Every serving system keeps
+a KV cache.
+
+The cache is not free, though. It grows with sequence length and with the number of
+attention heads, and for long contexts it can dominate memory. That memory pressure
+is exactly what the next cards address: grouped-query and multi-query attention
+shrink the cache by sharing keys and values across heads.

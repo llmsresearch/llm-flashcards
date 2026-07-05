@@ -1,0 +1,51 @@
+---
+seq: 99
+title: "Emergent Abilities"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "8. Scaling Laws"
+category: "Scaling Laws"
+summary: "Some capabilities stay near random until model scale crosses a threshold, then rise sharply. The sharpness is partly an artifact of pass/fail metrics but real on some benchmarks."
+image: "/cards/121_scaling.jpg"
+status: "done"
+related:
+  - "scaling-laws-overview"
+  - "chinchilla-optimal"
+  - "hallucination"
+---
+
+Scaling laws promise that loss falls smoothly with scale, but individual task
+performance does not always follow that smoothness. The card shows two curves of
+task accuracy against model scale. One rises gradually from small sizes, the
+pattern most tasks follow, labeled here as a smooth task like translation. The
+other stays flat near random accuracy across a wide range of scales and then rises
+sharply once the model passes a threshold, labeled an emergent task such as
+multi-step arithmetic or multi-step reasoning. Below the threshold the ability is,
+as the annotation puts it, not present at small scale at all.
+
+The appeal of the observation is the hockey-stick shape: a capability that seemed
+absent appears suddenly, which is dramatic and was widely reported. The card is
+careful not to leave it there. The caveats box is the important half. Much of the
+sharpness is an artifact of how the task is scored. A binary metric, pass or fail
+on a whole multi-step problem, gives no credit for a model that has the pieces
+mostly right, so accuracy stays pinned at zero until the model crosses the point
+where it can complete the entire chain, at which point it jumps. The underlying
+competence was improving smoothly the whole time; the metric just could not see it.
+
+The card names the fix directly: measured with log-likelihood or partial credit,
+the same curves look far smoother. If you score how much probability the model
+places on the correct answer, or give credit for partial progress, the sudden
+jump softens into the gradual rise the scaling laws would predict. The annotation
+sums it up, the curve changes with the metric. This reframing matters because
+apparent emergence had been read as evidence of unpredictable phase changes in
+capability, and much of that unpredictability turns out to be a property of the
+ruler rather than the model.
+
+The last caveat keeps the correction from overreaching: still real on some
+benchmarks. Not every sharp transition is a scoring artifact, and there are tasks
+where behavior genuinely shifts qualitatively with scale rather than just becoming
+measurable. The honest position is between the two extremes. Emergence is a real
+phenomenon in places, and it is also frequently an illusion created by
+discontinuous metrics, so a sudden jump on a benchmark is a reason to check how
+the benchmark is scored before concluding that something new appeared in the
+model.

@@ -1,0 +1,48 @@
+---
+seq: 114
+title: "Catastrophic Forgetting"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Fine-tuning heavily on a narrow task can improve that task while eroding unrelated skills the model had before. Mitigate by mixing in general data or by using PEFT."
+image: "/cards/59_finetuning.jpg"
+status: "done"
+related:
+  - "full-fine-tuning-vs-peft"
+  - "overfitting-in-fine-tuning"
+  - "continual-pretraining"
+---
+
+Catastrophic forgetting is the cost of fine-tuning too narrowly. When a model is
+trained hard on one task, gradient descent moves its weights toward that task,
+and there is nothing forcing it to preserve abilities that the fine-tune data
+does not exercise. Those abilities quietly degrade. The card makes the effect
+concrete with a table: after fine-tuning on legal question answering, target
+accuracy climbs from 45 to 82 percent, but general reasoning falls from 72 to 41
+and math word problems from 58 to 24.
+
+The mechanism is worth stating plainly, because the name makes it sound like a
+glitch when it is really the expected behavior of unconstrained optimization. The
+model has a fixed set of weights that encode all of its skills together. Training
+signal that only rewards the new task pulls those shared weights toward it, and
+skills that depended on the old configuration of the weights lose the arrangement
+they relied on. The bar on the card captures this visually: a model that was
+broadly capable before fine-tuning ends up sharp only on the target region, with
+the rest of its competence faded out.
+
+The card lists two mitigations, and they map onto ideas from earlier cards. The
+first is to mix general data into the fine-tuning set, so the training signal
+keeps rewarding the broad skills alongside the new one and the weights are not
+pulled entirely toward the narrow task. The second is to use PEFT such as LoRA:
+because the base weights stay frozen and only a small adapter changes, the
+original capabilities are structurally protected rather than being overwritten.
+The closing note is a rule of thumb, do not train only on the new task.
+
+The tradeoff to weigh is between adaptation and preservation. Full fine-tuning on
+narrow data gives the strongest gain on the target but the largest collateral
+loss, while data mixing and PEFT trade some peak target performance for keeping
+the model broadly useful. Which side to favor depends on whether the deployed
+model needs to do only the one task or remain a generalist. The next card looks
+at a related but distinct failure, where the model degrades even on held-out
+examples of the target task itself.

@@ -1,0 +1,42 @@
+---
+seq: 28
+title: "Multi-Head Attention"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Runs attention several times in parallel with different learned projections, so each head can track a different kind of relation. The outputs are concatenated and projected back to the input shape."
+image: "/cards/09_transformer.jpg"
+status: "done"
+related:
+  - "attention-head"
+  - "scaled-dot-product-attention"
+  - "grouped-query-attention"
+---
+
+A single attention computation can only follow one pattern of who-looks-at-whom at
+a time. Multi-head attention runs several of them side by side so the model can
+track different relations at once.
+
+The card shows one input h fanning out to eight heads. Each head has its own
+learned W_Q, W_K, and W_V, so each computes the scaled dot-product attention from
+the previous cards on its own projection of the input. Because the projections
+differ, the heads end up specializing: one might follow local neighbors, another
+subject-verb agreement, another long-range links. The card calls these different
+perspectives on the same sequence. Their outputs are concatenated, then passed
+through a final matrix W_O that mixes them back into a single vector h prime with
+the same shape as the input.
+
+The dimension box answers the obvious cost question. Each head works at a smaller
+width, d_head equals d_model divided by H, the number of heads. Eight heads at one
+eighth the width each add up to the full model width, so the total parameter count
+is about the same as a single head running at full d_model. The annotation states
+it plainly: multi-head is not more compute. You are splitting the same budget
+across several smaller attention computations rather than spending more.
+
+That reframing is the useful part. Multiple heads buy representational variety at
+roughly fixed cost. Instead of one attention pattern trying to serve every kind of
+relation, the model gets H specialists and a final layer to combine them.
+
+The next card zooms into a single one of those heads to see what it computes and
+what kinds of patterns individual heads have been found to learn.

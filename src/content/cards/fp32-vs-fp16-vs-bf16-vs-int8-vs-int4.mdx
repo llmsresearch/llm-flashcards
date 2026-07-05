@@ -1,0 +1,36 @@
+---
+seq: 158
+title: "FP32 vs FP16 vs BF16 vs INT8 vs INT4"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "Five common weight precisions from largest to smallest. Each step down usually halves bytes per weight and VRAM, with growing accuracy cost at very low precision."
+image: "/cards/134_quantization.jpg"
+status: "done"
+related:
+  - "what-is-quantization"
+  - "mixed-precision"
+  - "post-training-quantization-ptq"
+---
+
+Choosing a precision is choosing how many bits each weight costs. The card makes
+that choice concrete with a bar chart and a model-size table.
+
+The upper chart plots bytes per weight across five formats. FP32 uses four bytes
+per weight and sits at the top of the ladder. FP16 and BF16 both use two bytes,
+so their bars share the same height. INT8 drops to one byte. INT4 uses half a
+byte per weight, which is eight times smaller than FP32. Annotations mark FP32
+as the default precision with the biggest memory cost, BF16 as sharing FP32's
+exponent range, and INT4 as the most aggressive savings on the chart.
+
+The table translates those per-weight numbers into total model size for a 70B
+parameter model. At FP32 the weights alone would need about 280 GB. Halving the
+precision to FP16 or BF16 brings that to 140 GB. INT8 reaches 70 GB. INT4 lands
+near 35 GB, a size that can fit on a single high-end GPU where the FP32 original
+could not.
+
+The lower note states the tradeoff in one line: lower precision means less memory
+and faster inference, but accuracy drops mildly at INT8 and more noticeably at
+INT4. In practice you pick the lowest precision your quality budget allows, not
+the lowest number on the chart.

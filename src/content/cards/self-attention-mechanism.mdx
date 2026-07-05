@@ -1,0 +1,43 @@
+---
+seq: 24
+title: "Self-Attention Mechanism"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "At each position the model builds a weighted average of every token in the sequence, where the weights come from learned similarity. This is how tokens gather context."
+image: "/cards/05_transformer.jpg"
+status: "done"
+related:
+  - "positional-encoding"
+  - "query-key-value-vectors"
+  - "scaled-dot-product-attention"
+---
+
+The position cards handled where tokens sit. This card is the operation that
+actually reads the sequence, and it is the heart of the transformer.
+
+Self-attention works one position at a time, but each position looks everywhere.
+For a given token, the model produces a set of weights over all tokens in the
+sequence and then takes a weighted average of their vectors. The card walks
+through the word "sat": it attends most to "cat" with weight 0.55, gives 0.20 to
+itself, and spreads the rest thinly across "the", "on", and "mat". The output for
+"sat" is written out explicitly as 0.05 times The plus 0.55 times cat and so on,
+a weighted sum where the weights add to one.
+
+Two details matter. The weights are not fixed; they come from learned query-key
+similarity, which the next card unpacks. And the vectors being summed are the
+value vectors, again defined next card, not the raw embeddings. For now the shape
+of the idea is enough: similarity decides how much attention each token gets, and
+the value vectors are what get mixed.
+
+The phrase at the bottom captures why this matters, every position mixes
+information from every position. In a single pass, each token pulls in context
+from the whole sequence, so the representation of "sat" can come to encode that
+its subject is "cat". Nothing is processed left to right one step at a time the
+way older recurrent models worked; the mixing happens for all positions at once.
+
+That all-to-all mixing is expressive and also expensive, since every token compares
+against every other. That cost is what a later chapter on scaling attention works
+to reduce. The next three cards stay on the mechanism, starting with the query,
+key, and value vectors the weights are built from.

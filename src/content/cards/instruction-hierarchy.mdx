@@ -1,0 +1,42 @@
+---
+seq: 182
+title: "Instruction Hierarchy"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "13. Prompting"
+category: "Advanced Concepts"
+summary: "Instruction hierarchy ranks sources of guidance by trust. Developer and system instructions should override user text, which should override untrusted tool or retrieved content. Models trained with explicit priority rules resist some injection patterns more reliably."
+image: "/cards/171_advanced.jpg"
+status: "done"
+related:
+  - "prompt-injection"
+  - "system-vs-user-prompt"
+  - "delimiters-and-format"
+---
+
+The card shows a vertical stack of instruction sources ordered by trust. Developer
+policy sits at the top. System and application messages follow. User messages sit
+lower. Tool and retrieval output anchor the bottom as untrusted. Arrows point
+upward with a note that lower layers must yield when they conflict with higher
+ones. The visual is a priority stack, not a single prompt string.
+
+The mechanism is training and formatting together. Some frontier models learn
+during alignment that certain message classes outrank others, similar to how
+operating systems treat kernel policy over userland input. APIs may expose message
+types or metadata so the runtime can apply those priorities at inference. Without
+that structure, every token has equal surface form and the model must guess intent
+from phrasing alone, which injection exploits.
+
+Instruction hierarchy does not replace external controls. It raises the bar for
+attacks that hide commands in web pages or email bodies by giving the model a
+default bias toward developer rules. It can still fail under novel jailbreaks,
+long contexts, or tasks where user text legitimately needs to override defaults.
+Combine hierarchy with delimiters, tool permissioning, and output validation.
+
+In application design, map your real trust zones onto the stack. Put immutable
+safety and formatting rules in developer or system slots. Keep end-user requests in
+user slots. Wrap RAG chunks and tool JSON in the lowest tier and label them as
+untrusted evidence, not commands. Test conflicts deliberately: if a user says
+"ignore system rules," the model should refuse per policy. The card's takeaway is
+explicit precedence: not all instructions are equal, and deployments should encode
+that inequality rather than hoping one paragraph wins.

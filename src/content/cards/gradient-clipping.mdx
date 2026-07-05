@@ -1,0 +1,48 @@
+---
+seq: 75
+title: "Gradient Clipping"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "Caps the size of the gradient at a threshold. If it is larger, it is rescaled down before the optimizer step, so one bad batch cannot wreck the weights."
+image: "/cards/51_training.jpg"
+status: "done"
+related:
+  - "adam-optimizer"
+  - "mixed-precision"
+  - "learning-rate-schedule"
+---
+
+Most training steps are well behaved, but occasionally a batch produces a gradient
+far larger than usual, and a single oversized update can push the weights into a
+region the model never recovers from. The card's left panel is that failure: an
+exploding gradient sends one update off the top of the chart, and the model
+blows up. Gradient clipping is the guardrail against it.
+
+The mechanism is a cap on the gradient's overall length. The formula on the card
+measures the norm of the full gradient, written as the length of the vector g,
+and compares it to a threshold c. If the norm is at or below c, nothing happens.
+If it exceeds c, the whole gradient is rescaled by c divided by its norm, which
+shrinks it back to exactly length c while keeping its direction unchanged. That
+last point matters: clipping does not alter which way the step points, only how
+far it goes. The right panel shows the capped case, the gradient held at the
+dashed line marked norm less than or equal to c.
+
+The reason to clip the norm rather than each component separately is that the
+direction carries the information. Clamping individual entries would bend the
+update toward a different direction than the gradient actually indicated, whereas
+rescaling the whole vector preserves the direction the loss said to move and only
+tempers the magnitude. The loss curves at the bottom illustrate the payoff.
+Without clipping the loss is jagged, spiking whenever a large gradient lands.
+With clipping it descends smoothly, because the rare huge steps are cut down to
+size.
+
+Clipping only acts when a gradient is anomalously large, so on a stable run it
+does almost nothing, which is exactly what you want from a safety mechanism. It
+pairs closely with the two previous cards. In a mixed-precision setup an
+overflow can produce a spuriously enormous gradient, and with gradient
+accumulation the clip applies to the summed gradient of the full effective batch
+rather than to any single micro-batch. The threshold c is a hyperparameter, and
+setting it too low throttles learning by clipping normal steps, while setting it
+too high lets the occasional damaging update through.

@@ -1,0 +1,41 @@
+---
+seq: 172
+title: "Role Prompting"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "13. Prompting"
+category: "Prompting"
+summary: "Role prompting assigns a persona or expertise frame before the task. The same question yields different depth, vocabulary, and caution depending on whether the model is told to act as a lawyer, a tutor, or a casual assistant."
+image: "/cards/83_prompting.jpg"
+status: "done"
+related:
+  - "system-vs-user-prompt"
+  - "zero-one-few-shot-prompting"
+  - "delimiters-and-format"
+---
+
+The card shows a small grid: one factual question asked three times under three
+role prompts. Each column gets a different answer shape. The lawyer column is
+cautious and qualification-heavy. The tutor column explains step by step. The
+casual assistant column is short and plain. Below the grid, a one-line do-and-don't
+list warns against vague roles and contradictory persona text.
+
+Role text works by biasing which training modes the model activates. Personas are
+not privileged access to new facts; they are priors over tone, structure, and how much
+uncertainty to surface. A medical framing nudges toward disclaimers. A coding
+framing nudges toward syntax and error checks. The effect is real but soft: the
+model can still hallucinate or overstate confidence while sounding like an expert.
+
+Use roles to set audience and output contract, not to bypass safety or imply
+credentials the model does not have. Prefer specific, bounded roles: "explain to a
+first-year biology student in three short paragraphs" beats "you are an all-knowing
+scientist." Align role with system instructions and do not fight them in the user
+message. If two roles appear in the same prompt, the model may blend them
+unpredictably.
+
+For product design, role prompting is how you standardize voice across features
+without retraining. Put stable persona in the system message and keep the user
+message focused on the task. Test with adversarial user text that tries to break
+character; role alone is not a security boundary. The card's lesson is comparative:
+same question, different hat, measurably different response, which makes persona
+an explicit engineering choice rather than an accident of phrasing.

@@ -1,0 +1,47 @@
+---
+seq: 117
+title: "RLHF Overview"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "Reinforcement learning from human feedback runs in three stages: supervised fine-tuning, then a reward model trained on human preference pairs, then RL that pushes the model toward higher reward while staying close to the SFT baseline."
+image: "/cards/62_rlhf.jpg"
+status: "done"
+related:
+  - "supervised-fine-tuning-sft"
+  - "reward-model"
+  - "ppo-in-rlhf"
+---
+
+RLHF is the recipe that turns an instruction-following model into one whose answers
+line up with what people actually prefer. The card lays it out as three boxes read
+left to right, and the order matters because each stage consumes the output of the
+one before it. Stage one is supervised fine-tuning: feed the model prompts paired
+with good responses so it learns the format of an answer. Stage two trains a reward
+model on human preference pairs. Stage three uses reinforcement learning to adjust
+the model so its outputs score higher under that reward, held near the SFT model by
+a penalty.
+
+The reason the pipeline splits into three is that each stage solves a problem the
+others cannot. SFT is cheap and it fixes format, but it can only imitate the
+responses it was shown, so it never learns that one acceptable answer is better than
+another equally acceptable one. Ranking teaches that. Collecting a scalar quality
+label for every possible response is impractical, but asking a person which of two
+responses is better is easy, and the reward model turns those comparisons into a
+score any response can be graded against. With a score in hand, RL can search for
+responses the reward model likes rather than just copying a fixed set.
+
+The card marks stage one as the cheap step that sets the format and stage three as
+the one that actually changes behavior, which is a useful way to hold the division
+in mind. SFT gets the model into the right shape; the reward model captures human
+taste; RL is where the model starts producing answers no human wrote but that people
+would have preferred. Two of the three stages train entirely new models, the reward
+model and the final policy, and only SFT reuses labeled examples directly.
+
+The note about staying close to the SFT baseline points at the failure mode that
+makes stage three delicate. A model optimizing hard against a learned reward will
+find responses that score well without being good, so the objective includes a
+term that keeps the trained policy near the SFT starting point. That tension, chase
+reward but do not drift, runs through every card in this chapter, from the reward
+model that supplies the signal to the KL penalty that supplies the brake.

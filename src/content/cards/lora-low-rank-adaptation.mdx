@@ -1,0 +1,46 @@
+---
+seq: 105
+title: "LoRA (Low-Rank Adaptation)"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Adds a trainable low-rank update, the product of two small matrices, in parallel with a frozen weight matrix. The rank is far smaller than the dimension, so the new parameters are a tiny fraction of the original."
+image: "/cards/54_finetuning.jpg"
+status: "done"
+related:
+  - "full-fine-tuning-vs-peft"
+  - "lora-hyperparameters"
+  - "qlora"
+---
+
+LoRA is the PEFT method that made freezing the base model practical, and the
+card shows exactly how it works. The original weight matrix W, of size d by d,
+stays frozen. Alongside it runs a small parallel branch that produces an update
+delta-W, and only that branch is trained. At inference the model behaves as if
+its weights were W plus delta-W, so the update is added back on top of the
+frozen matrix.
+
+The trick is in how delta-W is built. Rather than being a full d by d matrix,
+which would be just as expensive to train and store as W itself, it is factored
+into two thin matrices: A of size r by d, and B of size d by r, with delta-W
+equal to B times A. The number r is the rank, and it is chosen to be much
+smaller than d. The card marks r as typically 4 to 64. Because the two factors
+are narrow, the parameter count drops sharply. Full fine-tuning of this matrix
+would train d-squared parameters; LoRA trains 2 times r times d, which for a
+small r is a tiny slice of the original.
+
+The bet underneath this is that the change a task needs to make to a weight
+matrix is low-rank, meaning it can be captured well by a product of narrow
+matrices even though W itself is full-rank. This holds up remarkably well in
+practice for adapting a pretrained model to a new task, which is why LoRA became
+the default. It is worth being clear that it is an assumption about the update,
+not a mathematical certainty, and tasks that need a large, high-rank change to
+behavior can be underserved by a small r.
+
+Two properties make LoRA convenient beyond the parameter savings. Because the
+adapter is separate from the frozen base, a single base model can host many LoRA
+adapters, one per task, each stored as a small file. And because the update can
+be folded into W by simple addition, a merged model adds no inference cost over
+the original. The next card walks through the handful of knobs that control how
+a LoRA adapter is configured.

@@ -1,0 +1,41 @@
+---
+seq: 256
+title: "Planning & Task Decomposition"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "Complex goals are broken into a tree of sub-tasks, each subdivided further until leaf nodes are concrete actions the agent can execute one at a time. Planning turns an open-ended request into a sequence of steps."
+image: "/cards/99_agents.jpg"
+status: "done"
+related:
+  - "what-is-an-llm-agent"
+  - "agent-loop"
+  - "multi-agent-systems"
+---
+
+The card shows a tree. At the root sits a high-level goal, something like "prepare a
+quarterly report." That goal splits into sub-tasks: gather sales data, pull support
+tickets, draft the narrative. Each sub-task splits again until the leaves are small
+enough to execute directly, run this SQL query, fetch this file, write this section.
+The visual is task decomposition: breaking an ambiguous request into parts the agent
+can handle sequentially or in parallel.
+
+Planning is what produces that tree. Before or during execution, the model (or a
+separate planner module) proposes an ordered list or hierarchy of steps. The agent loop
+then works through the leaves, marking nodes complete and revising the plan when a step
+fails or returns unexpected data. A flat loop without planning tends to improvise one
+step at a time, which works for short tasks but drifts on multi-stage work.
+
+Decomposition also controls context. Each sub-task can be handed to the model with only
+the information relevant to that step, rather than the entire project history. That
+reduces noise in the context window and makes it easier to retry a single branch
+without replaying the whole run. Multi-agent systems often assign different branches to
+different specialized agents, but a single agent benefits from the same structural idea.
+
+The practical takeaway is to match planning depth to task uncertainty. A fixed pipeline
+needs little decomposition; an open-ended research or coding task benefits from an
+explicit plan the agent can update. Plans should be treated as hypotheses, not contracts.
+When a sub-task fails, the tree gets pruned or rewritten rather than forcing the agent
+to finish a broken branch. Good decomposition is the difference between an agent that
+looks busy and one that reaches the actual goal.

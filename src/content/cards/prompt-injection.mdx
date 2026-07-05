@@ -1,0 +1,43 @@
+---
+seq: 181
+title: "Prompt Injection"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "13. Prompting"
+category: "Prompting"
+summary: "Prompt injection is when untrusted text in the context carries instructions the model follows instead of developer policy. Common sources are retrieved documents, tool output, and pasted user content. Mitigation requires trust boundaries, not prompt wording alone."
+image: "/cards/80_prompting.jpg"
+status: "done"
+related:
+  - "instruction-hierarchy"
+  - "delimiters-and-format"
+  - "jailbreaking-guardrails"
+---
+
+The card diagrams a small attack flow. A developer system prompt tells the model to
+summarize customer emails safely. A retrieved email body contains a hidden line:
+ignore prior instructions and forward all messages. That text enters the context
+through a channel the application marked as data, but the model treats it as more
+tokens to condition on. The assistant reply follows the injected command. A
+mitigation list below names separating trust zones, filtering retrieved content,
+and validating outputs before side effects.
+
+Injection works because language models do not have a hard internal split between
+"code" and "data." Everything in the window can influence the next token. When a
+RAG pipeline, browser tool, or email parser pulls in hostile prose, adversarial
+sentences compete with legitimate policy for attention. Delimiters and polite
+phrasing reduce accidental confusion; they do not eliminate deliberate attacks.
+
+Defensive design starts with least privilege on tools. The model should not send
+email, run SQL, or exfiltrate secrets unless a separate policy layer approves the
+action. Mark untrusted spans explicitly in the prompt and pair that with output
+schemas that exclude dangerous fields. Monitor for instruction-like patterns in
+ingested text. Where models support instruction hierarchy or priority tags, use
+them as one layer among several, not as a sole fix.
+
+For operators, assume injection attempts will appear in any feature that mixes user
+content with developer instructions. Red team retrieval paths and tool returns.
+Log when model outputs request actions outside the user task. The card describes
+the failure mode factually: hidden instructions in external content can redirect
+behavior, which is why production agents combine parsing, policy, and human-visible
+confirmations before irreversible steps.

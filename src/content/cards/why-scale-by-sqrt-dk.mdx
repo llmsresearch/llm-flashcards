@@ -1,0 +1,43 @@
+---
+seq: 27
+title: "Why Scale by √d_k?"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Dot products of high-dimensional vectors have variance that grows with the dimension. Dividing by the square root of the key dimension keeps softmax in a range where it can still learn."
+image: "/cards/08_transformer.jpg"
+status: "done"
+related:
+  - "scaled-dot-product-attention"
+  - "self-attention-mechanism"
+  - "softmax-temperature"
+---
+
+The scaling step in the attention formula looks like a detail, but without it
+attention does not train at all on large models. This card explains the reason.
+
+The issue starts with the dot product. A dot product sums d_k products of paired
+numbers, and when the vectors are high-dimensional that sum behaves like a random
+walk: its variance grows with d_k. So the raw scores from Q times K transpose get
+larger in spread as the key dimension grows. Feed scores with a large spread into
+softmax and it saturates, meaning almost all the weight collapses onto a single
+token. The card shows this on the left: one bar near 1.0 and the rest flat near
+zero.
+
+A saturated softmax is a training problem, not just an aesthetic one. When the
+output is nearly one-hot, its gradient is close to zero, so almost no learning
+signal flows back. The card labels this directly, softmax saturates and gradients
+vanish. Dividing by the square root of d_k cancels that growth, keeping the score
+variance roughly constant regardless of dimension. The right panel shows the
+result: the same queries and keys, but now the weights spread across several
+tokens, sharp enough to be selective yet not collapsed.
+
+The reason the correction is specifically the square root, not the dimension
+itself, follows from the variance argument. Standard deviation scales with the
+square root of the variance, so dividing by the square root of d_k is what
+restores a constant scale. It is the right-sized correction, no more.
+
+The takeaway on the card is blunt: without this factor, attention will not train
+for large dimensions. It is a small division with an outsized effect, which is why
+it earns its own card rather than a footnote in the formula.

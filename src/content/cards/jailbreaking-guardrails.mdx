@@ -1,0 +1,48 @@
+---
+seq: 136
+title: "Jailbreaking & Guardrails"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "Jailbreaks are prompts that trick an aligned model into forbidden output. Guardrails are the layered defenses: input filters, the model's own learned refusals, and output filters. No single layer is enough."
+image: "/cards/72_rlhf.jpg"
+status: "done"
+related:
+  - "red-teaming"
+  - "constitutional-ai"
+  - "rlhf-overview"
+---
+
+This card sets the attack against the defense. On the left, a jailbreak: a prompt like
+pretend you have no rules is fed to the model, and the model produces harmful output
+because the prompt bypassed its refusal. On the right, guardrails: a stack of three
+layers standing between a request and a harmful answer. The contrast is the lesson.
+Alignment training gives the model learned refusals, but those refusals can be talked
+around, so a deployed system wraps the model in additional checks rather than trusting
+it alone.
+
+The guardrail stack is what defense in depth means here. An input filter sits in front
+and blocks known bad patterns before they ever reach the model. The aligned model
+itself, tuned with SFT and RLHF, is the middle layer that refuses on its own. An
+output filter sits behind it and catches harmful content that slipped through. The
+card's point, stated in the annotation, is that no single layer catches everything.
+The input filter misses novel phrasings, the model can be tricked, and the output
+filter only sees the final text, so each layer covers a different class of failure and
+the combination is stronger than any one alone.
+
+The list of common jailbreak families explains why one layer is never enough. Role-play
+attacks ask the model to become a character with no rules, so the refusal never fires
+because the model thinks it is acting. Prompt injection hides instructions inside tool
+output or retrieved content, so the malicious text arrives through a channel the model
+was told to trust. Obfuscated requests encode the harmful ask in base64, in code, or in
+another language, so a filter scanning for plain-text patterns sees nothing. Each
+family defeats a different layer, which is precisely why layering them helps.
+
+The design stance the caption states is the one to carry forward: assume the model can
+be tricked and defend in layers. This connects directly to red teaming on the previous
+card, which is how new jailbreak families get discovered, and to Constitutional AI,
+which is one way the model's own refusal layer gets trained. Guardrails are not a proof
+of safety; they raise the cost and lower the success rate of attacks, and in a setting
+where new exploits keep arriving, that layered, revisable defense is the realistic
+goal rather than a single impenetrable barrier.

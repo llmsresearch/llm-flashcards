@@ -1,0 +1,40 @@
+---
+seq: 213
+title: "Retrieval-Augmented Context"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "15. Context Management"
+category: "Context Management"
+summary: "Retrieval-augmented context pulls relevant chunks into the prompt just in time during a conversation. It extends effective knowledge reach without enlarging the model window, though each retrieved passage still consumes tokens inside it."
+image: "/cards/153_context.jpg"
+status: "done"
+related:
+  - "token-budget"
+  - "lost-in-the-middle"
+  - "context-compression"
+---
+
+The card shows a conversation timeline with retrieval events at specific turns. When
+the user asks about a policy detail, a retriever fetches two chunks from a document
+store and inserts them before the model answers. Later, a different query triggers a
+fresh fetch. An annotation stresses that retrieval widens effective context, not the
+hard token ceiling of the model.
+
+The mechanism is query-conditioned selection. Embeddings or hybrid search find
+passages similar to the current need. Those passages become prompt tokens the model
+conditions on for that reply only. Unlike stuffing an entire corpus once, just-in-
+time retrieval keeps the window focused and updates evidence as the topic shifts.
+It pairs naturally with truncation: drop old transcript text while still accessing
+archived facts through search.
+
+Design choices matter. Chunk size, overlap, reranking, and citation format affect
+faithfulness. Place retrieved text in delimited, lower-trust regions per instruction
+hierarchy. Budget how many tokens retrieval may consume so user instructions and
+output reserve remain intact. Log sources for audit and detect when retrieval misses
+return empty context rather than letting the model improvise.
+
+Retrieval does not remove hallucination; it channels the model toward supplied text.
+Injection risks remain if documents contain hostile instructions, so treat corpora as
+untrusted unless curated. The card's timeline view is the operational picture: context
+is a living bundle assembled per turn, not a static prefix, which is how long
+products stay coherent without sending every past token on every call.

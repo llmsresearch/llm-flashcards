@@ -1,0 +1,43 @@
+---
+seq: 12
+title: "Embedding Matrix"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "A learnable lookup table with one row per token, shaped vocab_size by d_model. A token ID selects its row, turning an integer into the vector the model works with."
+image: "/cards/33_tokenization.jpg"
+status: "done"
+related:
+  - "vocabulary-size-tradeoffs"
+  - "what-is-an-embedding"
+---
+
+Tokenization ends with integers, but a network cannot compute with an ID like
+4302 directly. The number is just a label; it has no useful magnitude. The
+embedding matrix is the bridge from that label to a vector, and it is the first
+learned component every token passes through.
+
+The card draws it as a tall table. It has one row per token in the vocabulary and
+a fixed width, d_model, that is the size of the vector the model uses internally,
+often something like 768. Looking up a token is exactly that: the token ID is a
+row index, so token 1 grabs row 1 and nothing more. There is no arithmetic in the
+lookup itself, just a selection.
+
+What matters is that the rows are learned. They start as random numbers and are
+updated by backpropagation along with the rest of the model, so over training
+each row drifts toward a vector that is useful for predicting text. The values in
+a token's row are not assigned by anyone; they are shaped entirely by how that
+token is used.
+
+The size box is a useful reality check. Parameters here equal vocabulary size
+times d_model, so a 50,000-token vocabulary at width 768 is already 38 million
+parameters in this one table. In small models the embedding matrix is often the
+single largest block, which is the other half of the vocabulary-size tradeoff
+from the earlier card. The card also notes that frequent tokens get many gradient
+updates and end up with better-trained rows, while rare tokens are touched
+seldom and stay rougher.
+
+This is the true handoff point. Everything upstream was about turning text into
+IDs; from here on the model works with these vectors, and the next chapter is
+about what those vectors come to mean.

@@ -1,0 +1,46 @@
+---
+seq: 43
+title: "Encoder-Only Models (BERT-style)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Uses only the encoder stack with bidirectional attention, pretrained by predicting masked tokens. Strong at understanding tasks like classification and retrieval, but it cannot generate text token by token."
+image: "/cards/03_transformer.jpg"
+status: "done"
+related:
+  - "decoder-only-models-gpt-style"
+  - "gpt-vs-bert-vs-t5"
+  - "cross-attention"
+---
+
+Take the encoder-decoder design and keep only the left half. That is the
+encoder-only family, and BERT is the model that defined it. The trade it makes is
+deliberate: give up generation, gain a deep bidirectional read of the input.
+
+The diagram shows a single stack of encoder blocks with no decoder attached. The
+brace on the right labels the defining property, bidirectional attention that sees
+all positions. Every token attends to every other token, both left and right, at
+every layer. The card contrasts this with the causal, past-only attention of the
+generation models. Seeing the full sentence at once is what makes these models good
+readers, and it is also exactly why they cannot generate: there is no notion of
+producing the next token from a prefix when every position already sees the whole
+input.
+
+The pretraining task is masked language modeling, shown at the bottom of the stack.
+A token is replaced with a [MASK] placeholder, here the second word, and the model
+predicts what belonged there, "cat", using context from both sides. The annotation,
+predict from both sides, is the point. Because the objective rewards using left and
+right context together, the learned representations are rich for understanding even
+though they are useless for left-to-right writing.
+
+The examples and strengths follow from that. BERT, RoBERTa, and DistilBERT are the
+named models, and the tasks they excel at are sentence classification, dense
+retrieval embeddings, and span tagging such as named-entity recognition and
+extractive question answering. These are all cases where you have the complete text
+and want to label it, embed it, or point to a span within it, not extend it.
+
+The closing line states the boundary plainly: encoder only, no token-by-token
+generation. That single limitation is what the next card removes by keeping the
+decoder instead, and the comparison card lays the two families next to the original
+encoder-decoder.

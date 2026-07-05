@@ -1,0 +1,40 @@
+---
+seq: 207
+title: "Context Compression"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "15. Context Management"
+category: "Context Management"
+summary: "Context compression shrinks a long prompt before inference via summarization, selective retention, or learned compressors. It is lossy by design and fits more effective information into a fixed window."
+image: "/cards/149_context.jpg"
+status: "done"
+related:
+  - "conversation-truncation"
+  - "token-budget"
+  - "retrieval-augmented-context"
+---
+
+The card shows a wide bar labeled long context, roughly fifty thousand tokens, fed
+through a compressor box, emerging as a narrow bar of a few thousand tokens labeled
+compressed context. A bracket notes the shrink ratio while claiming the gist remains.
+Below, three strategies appear: LLM summarization, retrieval-style selection of
+relevant chunks, and learned soft-token compression distinct from ordinary embedding
+retrieval.
+
+Compression trades detail for space. Summaries drop names, qualifiers, and negation
+if the summarizer is careless. Selection keeps only chunks that match the current
+query but may discard background needed for the next turn. Learned compressors encode
+many tokens into fewer latent slots; they are less common in production but appear
+in research systems such as ICAE-style approaches.
+
+Use compression when the window is the bottleneck and you accept controlled loss.
+Good pipelines log what was removed, keep raw sources for re-fetch, and recompress
+when the user shifts topic. Pair summarization of old chat with verbatim retention
+of the latest user message and any cited evidence. Evaluate on tasks where missing a
+single fact matters, not only on fluency.
+
+The card's footer line states the design choice: shrink the prompt to fit, lose
+only what you can afford. That means compression policy belongs next to token
+budgeting and truncation rules. It is not a substitute for retrieval when facts are
+sparse; it is how you carry forward what retrieval already found when history grows
+too long to ship whole.

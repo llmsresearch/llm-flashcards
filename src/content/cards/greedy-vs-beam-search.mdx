@@ -1,0 +1,38 @@
+---
+seq: 140
+title: "Greedy vs Beam Search"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Greedy decoding keeps only the highest-probability token at each step. Beam search keeps the top K partial sequences, scoring several deterministic paths in parallel."
+image: "/cards/108_inference.jpg"
+status: "done"
+related:
+  - "autoregressive-generation"
+  - "temperature"
+  - "top-k-sampling"
+---
+
+Greedy decoding and beam search are search strategies, not sampling strategies.
+They do not introduce randomness. Given the same model state and the same scores,
+they choose the same continuation every time.
+
+The left tree is greedy decoding. At each step it keeps the single token with the
+highest local probability and throws away the siblings. In the card's example the
+path goes from "The" to "cat", then to "sat", then to "on". The cost is small
+because there is only one active path. The risk is that the locally best token can
+lead into a weaker full sequence, and once greedy decoding has dropped an
+alternative it never comes back.
+
+Beam search widens that choice. Instead of keeping one partial sequence, it keeps
+the best K candidates at each level and expands them in parallel. The card shows
+K equal to three, so "cat", "dog", and "bird" all survive the first step. Each
+candidate accumulates a sequence score, usually a sum of log probabilities, and
+the beam keeps the best partial paths as the tree grows.
+
+The tradeoff is exactly the bottom row: greedy uses constant memory, while beam
+uses memory proportional to K. Both are deterministic, which separates them from
+temperature, top-K, and top-P sampling. Beam search is useful when you want a
+high-scoring string rather than varied outputs, but it can still produce dull or
+overly safe text because it optimizes likelihood rather than diversity.

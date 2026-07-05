@@ -1,0 +1,42 @@
+---
+seq: 21
+title: "Learned Positional Embeddings"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "A trainable table with one vector per position, just like a token embedding table. Simple and flexible, but it cannot handle positions beyond the training length."
+image: "/cards/13_transformer.jpg"
+status: "done"
+related:
+  - "sinusoidal-positional-encoding"
+  - "embedding-matrix"
+  - "rope-rotary-position-embedding"
+---
+
+If a token embedding table works by learning one vector per token, the obvious
+alternative to the sinusoidal formula is to learn one vector per position the same
+way. That is all a learned positional embedding is.
+
+The card draws it as a table with max_seq_len rows and d_model columns. Row 0 is
+the vector for position 0, row 1 for position 1, and so on, and every entry is
+trained by backpropagation alongside the rest of the model. There is no formula to
+design and no assumption about how position should look; the model simply learns
+whatever position vectors help it predict text. The parameter count is
+max_seq_len times d_model, which the card puts at roughly 1.5 million for a 2048
+by 768 table, small next to the token embedding matrix.
+
+The appeal is flexibility. Because nothing is fixed in advance, the learned table
+can adapt to the data and tends to be slightly better than sinusoidal within the
+range it was trained on. The comparison box captures both sides of that.
+
+The cost is the hard ceiling. The table has exactly max_seq_len rows, so there is
+no vector for position 2049 if you only trained to 2048. Unlike a formula, a table
+cannot produce an entry it was never given, so a model with learned positions
+simply cannot process sequences longer than its training length without extra
+work. Sinusoidal encoding has no such cap and uses no parameters, at similar
+quality, which is the trade the box lays out.
+
+This choice split the field. The card notes BERT and the original GPT used learned
+positions, while the LLaMA family moved to RoPE, the next card, precisely to get
+better behavior on long contexts.

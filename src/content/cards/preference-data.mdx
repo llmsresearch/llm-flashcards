@@ -1,0 +1,45 @@
+---
+seq: 118
+title: "Preference Data"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "The training data for the reward model. A human sees one prompt with two candidate responses and picks the better one, producing a row of (prompt, chosen, rejected) that encodes a single comparison."
+image: "/cards/63_rlhf.jpg"
+status: "done"
+related:
+  - "reward-model"
+  - "rlhf-overview"
+  - "bradley-terry-model"
+---
+
+Preference data is what the reward model learns from, and the card shows one row of
+it in full. A prompt asks the model to explain gradient descent in one sentence. Two
+candidate responses come back, labeled A and B. A person reads both and picks A as
+the better answer. That single act of comparison becomes a training row written as
+a triple: the prompt, the chosen response, and the rejected response. Thousands of
+these rows are what stage two of the RLHF pipeline trains on.
+
+The design choice worth dwelling on is why the label is a comparison rather than a
+score. If you asked annotators to rate a response from one to ten, different people
+would anchor the scale differently and the same person would drift over a long
+session, so the numbers would be noisy and hard to compare across raters. Asking
+which of two responses is better sidesteps all of that. People are far more
+consistent at relative judgments than absolute ones, and a pile of consistent
+comparisons carries more usable signal than a pile of shaky ratings. The card's note
+that comparison is cheaper than writing points at the same economy: a person does
+not have to author a good answer, only recognize one.
+
+Each row records only that chosen beat rejected for this prompt, nothing about by how
+much. That is deliberate. The reward model will convert many such binary outcomes
+into a continuous score, and the machinery that does the conversion is the
+Bradley-Terry model on the next card. The preference data supplies the raw wins and
+losses; the score is inferred from them.
+
+The caption's remark that quality and diversity beat quantity is the practical
+lesson. A reward model trained on comparisons that all look alike learns a narrow
+slice of what people want and generalizes poorly to prompts outside that slice.
+Coverage across topics, difficulties, and failure modes matters more than sheer row
+count, because the reward model can only grade dimensions of quality that its
+training comparisons actually varied.

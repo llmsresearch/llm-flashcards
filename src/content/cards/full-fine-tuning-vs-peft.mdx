@@ -1,0 +1,43 @@
+---
+seq: 104
+title: "Full Fine-Tuning vs PEFT"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Full fine-tuning updates every weight in the base model, while parameter-efficient fine-tuning freezes the base and trains small add-on modules, reaching most of the quality at a fraction of the cost."
+image: "/cards/53_finetuning.jpg"
+status: "done"
+related:
+  - "supervised-fine-tuning-sft"
+  - "lora-low-rank-adaptation"
+  - "adapter-layers"
+---
+
+Once you have a fine-tuning objective, the next decision is how much of the model
+to actually train. The card draws the two ends of that choice. On the left, full
+fine-tuning: every layer is shaded as trainable, and the whole weight set moves.
+On the right, parameter-efficient fine-tuning, or PEFT: the layers stay frozen
+and a small adapter is bolted onto each one, and only those adapters train.
+
+Full fine-tuning is the flexible option. Since every parameter can move, the
+model can in principle adapt as far as the data pushes it. The cost is that you
+are training and storing a complete copy of the model for each task. The
+optimizer needs gradients and optimizer state for every weight, which is where
+the memory goes, and the result is a full-sized checkpoint per fine-tune. For a
+large model that is a serious bill in both compute and storage.
+
+PEFT takes a different bet. It keeps the base weights fixed and inserts a small
+number of new trainable parameters, then trains only those. The table on the
+card sums up the tradeoff: full fine-tuning trains 100 percent of the parameters
+and needs huge GPU memory, while PEFT trains under 1 percent and needs little.
+Because the base is shared and frozen, each task adds only a tiny adapter rather
+than a whole model, so you can keep many task-specific fine-tunes around cheaply
+and swap them in as needed.
+
+The claim that PEFT reaches most of the quality is empirical and holds well
+across common tasks, though it is not a guarantee for every case; when a task
+demands large changes to the model's behavior, full fine-tuning can still pull
+ahead. The card names LoRA as the example adapter, which is not incidental,
+since LoRA is the method that made PEFT the default choice for most fine-tuning
+work. The next cards open that method up.

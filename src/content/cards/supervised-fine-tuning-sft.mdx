@@ -1,0 +1,47 @@
+---
+seq: 103
+title: "Supervised Fine-Tuning (SFT)"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Training on labeled prompt-response pairs where the instruction tokens are masked from the loss, so only the response tokens are scored. Same objective as pretraining, applied to a different subset of tokens."
+image: "/cards/58_finetuning.jpg"
+status: "done"
+related:
+  - "instruction-tuning"
+  - "cross-entropy-loss"
+  - "language-modeling-objective"
+---
+
+Supervised fine-tuning is the concrete training procedure behind instruction
+tuning, and its defining detail is which tokens count toward the loss. The card
+lays a single training example out as a row of tokens split into two halves. On
+the left, the instruction tokens ("### Instruction: Summarize the paragraph
+below.") are marked masked, no loss. On the right, the response tokens ("###
+Response: The author argues that ...") are marked as the part where loss is
+applied.
+
+The reason for the split follows from what we are trying to teach. The
+instruction is given to the model at inference time, so there is no value in
+training it to predict those tokens. What we want is for the model, having read
+the instruction, to produce a good response. So the loss is computed only over
+the response tokens, each one scored on how well the model predicted it given
+everything before it, instruction included. The formula on the card writes this
+as the negative sum of log P of each response token conditioned on the full
+context, with a note that the instruction tokens contribute zero to the loss.
+
+Worth stressing is how little machinery this requires. It is the same
+cross-entropy loss and the same next-token objective from pretraining, as the
+caption says directly. The model still reads the instruction as context and
+attends to every token in it; the mask only changes where the gradient signal
+comes from. In practice this is implemented by setting the label positions for
+the instruction tokens to a value the loss function ignores, so their
+predictions are computed but never penalized.
+
+The pipeline at the bottom of the card shows where SFT sits: a base or
+instruction-tuned model, then loss only on response tokens, gives an SFT model.
+This is the workhorse step for turning a raw predictor into something that
+follows tasks, and it is where most practical fine-tuning effort goes. The cards
+that follow ask a different question: once you have decided to fine-tune, do you
+update every weight, or only a small set of added ones?

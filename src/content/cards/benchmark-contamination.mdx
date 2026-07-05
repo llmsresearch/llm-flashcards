@@ -1,0 +1,41 @@
+---
+seq: 295
+title: "Benchmark Contamination"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "When benchmark questions or answers leak into the training corpus, scores rise without real capability gain. Detect by comparing performance on rephrased versions; mitigate by filtering and rotating evaluation sets."
+image: "/cards/147_evaluation.jpg"
+status: "done"
+related:
+  - "mmlu"
+  - "data-contamination"
+  - "memorization-vs-generalization"
+---
+
+A benchmark only measures generalization if the model has not already seen the test.
+Benchmark contamination breaks that assumption. The card draws a Venn diagram. One
+oval is the pretraining corpus, trillions of tokens scraped from the web. The other
+is a benchmark Q&A set such as MMLU, GSM8K, or HumanEval. The overlap region is
+highlighted as contamination: benchmark answers that leaked into training.
+
+When contamination happens, the model may not be solving the task. It may be
+recalling memorized question-answer pairs. Scores jump while behavior on nearby tasks
+stays flat. The signs box lists three tells. A benchmark score spikes without
+broader improvements. The model recites benchmark questions verbatim. Performance
+drops sharply on rephrased versions of the same items. That rephrase test is the
+clearest single check because it keeps the skill demand while breaking surface
+memorization.
+
+Mitigation starts before training and continues after release. Filter known
+benchmark text out of pretraining corpora using exact and near-match detection.
+Rotate evaluation to new held-out sets that were not public during training. Report
+scores on rephrased or private variants alongside public leaderboard numbers. Teams
+increasingly treat contamination as a routine audit, not a rare scandal.
+
+The card's bottom line is strict: if you trained on the test, the test means
+nothing. Contamination is narrower than general data contamination, which also
+covers PII and copyrighted text, but the logic is the same. Evaluation only informs
+decisions when the train and test boundary holds. Treat suspicious score jumps as a
+prompt to run rephrase probes before trusting a headline number.

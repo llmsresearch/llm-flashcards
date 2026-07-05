@@ -1,0 +1,38 @@
+---
+seq: 190
+title: "Self-Consistency"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "14. Reasoning"
+category: "Prompting"
+summary: "Self-consistency samples multiple reasoning paths at non-zero temperature and takes a majority vote on the final answer. It trades extra inference cost for higher accuracy on tasks where diverse chains explore different solution routes."
+image: "/cards/78_prompting.jpg"
+status: "done"
+related:
+  - "chain-of-thought-cot"
+  - "zero-shot-cot"
+  - "test-time-compute"
+---
+
+The card shows a fan-out diagram. One prompt enters at the top. Several parallel
+samples run at temperature above zero, each producing its own chain-of-thought and
+final answer. Arrows converge on a vote box that selects the majority label. The
+hero is ensemble reasoning at inference time, not training another model.
+
+Independent samples explore alternate decompositions. On math and logic puzzles, one
+chain may carry a typo while another reaches the same correct endpoint. Majority
+vote suppresses outliers when errors are uncorrelated. The method assumes answers
+are discrete and comparable; free-form essays need a different aggregation strategy.
+
+Cost scales linearly with sample count N. Doubling N doubles tokens and latency.
+Typical experiments use five to forty samples depending on budget and benchmark
+gains. Pair with chain-of-thought prompts so each sample includes a trace you can
+audit. Extract final answers with a strict parser before voting to avoid counting
+surface-form duplicates as disagreement.
+
+Self-consistency is one form of test-time compute: spend more work per query to
+raise reliability. It complements model scaling rather than replacing it. Use it
+when occasional expensive correctness matters more than single-pass speed, such as
+grading pipelines or high-stakes calculators. When temperature zero already yields
+stable correct answers, voting adds little. The card's lesson is statistical: one
+prompt, many reasoning paths, aggregate to reduce variance.

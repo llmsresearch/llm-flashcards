@@ -1,0 +1,44 @@
+---
+seq: 51
+title: "Flash Attention"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "4. Scaling Attention: Longer & Cheaper"
+category: "Transformer Architecture"
+summary: "An IO-aware attention algorithm that never writes the full attention matrix to slow GPU memory. It computes attention block by block in fast on-chip SRAM, producing the exact same output as standard attention but much faster on long sequences."
+image: "/cards/25_transformer.jpg"
+status: "done"
+related:
+  - "scaled-dot-product-attention"
+  - "context-window"
+  - "kv-cache"
+---
+
+The earlier attention cards described the math. Flash Attention changes nothing about
+that math; it changes where the intermediate numbers live during the computation. The
+gain comes entirely from respecting the GPU memory hierarchy.
+
+The two panels show the difference. Standard attention builds the full N by N
+attention matrix and stores it in HBM, the large but slow GPU memory. That costs
+memory on the order of N squared and, more importantly, a lot of slow reads and
+writes moving that matrix in and out. Flash Attention never materializes the full
+matrix. It processes attention in blocks small enough to fit in SRAM, the fast
+on-chip memory, computing each block's contribution and accumulating the result. HBM
+memory drops to order N, and the traffic to slow memory falls sharply.
+
+The point the card underlines twice is that this is lossless. Same math, different
+memory traffic, and the label is explicit that it is not an approximation. The output
+is bit-for-bit the standard attention result, unlike sliding-window attention which
+genuinely changes what each token can see. Flash Attention only reorganizes the
+computation, which is why it can be turned on by default with no change to model
+behavior.
+
+The speedup is reported as roughly two to four times faster on long sequences. The
+qualifier matters: the benefit grows with sequence length, because that is when the
+attention matrix is large enough for memory traffic to dominate the cost. On short
+sequences the difference is small.
+
+The framing to keep is IO-awareness: minimize reads and writes to slow GPU memory,
+same softmax, fewer trips to HBM. It is a systems optimization rather than a modeling
+change, and it is one of the main reasons long context became practical to train and
+serve.

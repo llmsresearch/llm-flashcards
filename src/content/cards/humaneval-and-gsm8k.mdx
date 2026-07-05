@@ -1,0 +1,42 @@
+---
+seq: 285
+title: "HumanEval & GSM8K"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "Two reasoning benchmarks with crisp pass/fail grading. HumanEval runs unit tests on generated Python functions. GSM8K checks the final numeric answer on grade-school math word problems."
+image: "/cards/145_evaluation.jpg"
+status: "done"
+related:
+  - "mmlu"
+  - "benchmark-contamination"
+  - "llm-as-a-judge"
+---
+
+Where MMLU tests knowledge with a letter pick, HumanEval and GSM8K test whether the
+model can produce a correct result under executable grading. The card splits the
+diagram in two. On the left, HumanEval shows a Python function stub with a docstring
+and a blank body. The model fills in code, and pass means the unit tests succeed.
+On the right, GSM8K shows a short word problem about apples and friends. Pass means
+the final number matches the reference.
+
+The comparison box states what each benchmark stresses. HumanEval is code generation:
+multi-line output that must compile and pass hidden tests. GSM8K is arithmetic plus
+word reasoning: the model must parse the story, compute steps, and emit one number.
+Both use pass@k style metrics, where k independent samples are drawn and success
+counts if any sample passes. That matters because a single lucky generation can
+succeed while the model is unreliable.
+
+The grading mechanism removes ambiguity that plagues open-ended evaluation. HumanEval
+does not ask a human whether the code looks right; it runs tests. GSM8K does not
+grade the reasoning chain, only the extracted answer, though wrong reasoning with a
+right number still passes. That makes scores easy to compare but hides partial
+credit and reasoning quality.
+
+Together these benchmarks became standard complements to MMLU because they probe
+execution and multi-step reasoning rather than static facts. The card's caption
+captures the appeal: code and math are two domains where pass/fail is unambiguous.
+Use them when you need a hard check that the model can act, not only recall, but
+read them alongside contamination checks and harder reasoning suites for a fuller
+picture.

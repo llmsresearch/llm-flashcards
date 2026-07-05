@@ -1,0 +1,46 @@
+---
+seq: 107
+title: "QLoRA"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Loads the base model in 4-bit precision and trains a small LoRA adapter in higher precision on top. Gradients flow through the dequantized weights, bringing large models within reach of a single GPU."
+image: "/cards/56_finetuning.jpg"
+status: "done"
+related:
+  - "lora-low-rank-adaptation"
+  - "lora-hyperparameters"
+  - "mixed-precision"
+---
+
+QLoRA attacks the one cost LoRA leaves untouched. LoRA freezes the base and
+trains only a small adapter, but the frozen base still has to sit in memory at
+full size, and for a large model that alone can overflow a single GPU. QLoRA's
+answer is to store the frozen weights in 4-bit precision. The card shows the
+recipe as a sum: a 4-bit quantized base W on the left, a trainable LoRA adapter
+A and B kept in 16-bit in the middle, and the combined trained model on the
+right, holding 4-bit W plus a 16-bit delta-W.
+
+The subtle part is how training still works when the base is quantized. You
+cannot compute meaningful gradients directly against 4-bit numbers, so during the
+backward pass the relevant weights are dequantized back to higher precision on
+the fly, the gradient flows through those dequantized values, and only the
+adapter is updated. The base weights are never changed; they exist in 4-bit for
+storage and are expanded temporarily only where computation needs them. The card
+marks this with the note that gradients flow through the dequantized W, and that
+the adapter is the only thing being trained.
+
+The payoff is memory. The card compares a full 16-bit fine-tune of a 65B model at
+around 780 GB against QLoRA at around 48 GB, roughly 16 times smaller, which is
+the difference between a cluster and a single high-end 48 GB GPU. That shift is
+what put fine-tuning of large models within reach of individual researchers
+rather than only well-resourced labs.
+
+The tradeoff to keep in view is that 4-bit storage is lossy, so the frozen base
+is a slightly degraded version of the original. In practice the quality cost is
+small, in part because the trainable adapter can absorb some of the error, and
+QLoRA became a standard way to fine-tune large models cheaply. It builds directly
+on the precision ideas from mixed-precision training and the low-rank update from
+LoRA, combining them into one memory-efficient recipe. The next card steps back
+to an earlier PEFT design that places its trainable modules differently.

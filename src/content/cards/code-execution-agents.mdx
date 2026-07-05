@@ -1,0 +1,42 @@
+---
+seq: 260
+title: "Code Execution Agents"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "A code execution agent writes a program, runs it in a sandbox, reads stdout or errors, and iterates. Running code gives exact arithmetic, data transforms, and API calls that token generation alone cannot guarantee."
+image: "/cards/104_agents.jpg"
+status: "done"
+related:
+  - "tool-use-function-calling"
+  - "agent-loop"
+  - "error-handling"
+---
+
+The card shows a tight loop: the agent drafts code, the runtime executes it inside a
+sandbox, and the result (output, exception, or exit code) returns to the model for the
+next edit. A short list on the card states why this beats relying on the LLM directly:
+exact arithmetic, deterministic data processing, and the ability to call libraries the
+model cannot simulate reliably in text.
+
+Code execution is a specialized form of tool use. Instead of calling a fixed function
+with JSON arguments, the model produces a full program or script. The sandbox runs that
+code with restricted permissions: limited filesystem access, no or filtered network,
+timeouts, and memory caps. The agent sees real stderr and stack traces, which are often
+more actionable than a vague "something went wrong" in plain language.
+
+The pattern fits tasks where the answer is computed rather than recalled. Aggregating a
+CSV, plotting a chart, parsing a log file, or probing an API with precise parameters
+are cases where hallucinated numbers or invented function names fail immediately. The
+model supplies intent and structure; the interpreter supplies correctness. Iteration
+handles bugs the same way a human developer would: read the error, patch the code, run
+again.
+
+Safety notes are defensive and practical. Treat the sandbox as the only place untrusted
+code runs: isolate it from production credentials, sensitive files, and open network
+access unless a specific task requires otherwise. Cap runtime and output size so a
+runaway loop cannot exhaust resources. Log every execution for audit. Never execute
+model-generated code on the host machine without those walls. The model will sometimes
+propose dangerous calls; the sandbox and permission policy are what keep that from
+becoming incident response.

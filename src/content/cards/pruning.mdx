@@ -1,0 +1,36 @@
+---
+seq: 168
+title: "Pruning"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "Remove the least important weights from a trained model. Unstructured pruning zeros individual weights for higher sparsity; structured pruning removes whole rows, columns, or heads for real speedup."
+image: "/cards/139_quantization.jpg"
+status: "done"
+related:
+  - "knowledge-distillation"
+  - "what-is-quantization"
+  - "lora-low-rank-adaptation"
+---
+
+Quantization keeps every weight but stores each one in fewer bits. Pruning deletes
+weights entirely, leaving zeros where parameters used to sit.
+
+The card compares two strategies side by side. Unstructured pruning marks individual
+cells in a weight matrix as zero, scattered randomly across the grid. That can reach
+high sparsity fractions, but the remaining nonzero entries form an irregular
+pattern that standard dense matrix hardware cannot accelerate without specialized
+sparse kernels. Structured pruning removes whole columns or rows uniformly, so the
+matrix that remains is literally smaller and dense hardware can run it faster.
+
+A comparison panel below the grids states the tradeoff plainly. Unstructured
+pruning achieves higher sparsity but is harder to turn into speed. Structured
+pruning sacrifices some sparsity for layouts that actually shrink the compute. The
+card marks structured pruning as the practical choice for inference.
+
+The lower panel lays out a typical recipe: measure importance per weight using
+magnitude or gradient information, drop the lowest-importance fraction, then
+fine-tune briefly to recover accuracy lost by the deletion. Pruning is rarely a
+one-shot cut; a short recovery training pass often closes much of the quality gap.
+The goal is to delete the least useful weights and keep the rest.

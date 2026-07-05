@@ -1,0 +1,43 @@
+---
+seq: 3
+title: "BPE (Byte Pair Encoding)"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "The standard algorithm for building a subword vocabulary. It starts from characters and repeatedly merges the most frequent adjacent pair into a new token."
+image: "/cards/29_tokenization.jpg"
+status: "done"
+related:
+  - "token-vs-word-vs-character"
+  - "vocabulary-size-tradeoffs"
+---
+
+The previous card said subwords are the right granularity. BPE is how you
+actually find them. It is worth knowing because it is not a clever linguistic
+model, just a counting loop, and yet it produces the vocabulary almost every
+major LLM uses.
+
+The card runs the algorithm on a tiny corpus, "low, lower, lowest". Start by
+breaking everything into individual characters. Count how often each adjacent
+pair appears across the corpus. Merge the single most frequent pair into one new
+token, add it to the vocabulary, and rewrite the corpus with that merge applied.
+Then repeat. In the example, `l` and `o` merge first because they co-occur most,
+producing `lo`; next `lo` and `w` merge into `low`; then `e` and `r` into `er`.
+Each pass adds exactly one token to the vocabulary.
+
+The rule box states the loop plainly: count pair frequencies, merge the top pair,
+repeat until the vocabulary reaches its target size. That target is the only real
+knob. Stop early and you get a small vocabulary of short pieces; run longer and
+common words get absorbed into single tokens.
+
+What makes this work is what the frequency counting implies. Pieces that appear
+constantly, like `low` or `ing` or `the`, get merged early and end up as whole
+tokens, so ordinary text is compact. Pieces that are rare never accumulate enough
+count to merge, so an unusual word stays broken into smaller known parts rather
+than failing outright. That is the property the earlier cards promised: common
+words become single tokens, rare words stay decomposable, and it falls directly
+out of merging by frequency.
+
+The merge list learned here is fixed at training time and shipped with the model.
+Tokenizing new text just means replaying those same merges in order.

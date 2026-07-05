@@ -1,0 +1,45 @@
+---
+seq: 250
+title: "Tool Use / Function Calling"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "The model emits a structured tool call with a name and arguments; the runtime executes the tool and returns the result; the model continues with that result in context. This is how an LLM reaches outside its weights."
+image: "/cards/97_agents.jpg"
+status: "done"
+related:
+  - "what-is-an-llm-agent"
+  - "agent-loop"
+  - "hallucination"
+---
+
+The card shows a request/response flow in three beats. First, the model receives a
+prompt that includes a list of available tools, each with a name, parameter schema, and
+short description. Second, instead of answering in plain text, the model emits a
+structured call: which tool to invoke and what arguments to pass. Third, the runtime
+runs that tool, appends the result to the conversation, and calls the model again so
+it can continue with real data in context.
+
+Mechanically, function calling is a convention layered on top of ordinary text
+generation. During training or fine-tuning, the model learns to output JSON or another
+structured format when a tool is appropriate. The API parses that output, validates it
+against the declared schema, executes the matching function, and injects the return
+value as a new message before the next generation pass. From the model's perspective,
+the tool result is just more text in the thread, but it arrived from a real external
+source rather than from the model's weights.
+
+This matters because a language model on its own has no reliable access to current
+facts, private data, or side effects in the world. Tool use is one of the main ways
+systems work around hallucination for factual queries: instead of guessing a stock
+price or a database row, the model asks a tool that returns the actual value. The same
+pattern extends to actions, sending an email, creating a calendar event, or running a
+query, as long as you expose those capabilities with clear schemas.
+
+The design burden sits mostly on the integrator. Tool descriptions need to be precise
+enough that the model picks the right one and fills arguments correctly. Results need
+to be formatted so the model can interpret them without confusion. And every tool call
+is a trust boundary: the model is deciding to invoke code you wrote, so permissions,
+validation, and error handling belong in the runtime, not in the hope that the model
+will be careful. In an agent loop, tool use is the step where the model's judgment
+turns into real-world effect.

@@ -1,0 +1,45 @@
+---
+seq: 44
+title: "Decoder-Only Models (GPT-style)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Uses only the decoder stack with causal attention, pretrained by predicting the next token from the prefix. Strong at generation, chat, and in-context learning, and it is the architecture behind GPT, LLaMA, Claude, and Gemini."
+image: "/cards/04_transformer.jpg"
+status: "done"
+related:
+  - "encoder-only-models-bert-style"
+  - "gpt-vs-bert-vs-t5"
+  - "causal-mask"
+---
+
+This is the other half of the split, and it is the one that most current large
+models are built on. Keep only the decoder stack, drop the encoder, and pretrain the
+whole thing to predict the next token. Simple, and it scaled further than anyone
+expected.
+
+The diagram runs bottom to top. The input "The cat sat on the" ends in a masked
+position marked with a question mark, the stack of decoder blocks processes it, and
+the top produces the next token, "mat". The brace names the defining property, causal
+attention that sees only the past, which is the causal-mask card in action: each
+position may attend to earlier positions and itself, never ahead. That constraint is
+what makes the next-token objective honest. If a position could see the future, the
+prediction task would be trivial and nothing useful would be learned.
+
+The pretraining setup is annotated on the right, predict next from prefix and
+pretrained with next-token prediction. There is no masking of interior tokens and no
+separate reading stack; the model simply reads a prefix and guesses what follows,
+over enormous amounts of text. The bottom line notes it uses the same building block
+as the encoder, just with past-only attention. Architecturally the block is nearly
+identical to BERT's; the attention mask is the real difference.
+
+The examples box lists the reach: the GPT family, LLaMA, Mistral, Qwen, Claude, and
+Gemini. The strengths are open-ended generation, chat and instruction following, and
+in-context learning, the ability to pick up a task from examples in the prompt
+without weight updates. That last property emerged from scale rather than being
+designed in, and it is a large part of why this family came to dominate.
+
+Between this card and the encoder-only card, both halves of the 2017 design have been
+isolated and studied. The next card puts GPT, BERT, and T5 side by side and ties each
+architecture back to the objective it was built to serve.

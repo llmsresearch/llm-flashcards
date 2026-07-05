@@ -1,0 +1,48 @@
+---
+seq: 77
+title: "Dropout in Transformers"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "Randomly zeroing a fraction of activations during training pushes the model to spread information across units instead of leaning on a few. It is switched off at inference."
+image: "/cards/52_training.jpg"
+status: "done"
+related:
+  - "feed-forward-network-ffn"
+  - "residual-connections"
+  - "layer-normalization"
+---
+
+Dropout is a regularizer that works by deliberately damaging the network during
+training. On each forward pass it picks a random fraction of activations and sets
+them to zero, and the choice is fresh every pass, so a unit that survives one
+step may be dropped the next. The card contrasts the two modes side by side.
+During training some units are crossed out with probability p; at inference the
+mask is removed and every unit stays active.
+
+The point is what this does to how the model organizes information. If a network
+could route a prediction through one or two highly specialized units, it would,
+and it would then be fragile: those units carry too much and the rest carry too
+little. Dropout makes that strategy fail, because any given unit might be absent
+when the answer depends on it. The model is pushed to build redundant, distributed
+representations where several units each hold part of the signal, which is the
+sense in which the caption says it forces redundancy across units.
+
+The train-versus-eval split shown on the card is not optional bookkeeping. If
+dropout stayed on at inference the output would be random from one run to the
+next, and the average activation would be lower than the network was calibrated
+for, since a fraction of the signal is missing. Frameworks handle the mismatch by
+scaling, commonly dividing the surviving activations by one minus p during
+training so the expected total stays constant, then running clean at inference.
+The mechanism is a single train-time flag, but forgetting to flip it is a
+classic source of results that look wrong for no obvious reason.
+
+One thing worth noting is how small a role dropout plays in the largest language
+models. It was central when networks were trained on limited data and could
+easily memorize it, but a model trained on a near-endless stream of text sees
+each example rarely and overfits far less, so heavy dropout is often unnecessary
+and can even hold learning back. Many large pretraining runs set it to zero in the
+main layers and reintroduce it during fine-tuning, where the dataset is smaller
+and overfitting returns as a real risk. It remains a standard tool, but the era
+of scale has moved it from a default to a situational one.

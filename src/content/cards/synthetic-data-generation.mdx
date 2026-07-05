@@ -1,0 +1,49 @@
+---
+seq: 83
+title: "Synthetic Data Generation"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "7. Pretraining at Scale"
+category: "Advanced Concepts"
+summary: "Using a strong model to generate labeled training examples for a smaller one. Cheap to scale when human labels are scarce, but it inherits the teacher's blind spots."
+image: "/cards/170_advanced.jpg"
+status: "done"
+related:
+  - "pretraining"
+  - "language-modeling-objective"
+  - "hallucination"
+---
+
+Pretraining runs on text that already exists. Synthetic data generation makes new
+training text on demand. The card frames it as a teacher and student: a strong
+model is prompted to produce labeled examples, and a smaller model trains on
+them. The example prompt, write a thousand SQL question-and-answer pairs, turns
+into a dataset of paired questions and answers that the student learns from,
+repeated at whatever volume you are willing to pay for.
+
+The appeal is on the left of the card: cheap to scale. A capable model can emit
+examples far faster and cheaper than people can write and check them, which
+matters most exactly where human labels are hardest to get. The common uses
+listed on the card follow from that. Instruction-tuning data when labels are
+scarce, coverage of specialized domains like code, math, and medicine,
+augmentation of a small real dataset, and safety or red-team examples that are
+awkward to collect from real users. In each case the generator is standing in for
+labor that would otherwise be the bottleneck.
+
+The card is careful to mark the cost right next to the benefit: must be filtered.
+A strong model still produces wrong answers, and a synthetic SQL answer that does
+not run or a math solution that reaches the wrong number is worse than no example,
+because the student will faithfully learn the error. The generated set has to be
+checked before it is trained on, and for tasks with a verifier, running the code
+or checking the result, that filtering can be automated, which is part of why
+code and math are such common targets.
+
+The two pitfalls at the bottom are the ones to internalize. The student inherits
+the teacher's blind spots: it cannot learn a fact or a skill the generator does
+not have, so synthetic data tends to transfer the teacher's ceiling along with
+its knowledge, which is why a student rarely surpasses its teacher on the target
+task through imitation alone. The second, model collapse, is the failure mode
+when this is pushed to an extreme: train a model largely on the output of models,
+across generations, and the distribution narrows and drifts, losing the rare
+cases and diversity that were present in real data. Synthetic data is a way to
+multiply a good source, not to manufacture capability from nothing.

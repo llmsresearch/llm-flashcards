@@ -1,0 +1,40 @@
+---
+seq: 7
+title: "Vocabulary Size Tradeoffs"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "How large to make the vocabulary is a design choice. Bigger means fewer tokens per word but larger embedding and output layers; most models land near 30k to 100k."
+image: "/cards/30_tokenization.jpg"
+status: "done"
+related:
+  - "bpe-byte-pair-encoding"
+  - "embedding-matrix"
+  - "tokens-per-dollar"
+---
+
+BPE will build a vocabulary of whatever size you ask for, which turns the size
+itself into a decision. The card plots the one quantity that moves as you change
+it: the average number of tokens it takes to spell a word.
+
+Read the curve left to right. A small vocabulary sits high on the left. With few
+merges learned, words fragment into many pieces, so sequences are long and slow.
+As the vocabulary grows, words get absorbed into single tokens and the curve
+falls, until it flattens near one token per word. Past that point you are adding
+vocabulary entries that each appear rarely, so they collect little training
+signal and mostly waste capacity. The card marks the useful middle as the sweet
+spot, around 1.3 tokens per word, where most production tokenizers live.
+
+The cost that pulls against a large vocabulary is not shown on the curve but named
+underneath: the vocabulary size sets the height of two matrices, the input
+embedding table and the output projection. Both scale directly with it. Double
+the vocabulary and you double the parameters in those layers, whether or not the
+extra entries earn their keep. So the choice trades sequence length against model
+size, and neither direction is free.
+
+The examples ground it. GPT-2 used about 50k, LLaMA 2 about 32k, and Gemma jumps
+to 256k. The outlier is the tell: models meant to handle many languages need a
+much larger vocabulary, because a tokenizer tuned mostly on English shatters other
+scripts into tiny pieces. That connects straight to what a token actually costs
+to run, which the next cards pick up.

@@ -1,0 +1,46 @@
+---
+seq: 271
+title: "Multimodal LLMs"
+part: "VIII. Beyond Text"
+partNumber: 8
+chapter: "19. Multimodal"
+category: "Advanced Concepts"
+summary: "Multimodal LLMs attach encoders that turn images, audio, or video into tokens the language model can process alongside text. Token concatenation is one fusion pattern; cross-attention and adapter layers are others."
+image: "/cards/168_advanced.jpg"
+status: "done"
+related:
+  - "clip"
+  - "context-window"
+  - "cosine-similarity"
+---
+
+The card shows a horizontal pipeline. An image enters a vision encoder and emerges as a
+sequence of image tokens. A text prompt is tokenized separately. The two streams merge
+into one input the LLM processes, and the model emits a text response, for example
+describing what is in the picture. The caption reads "same backbone, more input types,"
+which is the architectural point: the core language model stays familiar; new encoders
+bring other modalities into its input format.
+
+Token concatenation is one common fusion pattern. Image tokens sit beside text tokens in
+a single sequence, and the transformer attends across both. The model learns, through
+training on image-text pairs, how to ground words like "the red car on the left" in
+visual features. Other designs keep modalities separate longer: cross-attention layers
+let text queries attend to image features without flattening them into the same token
+grid, and lightweight adapter layers project encoder outputs into the LLM's embedding
+space. The card notes these alternatives because concatenation is not the only
+production approach.
+
+What this enables is practical rather than exotic. Visual question answering, reading
+charts and screenshots, describing UI state, and parsing scanned documents are tasks
+where text-only models guess from priors. A multimodal model can condition on pixels.
+Audio and video extend the same idea with encoders that produce token-like
+representations over time, though the card's hero focuses on the image case as the
+canonical diagram.
+
+The limits carry over from text models. Context window size still caps how much image
+and text you can send together. High-resolution inputs are often downsampled or tiled,
+which can lose fine detail. Hallucination persists: the model may describe objects
+that are not present or misread small text in a chart. Multimodal capability is not
+grounding by itself; it is access to raw sensory input, and verification still matters
+for high-stakes use. CLIP and vision-language architectures elsewhere in this chapter
+zoom into how the encoders that feed these models are built and trained.

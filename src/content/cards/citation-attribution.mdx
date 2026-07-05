@@ -1,0 +1,46 @@
+---
+seq: 243
+title: "Citation & Attribution"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Attaches a source pointer to each claim in the model's answer. Lets users verify claims and lets engineers audit outputs. Implemented by passing chunk ids in the prompt and asking the model to reference them inline."
+image: "/cards/95_rag.jpg"
+status: "done"
+related:
+  - "hallucination-reduction"
+  - "what-is-rag"
+  - "context-stuffing"
+---
+
+A grounded answer is useful. A grounded answer with sources is verifiable.
+Citation and attribution is the practice of tying each claim in the model's
+output back to a specific retrieved chunk, so users and engineers can check
+where a statement came from.
+
+The card shows an assistant answer with inline numbered markers. The first
+sentence about thirty-day returns carries [1]. The exchange window carries [2].
+The refund timeline carries [3]. Below the answer, a sources block maps each
+number to a file and chunk id: returns.md chunk 42, chunk 43, chunk 44. A
+bracket on the left links the claims in the answer to the rows in the sources
+list. Every stated fact traces to a retrievable unit of evidence.
+
+The mechanism section describes how those markers get attached. Retrieved
+chunks enter the prompt with their ids visible to the model. The output
+template or schema asks the model to place [n] markers next to claims. A
+post-processing step maps each marker back to the chunk id and source file.
+This can be enforced through prompt instructions alone or through structured
+output formats that require citation fields.
+
+Citations serve two audiences. Users can click or follow a reference to confirm
+a policy detail before acting on it. Engineers can audit production logs and
+see whether a bad answer came from retrieval failure, misread context, or
+unsupported generation. Without citations, a fluent correct-sounding answer is
+opaque: there is no path from claim to evidence.
+
+The practical takeaway is to treat citations as part of the RAG output contract,
+not an optional formatting nicety. Pass chunk ids into the prompt, require
+inline markers in the answer, and resolve them to stable source references in
+post-processing. The next step after reducing hallucination is making the
+remaining claims checkable.

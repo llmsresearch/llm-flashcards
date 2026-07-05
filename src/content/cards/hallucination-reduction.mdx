@@ -1,0 +1,46 @@
+---
+seq: 242
+title: "Hallucination Reduction"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Models make up plausible facts when asked outside their knowledge. Retrieval grounds the answer in real source text, and prompt instructions push the model to abstain when no source is found."
+image: "/cards/94_rag.jpg"
+status: "done"
+related:
+  - "what-is-rag"
+  - "hallucination"
+  - "citation-attribution"
+---
+
+RAG is often adopted to improve factual answers, but retrieval alone does not
+guarantee truthfulness. This card shows a concrete before-and-after on a
+factual question and lists mitigations that go beyond simply adding documents
+to the prompt.
+
+The same question appears above both panels: what is the company's founding
+year? Without retrieval, the model answers confidently with a specific year and
+founder name. The answer reads plausibly but is wrong. The card marks this
+panel as invented detail: the model filled a gap with likely-sounding text
+because nothing in its weights or input constrained it to fact. With retrieval,
+the model answers 1997 and points to the About page as the source. The answer
+is grounded and auditable.
+
+The contrast is the hero. Retrieval supplies real text the model can cite
+rather than recall from memory. That shifts the failure mode. The model may
+still misread or overreach beyond the provided context, but it starts from
+evidence rather than improvisation. Provenance becomes something you can check.
+
+The mitigations box lists additional guardrails. Telling the model to say it
+does not know when the context lacks an answer is often the most effective
+prompt change. Requiring citations in the output schema forces claims to link
+back to chunks. Lower temperature on factual queries reduces creative
+paraphrase. A second verification pass, whether another model or a tool, can
+catch unsupported statements before they reach the user.
+
+The practical takeaway is that retrieval reduces hallucination but does not
+eliminate it. Build the full stack: good retrieval, clear context stuffing,
+abstention instructions, and citations where users need to verify claims. Measure
+on domain questions where the model would otherwise invent plausible wrong
+answers.

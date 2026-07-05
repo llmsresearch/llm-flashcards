@@ -1,0 +1,44 @@
+---
+seq: 137
+title: "Autoregressive Generation"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Decoder-only models generate text one token at a time, appending each sampled token to the input and running again. The KV cache keeps this affordable."
+image: "/cards/107_inference.jpg"
+status: "done"
+related:
+  - "language-modeling-objective"
+  - "what-is-a-transformer"
+---
+
+Training taught the model to predict one next token. Generation is what happens
+when you let it do that repeatedly and feed the results back in. The card walks
+through three iterations of the same loop: the model reads "The cat sat", samples
+"on", appends it, reads "The cat sat on", samples "the", and so on. Each new
+token is chosen while conditioning on everything produced so far, which is what
+"autoregressive" means.
+
+There is no separate planning phase. The model does not decide on a sentence and
+then write it out. It commits to one token, and only then considers the next,
+with the token it just emitted now part of the context it reasons over. This is
+why a single early word can steer a whole response, and why the same prompt can
+produce different answers on different runs when the sampling introduces
+variation.
+
+## The cost of doing it one token at a time
+
+The loop has an obvious inefficiency. If each step reran the full model over the
+entire growing prefix, the work would balloon as the text got longer. The **KV
+cache** is the fix noted on the card. Each token's intermediate attention values,
+its keys and values, are computed once and stored, so every later step reuses
+them instead of recomputing the past. New work per step stays roughly constant
+rather than growing with the prefix.
+
+The line at the bottom is the practical takeaway, and it is a common source of
+confusion about speed. Latency is driven mainly by how many tokens you ask the
+model to produce, not by the model's size alone. A large model and a small one
+both generate strictly one token per forward pass; a long answer is slow because
+it is long. That distinction shapes almost every decision about serving cost,
+streaming, and how these systems feel to use.

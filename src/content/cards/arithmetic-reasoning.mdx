@@ -1,0 +1,41 @@
+---
+seq: 187
+title: "Arithmetic Reasoning"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "14. Reasoning"
+category: "Reasoning"
+summary: "Large models often fail multi-digit arithmetic when they try to compute entirely in latent space. Step-by-step scratch work, chain-of-thought, or an external calculator improves reliability on exact numeric tasks."
+image: "/cards/175_reasoning.jpg"
+status: "done"
+related:
+  - "scratchpad-technique"
+  - "program-aided-lms-pal"
+  - "chain-of-thought-cot"
+---
+
+The card compares two approaches to the same five-digit multiplication. On the left,
+the model answers in one line and gives a wrong product, as if the calculation
+happened internally without written steps. On the right, the model either writes
+partial products in a scratchpad or calls a calculator tool and returns the exact
+result. The visual argument is specific: exact arithmetic is a weak point for pure
+latent computation.
+
+Transformers predict likely tokens, not symbolic rules. They can approximate common
+patterns seen in training but drift on long carries, uneven operands, or nested
+operations. Chain-of-thought and scratchpads help by externalizing partial results
+so each step conditions the next. Even then, manual long division in text can
+still slip. Tools and code execution remove the burden from the language model
+entirely for the numeric kernel.
+
+For applications that need guaranteed correctness, treat the LLM as planner and
+narrator, not as CPU. Parse numbers from the problem, pass them to a calculator or
+Python runtime, and let the model explain the result. When tools are unavailable,
+require explicit step format, validate with a independent recomputation on your
+side, and retry on mismatch.
+
+Arithmetic benchmarks are useful sanity checks when choosing a reasoning strategy.
+Gains from CoT show up clearly here; gains from bigger context windows do not.
+The card's takeaway is task fit: match the mechanism to the error mode. If the
+failure is silent miscalculation, more prose alone may not suffice; give the model
+a scratchpad and, when possible, a real executor.

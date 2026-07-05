@@ -1,0 +1,43 @@
+---
+seq: 19
+title: "Positional Encoding"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Attention on its own has no sense of order. Positional encoding adds a position-specific vector to each token embedding so the model knows where each token sits."
+image: "/cards/11_transformer.jpg"
+status: "done"
+related:
+  - "token-embeddings"
+  - "sinusoidal-positional-encoding"
+  - "learned-positional-embeddings"
+---
+
+The previous card added something to each token vector without saying why. This
+card is the why, and it comes from a real limitation of attention.
+
+Attention, which the coming cards cover in detail, treats its input as a set. It
+looks at which tokens are present and how they relate, but it has no built-in
+notion of order. The card makes this concrete: to attention alone, "the cat sat"
+and "sat the cat" are the same collection of tokens. That is a problem, because
+order carries meaning in language, and a model that cannot tell those two apart
+is missing something basic.
+
+The fix is to inject position at the input. Each token embedding gets a
+position-specific vector added to it: the token at slot 0 gets the vector for
+position 0, the token at slot 1 gets the vector for position 1, and so on. The
+formula on the card states it plainly, the input is the token embedding plus a
+position encoding. After this addition, two tokens that are identical as words
+but sit in different places arrive at attention as different vectors, so order
+survives.
+
+It is worth noting where this happens. Position is not something attention
+computes; it is something added to the representation before attention runs. The
+model then learns to read that added signal however it finds useful.
+
+The card lists two flavors, sinusoidal and learned, and points ahead to the next
+cards for each. They differ in whether the position vectors are computed by a
+fixed formula or trained like any other parameter, and that choice turns out to
+matter mostly for how well a model handles sequences longer than it saw in
+training. Those trade-offs are the subject of the next two cards.

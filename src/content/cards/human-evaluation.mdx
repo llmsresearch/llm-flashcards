@@ -1,0 +1,41 @@
+---
+seq: 291
+title: "Human Evaluation"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "A human rater compares two model outputs on the same prompt or scores on a scale. The cleanest signal for subjective quality, but slow and expensive. Best reserved for final decisions."
+image: "/cards/142_evaluation.jpg"
+status: "done"
+related:
+  - "preference-data"
+  - "llm-as-a-judge"
+  - "chatbot-arena-elo"
+---
+
+Automatic metrics miss most of what users care about in chat: tone, helpfulness,
+creativity, and whether an answer feels right. Human evaluation is the direct
+measure. The card draws a pipeline. One prompt branches to two model outputs. A
+human rater, blind to which model produced which answer, picks the better one or
+assigns a score. The result is a pairwise preference: A wins, B wins, or tie.
+
+That pairwise setup is the mechanism teams rely on. Comparing two answers on the
+same prompt controls for prompt difficulty and isolates model differences. Likert
+scales work for single-output rating, but side-by-side comparison tends to produce
+cleaner, more consistent signal on subjective tasks. The annotation on the card
+calls pairwise preference the cleanest signal for a reason: it reduces the rater's
+burden to a relative judgment.
+
+The pitfalls box keeps expectations realistic. Raters disagree on subjective tasks,
+so you aggregate over many raters and many prompts. Prompt design can bias toward
+verbosity, formatting flourishes, or refusals that look cautious. Cost runs roughly
+one to ten dollars per comparison depending on task and vendor. Fatigue and ordering
+effects creep in during long sessions. None of these invalidate human eval, but they
+explain why it does not scale to every training iteration.
+
+The when-to-use box draws the line. Reach for humans on subjective tasks like
+creative writing and helpfulness, and on final ship or no-ship calls where mistakes
+are costly. Use cheaper automatic or LLM judges for fast iteration during development.
+The card's bottom line is blunt: human evaluation is the gold standard, but slow and
+expensive. Treat it as the last check, not the inner loop.

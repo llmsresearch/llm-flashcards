@@ -1,0 +1,39 @@
+---
+seq: 281
+title: "Perplexity as Metric"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "Perplexity measures average next-token prediction quality. It is necessary but not sufficient: two models with similar perplexity can differ sharply in helpfulness, factuality, and reasoning."
+image: "/cards/140_evaluation.jpg"
+status: "done"
+related:
+  - "perplexity"
+  - "mmlu"
+  - "human-evaluation"
+---
+
+Perplexity is the standard readout of the language modeling objective, but it is
+often mistaken for a full quality score. The card makes that mistake visible with a
+counter-example. Model A and Model B sit side by side with nearly identical
+perplexity, around 7.2 and 7.0. Model A scores well on MMLU and follows
+instructions; Model B scores lower and refuses or ignores format. Similar perplexity,
+very different value in practice.
+
+The middle box names what perplexity does not capture. It says nothing about
+helpfulness or instruction following, factuality on held-out facts, safety and
+refusal behavior, or reasoning beyond pattern completion. Those gaps matter because
+perplexity only asks whether the model predicted the held-out tokens well, not
+whether the predictions are useful, true, or safe in deployment.
+
+The mechanism is straightforward. Perplexity is derived from cross-entropy loss on a
+validation set. Lower is better, and it tracks pretraining progress cleanly. The
+caption at the bottom states the practical rule: low perplexity is necessary, not
+sufficient. A model can be a strong token predictor and still be a poor assistant.
+
+Two additional constraints keep the number honest. Perplexity is not comparable
+across different tokenizers or vocabulary sizes, since it is measured per token. And
+it reflects fit to text distribution, not task performance. The card's takeaway is
+to use perplexity for training diagnostics and pair it with task-level benchmarks
+when you need to compare models for release or product decisions.

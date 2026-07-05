@@ -1,0 +1,46 @@
+---
+seq: 332
+title: "Latency Optimization"
+part: "XI. Shipping"
+partNumber: 11
+chapter: "23. APIs & Practical"
+category: "APIs & Practical"
+summary: "A single request's latency splits into network, tokenization, prefill, decode, and post-processing. Most wall-clock time usually sits in prefill and decode, which are the main levers to cut."
+image: "/cards/166_apis.jpg"
+status: "done"
+related:
+  - "latency-ttft-vs-tps"
+  - "kv-cache-inference"
+  - "streaming"
+---
+
+The card shows a horizontal stacked bar labeled as the total latency budget for
+one API call. Five segments sit side by side: network, tokenize input, prefill,
+decode output, and post-process. Prefill and decode are drawn wide. Network,
+tokenization, and post-processing are narrow slivers by comparison.
+
+Prefill is the forward pass over the entire prompt before the first output token
+can be emitted. Its cost scales with prompt length: more input tokens mean more
+attention work up front. Decode is the per-token generation that follows. Its cost
+scales with how many output tokens you ask for and how expensive each decode step
+is on the chosen model. The annotations on the card tie those two segments
+directly to prompt length and output length.
+
+Smaller segments still exist. Network RTT matters for edge clients talking to
+distant regions. Tokenization is usually minor unless inputs are huge. Post-
+processing covers parsing, safety filters, or tool routing on the way out. The
+card's footer line compresses the budget into a useful rule: latency is prompt
+length plus output length plus model size, with everything else often in the noise.
+
+The where-to-cut box lists the knobs that actually move the bar. Use a smaller
+model where quality allows. Stream so users see the first token while decode
+continues. Cache stable prompt prefixes so repeat calls skip full prefill on the
+shared head. Cap max_tokens and ask for shorter answers when verbosity is not
+required. Prompt caching is called out as often the biggest practical win when
+the same system prompt or document bundle appears on many requests.
+
+Optimization should target the largest segment first. If prefill dominates,
+shorten or cache the prompt before you tune decoding parameters. If decode
+dominates, reduce output length or move to a faster model tier. Streaming improves
+perceived latency without changing total compute. Measure TTFT and tokens per
+second separately so you know which side of the bar you are actually shrinking.

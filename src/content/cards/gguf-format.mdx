@@ -1,0 +1,38 @@
+---
+seq: 166
+title: "GGUF Format"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "A single-file binary format for quantized model weights, designed for llama.cpp and related runtimes. Bundles metadata, tensor layout, and quantized weights together."
+image: "/cards/137_quantization.jpg"
+status: "done"
+related:
+  - "gptq-awq"
+  - "post-training-quantization-ptq"
+  - "kv-cache-inference"
+---
+
+Quantization algorithms produce smaller weights, but serving still needs a file
+format that packs those weights with enough metadata to load them correctly. GGUF
+is the de facto container for local LLM inference.
+
+The card sketches a .gguf file as a vertical stack of sections. At the top sit a
+magic number and version header. Below that is key-value metadata covering
+architecture name, vocabulary, layer count, and similar fields, so the file is
+self-describing without a separate config.json. Next is a tensor info table
+listing each tensor's name, shape, dtype, and byte offset, allowing any tensor to
+be located in constant time. The largest section at the bottom holds the quantized
+weight data itself, drawn as flat binary blocks that memory-mapping can load
+efficiently.
+
+The middle panel lists common GGUF quantization types. Q8_0 is 8-bit and near
+lossless. Q5_K sits in the middle at 5-bit. Q4_K_M is a 4-bit option that many
+users start from. Q2_K pushes to 2-bit at a noticeable quality cost. The
+type name encodes both bit width and the specific packing scheme.
+
+The lower panel notes why GGUF became standard for local inference: one file with
+no Python dependency, loaded by llama.cpp, KoboldCpp, Ollama, and similar tools,
+running on CPU, GPU, or a hybrid of both. If you download a quantized Llama-family
+model for offline use, it is likely in this format.

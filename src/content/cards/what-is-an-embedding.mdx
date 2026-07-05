@@ -1,0 +1,45 @@
+---
+seq: 13
+title: "What is an Embedding?"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "2. Embeddings: Tokens into Meaning"
+category: "Embeddings"
+summary: "An embedding turns a discrete item like a word into a vector of real numbers, arranged so that items with similar meaning land at nearby positions."
+image: "/cards/36_embeddings.jpg"
+status: "done"
+related:
+  - "embedding-matrix"
+  - "embedding-space"
+  - "cosine-similarity"
+---
+
+The last chapter ended with a lookup table that hands each token a vector. This
+card is about what those vectors are for. An embedding is the general idea:
+represent a discrete thing, a word, an image, a product, as a list of real
+numbers, so that a model can compute with meaning instead of with arbitrary
+labels.
+
+The card embeds four words. "cat", "dog", "apple", and "banana" each map to a
+short vector like [0.81, -0.12, 0.45]. On their own those numbers say nothing. The
+point is not any single coordinate but where the vectors sit relative to each
+other. The plot underneath shows the payoff: cat and dog fall close together in
+one region, apple and banana in another. Similar meanings end up as nearby
+points.
+
+That property is the whole reason embeddings are useful. A raw token ID has no
+notion of closeness. Token 500 is not more like token 501 than token 9000. Once
+items become vectors, distance and direction start to mean something, and a model
+can generalize. If it learns something about cat, the nearby position of dog lets
+some of that carry over.
+
+Where do the numbers come from? Nobody writes them by hand. They are learned,
+the same way the embedding matrix rows were, by adjusting the vectors so the model
+predicts text well. Meaning is not defined in advance and then stored; it emerges
+from usage. Words that appear in similar contexts get nudged toward similar
+positions, so the geometry ends up reflecting how the words are actually used.
+
+Two dimensions on the card are only for drawing. Real embeddings have hundreds or
+thousands, which is what makes them able to capture many kinds of similarity at
+once. The next two cards look harder at that space: the directions inside it, and
+how to measure whether two vectors are close.

@@ -1,0 +1,47 @@
+---
+seq: 102
+title: "Instruction Tuning"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Fine-tuning a base model on pairs of instruction and desired response, which shifts it from continuing text to answering the request that was actually made."
+image: "/cards/57_finetuning.jpg"
+status: "done"
+related:
+  - "pretraining"
+  - "supervised-fine-tuning-sft"
+  - "language-modeling-objective"
+---
+
+A base model out of pretraining is a next-token predictor and nothing more. Ask
+it to translate "hello" to French and it may well produce "bonjour", but it is
+just as likely to keep going with "Translate to French: world" and another
+example after that, because the training text it saw was full of lists and
+templates that continue rather than stop. The card puts the two behaviors next
+to each other: the base model keeps autocompleting the pattern, while the
+instruction-tuned model reads the request and returns just the answer.
+
+Instruction tuning is the step that closes that gap. It takes the base model and
+continues training it, but on a curated set of examples where each one is a pair:
+an instruction, and the response a helpful assistant would give. The card shows
+the format that carries this, an "### Instruction:" segment followed by an
+"### Response:" segment. That consistent structure is doing real work. It gives
+the model a reliable signal for where the request ends and its own turn begins,
+which is what lets it learn the assistant role rather than absorbing the examples
+as more generic text to imitate.
+
+Nothing about the underlying objective changes here. The loss is still next-token
+prediction, the same one used in pretraining. What changes is the data. Instead
+of scraped web text with no particular shape, the model now sees thousands of
+demonstrations of the behavior we want, and gradient descent moves it toward
+producing that behavior by default. The bottom strip of the card frames it as a
+pipeline: base model, plus instruction and response pairs, gives an
+instruction-tuned model.
+
+It helps to be precise about what this does and does not add. Instruction tuning
+does not teach the model new facts in any reliable way, and it is a small run
+compared to pretraining. What it changes is disposition: the model learns that
+the expected continuation of a request is a direct, helpful answer. The next
+card looks at how the loss is actually applied during this step, since the way
+the instruction and response tokens are treated is not symmetric.

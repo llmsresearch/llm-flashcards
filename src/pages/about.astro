@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title="About - LLMs Visual Card"
+  description="About the LLMs Visual Card knowledge bank and how the visual cards are organized."
+>
+  <div class="wrap">
+    <p class="eyebrow">About</p>
+    <h1>A visual knowledge bank for large language models.</h1>
+
+    <div class="prose">
+      <p>
+        This site collects one concept per card, with a visual explanation and a
+        short written note. The sequence starts with tokenization and moves through
+        transformers, training, alignment, inference, retrieval, agents,
+        evaluation, safety, and deployment.
+      </p>
+
+      <h2>How to use it</h2>
+      <p>
+        Use the map as a curriculum, or open a single card when you need a quick
+        reminder. Each card page keeps related concepts nearby so you can move
+        from a term to the machinery around it without leaving the visual card
+        sequence.
+      </p>
+
+      <h2>Scope</h2>
+      <p>
+        The current knowledge bank covers 180 cards. The focus is practical
+        understanding: what each idea is, where it sits in the system, and what
+        tradeoffs matter when building or using LLMs.
+      </p>
+
+      <a class="btn" href={withBase("/")}>Browse the map</a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+seq: 148
+title: "KV Cache (Inference)"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "At serving time, the KV cache grows with generated sequence length and can dominate GPU memory. Paged attention stores cache blocks in fixed-size pages so batches pack into VRAM more efficiently."
+image: "/cards/114_inference.jpg"
+status: "done"
+related:
+  - "kv-cache"
+  - "autoregressive-generation"
+  - "latency-ttft-vs-tps"
+---
+
+The earlier KV cache card explained the mechanism: save past keys and values so
+the model does not recompute the whole prefix at every generated token. This card
+looks at the same object from the serving side, where the cache is mostly a memory
+management problem.
+
+The upper plot shows the first constraint. KV cache memory grows linearly with the
+number of tokens kept. A longer prompt, a longer generation, more layers, more KV
+heads, and a larger head dimension all add memory. At short context this may be a
+detail. At long context or high batch size, the cache can become the main thing
+limiting how many requests fit on the GPU.
+
+Paged attention is the layout fix shown in the middle of the card. Instead of
+reserving one contiguous chunk of memory for each sequence, the system splits the
+cache into fixed-size pages and allocates pages from a shared pool. One sequence
+can occupy a few red pages, another can occupy gray pages, and free pages remain
+available for new tokens or new requests.
+
+The point is packing. Real serving batches contain sequences of different lengths,
+arriving and finishing at different times. If every sequence needed a large
+contiguous reservation, VRAM would fragment and sit unused. Pages let the runtime
+grow, share, and evict cache blocks cleanly, which is why modern inference engines
+treat KV cache layout as part of the core serving design rather than an
+implementation detail.

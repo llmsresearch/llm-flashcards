@@ -1,0 +1,39 @@
+---
+seq: 139
+title: "Temperature"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Temperature divides logits before softmax. Low temperature sharpens the distribution toward the most likely token, while high temperature flattens it and makes sampling more variable."
+image: "/cards/109_inference.jpg"
+status: "done"
+related:
+  - "logits-log-probabilities"
+  - "greedy-vs-beam-search"
+  - "top-k-sampling"
+---
+
+Temperature is the simplest decoding knob because it changes the shape of the
+next-token distribution without changing the model. The logits are the same. The
+only extra step is to divide them by T before softmax.
+
+The three charts show the effect on one set of candidate tokens. At T near zero,
+the largest logit becomes dominant and the distribution is sharp, close to greedy
+decoding. At T equal to one, the distribution is left in its original softmax
+shape. At a higher value such as T equals two, the differences between logits are
+compressed and the bars flatten, giving lower-probability tokens more room to be
+sampled.
+
+That is why the same prompt can feel factual or loose depending on this one
+number. A low temperature is useful when the task has a narrow answer, such as
+extracting a field, classifying an item, or following a strict format. A higher
+temperature is useful when variety matters more than repeatability, as in
+brainstorming or open-ended drafting. The card's guidance box puts that into the
+usual ranges: close to zero for factual answers, around 0.7 to 1.0 for more
+creative writing.
+
+Temperature does not decide which tokens are allowed. It only changes their
+relative probabilities before sampling. The truncation methods on the next cards
+do the other kind of work: they remove part of the distribution before the draw is
+made.

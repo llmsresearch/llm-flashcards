@@ -1,0 +1,45 @@
+---
+seq: 247
+title: "RAG vs Fine-Tuning"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Two ways to extend an LLM. RAG injects knowledge at query time; fine-tuning bakes new behavior into the weights. They solve different problems and are often combined."
+image: "/cards/93_rag.jpg"
+status: "done"
+related:
+  - "what-is-rag"
+  - "supervised-fine-tuning-sft"
+  - "lora-low-rank-adaptation"
+---
+
+Teams that need a model to know more or behave differently face two main paths.
+RAG adds knowledge at query time by retrieving documents and stuffing them into
+the prompt. Fine-tuning changes the model's weights so new behavior or knowledge
+is baked in. The card compares when each approach fits.
+
+The two-column table lists the deciding factors. Use RAG when facts change
+often, when documents are private and should not be memorized into shared
+weights, when you need citations that keep the source visible, or when you
+want updates without retraining. Use fine-tuning when behavior or style must
+change, when the task format is fixed, when you need low-latency inference
+without a retrieval step on every query, or when you have substantial labeled
+examples to train on.
+
+The flowchart below walks through the decision in order. If the knowledge
+changes frequently, RAG is the natural first branch. If the knowledge is stable
+but the output format or tone must shift, fine-tuning is the better tool. The
+footer notes that this is not either-or: many production systems retrieve
+documents and also run a fine-tuned model that knows how to use them.
+
+The distinction is about where information lives. RAG keeps knowledge in an
+index you can edit, version, and permission separately from the model. Fine-tuning
+stores patterns in parameters, which is harder to update but removes per-query
+retrieval cost and latency. RAG makes sources auditable. Fine-tuning changes
+how the model talks and structures answers.
+
+The practical takeaway is to match the tool to the problem shape. Changing facts
+and proving where they came from points to RAG. Changing skills, format, or
+tone points to fine-tuning. When both needs exist, combine them: a tuned model
+that follows your output schema, plus retrieval that supplies current evidence.

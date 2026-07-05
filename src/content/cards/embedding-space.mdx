@@ -1,0 +1,43 @@
+---
+seq: 14
+title: "Embedding Space"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "2. Embeddings: Tokens into Meaning"
+category: "Embeddings"
+summary: "The high-dimensional space embeddings live in. Relationships like gender or plural show up as consistent directional offsets that hold across many word pairs."
+image: "/cards/38_embeddings.jpg"
+status: "done"
+related:
+  - "what-is-an-embedding"
+  - "cosine-similarity"
+---
+
+The previous card showed that similar words sit near each other. This one is
+about something subtler and more striking: the directions between words carry
+meaning too, not just the clusters they fall into.
+
+The classic example is on the card. Look at the arrow from woman to queen and the
+arrow from man to king. They point roughly the same way and have roughly the same
+length. Whatever change turns woman into queen is the same change, as a direction
+in the space, that turns man into king. That shared direction is what the card
+labels the gender direction. It is not a coordinate anyone assigned; it fell out
+of training, and it is consistent enough that you can do arithmetic with it.
+
+That arithmetic is the famous line: king minus man plus woman lands near queen.
+Read as vectors, you start at king, subtract the male direction, add the female
+direction, and arrive close to queen. The card lists more of these. Paris minus
+France plus Italy points at Rome, a capital-of relationship. walk plus an ing
+direction reaches walking. cat plus a plural direction reaches cats. Different
+relationships, same trick: each is a direction that generalizes across many pairs.
+
+The reason this can happen is dimensionality. With hundreds of dimensions there
+is room for many independent directions to coexist, so one axis of variation can
+track gender while another tracks number and another tracks country, without
+colliding. The two-dimensional drawing flattens all of that, but the intuition
+survives: meaning is encoded in position and in direction.
+
+Worth a caveat. These analogies are cleaner in the older static embeddings than
+in real models, and they are illustrative rather than exact. The durable idea is
+that the space has structure, and that structure is what makes embeddings more
+than a lookup. Measuring closeness in it is the next card.

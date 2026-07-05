@@ -1,0 +1,51 @@
+---
+seq: 128
+title: "Constitutional AI"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "Aligns a model using written principles instead of human preference labels. The model critiques and revises its own responses against a constitution, and those revised pairs train the next version. Often called RLAIF."
+image: "/cards/69_rlhf.jpg"
+status: "done"
+related:
+  - "reward-model"
+  - "preference-data"
+  - "rlhf-overview"
+---
+
+Constitutional AI attacks the cost that sits underneath everything else in this
+chapter: human preference labels are slow and expensive to collect. The card shows
+the alternative as a loop the model runs on itself. A prompt comes in, often a
+harmful or tricky one. The model produces an initial response that may violate the
+principles we care about. The model then critiques that response against a written
+constitution and rewrites it into a safer version. The pair of prompt and revised
+response becomes training data, and the loop feeds the next round.
+
+The move that matters is who does the judging. In standard RLHF a person compares two
+responses and the reward model learns their taste. Here the model critiques itself
+against explicit written rules, so the judgment step needs no human in the loop. The
+card's sample constitution lists the kind of principles used: do not give
+instructions for harm, be honest about uncertainty, respect user autonomy. These are
+written by people, but they are applied by the model, which is the division the card
+draws. Humans specify the values once, in words, rather than labeling thousands of
+individual comparisons.
+
+The self-critique step is doing real work and deserves scrutiny. It relies on a
+capability gap that turns out to hold in practice: a model is often better at
+recognizing that a response violates a principle than at avoiding the violation
+while generating in the first place. Asking it to check its own draft against a rule
+and revise surfaces problems the first pass missed. The revised responses are
+cleaner than the originals precisely because critique is an easier task than flawless
+generation, and stacking many such revisions produces training data that pulls the
+model toward the constitution.
+
+The bottom row shows where this fits the pipeline. A base plus SFT model generates
+self-revised pairs, and those pairs train an RLAIF-tuned model, replacing the human
+preference labels that would otherwise sit in that slot. The name reinforcement
+learning from AI feedback captures the swap: an AI grader stands in for the human
+annotators. The gain is scale, since the model can critique far more examples than a
+labeling team could ever review. The catch, which the card leaves implicit, is that
+the alignment is only as good as the written constitution and the model's honesty in
+applying it, so a blind spot in the principles or a weakness in self-critique
+propagates straight into the tuned model.

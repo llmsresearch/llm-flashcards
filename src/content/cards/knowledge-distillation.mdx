@@ -1,0 +1,37 @@
+---
+seq: 167
+title: "Knowledge Distillation"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "Trains a small student model to mimic the full output distribution of a large teacher model. Soft probabilities transfer more signal than hard labels alone."
+image: "/cards/138_quantization.jpg"
+status: "done"
+related:
+  - "pruning"
+  - "what-is-quantization"
+  - "supervised-fine-tuning-sft"
+---
+
+Quantization and pruning shrink an existing model in place. Knowledge distillation
+takes a different path: train a separate, smaller student model to reproduce the
+behavior of a larger teacher.
+
+The card shows both models receiving the same prompt. The teacher is a large, frozen
+model that produces a probability distribution over classes or tokens, such as
+cat 0.6, dog 0.3, bird 0.1. The student is a smaller, trainable model that
+produces its own distribution over the same labels. A KL-divergence loss measures
+how far the student's distribution sits from the teacher's, and training pushes
+them together. The teacher receives no gradient updates; only the student learns.
+
+The middle panel contrasts soft and hard targets. A hard target gives only the
+correct class. A soft target gives the full distribution, including the relative
+weights the teacher placed on wrong answers. That relative structure is sometimes
+called dark knowledge: the teacher's uncertainty about near-miss labels carries
+information a single correct label omits.
+
+The result is a student that is faster and cheaper to serve, often within a few
+percentage points of the teacher on benchmark tasks. The card's bottom line is
+direct: train a small model to match a big model's output distribution, not just
+its top prediction.

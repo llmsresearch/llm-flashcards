@@ -1,0 +1,68 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Absolute-from-root path to the social preview image, e.g. /cards/28_tokenization.jpg */
+  ogImage?: string;
+  /** Hide the footer for full-height app-style pages. */
+  hideFooter?: boolean;
+}
+
+const { title, description, ogImage, hideFooter } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogUrl = ogImage ? new URL(withBase(ogImage), Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogUrl && <meta property="og:image" content={ogUrl} />}
+
+    <meta name="twitter:card" content={ogUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogUrl && <meta name="twitter:image" content={ogUrl} />}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={withBase("/")}>LLMs<span>Visual Card</span></a>
+        <nav class="nav-links">
+          <a href={withBase("/")}>Map</a>
+          <a href={withBase("/about")}>About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    {
+      !hideFooter && (
+        <footer class="site-footer">
+          <div class="wrap">
+            <span>Visual cards for large language models.</span>
+            <span>LLMs Visual Card</span>
+          </div>
+        </footer>
+      )
+    }
+  </body>
+</html>

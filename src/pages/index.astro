@@ -1,0 +1,405 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const PARTS: { n: number; name: string; note: string }[] = [
+  { n: 1, name: "Representing Language", note: "How text becomes tokens and vectors." },
+  { n: 2, name: "The Transformer", note: "The block that does the computation." },
+  { n: 3, name: "Training the Model", note: "What the model learns from raw text." },
+  { n: 4, name: "Adaptation & Alignment", note: "Turning a base model into an assistant." },
+  { n: 5, name: "Running the Model", note: "Generating text at inference time." },
+  { n: 6, name: "Talking to the Model", note: "Prompting and shaping the output." },
+  { n: 7, name: "Knowledge & Tools", note: "Retrieval, tool use, and agents." },
+  { n: 8, name: "Beyond Text", note: "Images, audio, and other modalities." },
+  { n: 9, name: "Measuring", note: "Evaluation and benchmarks." },
+  { n: 10, name: "Governing", note: "Failure modes, safety, and ethics." },
+  { n: 11, name: "Shipping", note: "APIs and running in production." },
+];
+
+const cards = (await getCollection("cards")).sort((a, b) => a.data.seq - b.data.seq);
+const byPart = new Map<number, typeof cards>();
+for (const c of cards) {
+  const k = c.data.partNumber;
+  if (!byPart.has(k)) byPart.set(k, []);
+  byPart.get(k)!.push(c);
+}
+
+const featured = cards.find((c) => c.data.status === "done")!;
+const { Content: FeaturedContent } = await render(featured);
+const pad = (n: number) => String(n).padStart(2, "0");
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title="LLMs Visual Card - Visual cards for large language models"
+  description="A visual guide to how large language models work, from tokenization to production. One idea per card, free to read."
+  hideFooter
+>
+  <div class="wrap">
+    <div class="home">
+      <section class="hero">
+        <p class="eyebrow">Visual cards</p>
+        <h1 class="hero-title">How large language models work</h1>
+      </section>
+
+    <div class="reader">
+      <!-- Left: contents (own scroll) -->
+      <nav class="toc" aria-label="Visual card contents">
+        {
+          PARTS.map((part) => {
+            const items = byPart.get(part.n) ?? [];
+            const active = items.length > 0;
+            return (
+              <section class={`toc-part ${active ? "" : "off"}`}>
+                <div class="toc-head">
+                  <span class="pn">{pad(part.n)}</span>
+                  <span class="pt">{part.name}</span>
+                </div>
+                {active ? (
+                  <ul>
+                    {items.map((c) => (
+                      <li>
+                        <a
+                          href={withBase(`/card/${c.id}`)}
+                          class:list={["entry", { current: c.id === featured.id }]}
+                          data-slug={c.id}
+                          data-title={c.data.title}
+                          data-img={withBase(c.data.image)}
+                          data-chapter={c.data.chapter.replace(/^\d+\.\s*/, "")}
+                        >
+                          {c.data.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="soon">In progress</p>
+                )}
+              </section>
+            );
+          })
+        }
+      </nav>
+
+      <!-- Middle: the card, fixed in view -->
+      <div class="pane-figure">
+        <figure class="card-figure">
+          <img id="rd-img" src={withBase(featured.data.image)} alt={featured.data.summary} width="1344" height="1800" />
+        </figure>
+      </div>
+
+      <!-- Right: explanation (own scroll) with prev/next pinned to the bottom -->
+      <article class="pane-text" id="pane-text">
+        <div class="pane-scroll">
+          <p class="eyebrow" id="rd-chapter">{featured.data.chapter.replace(/^\d+\.\s*/, "")}</p>
+          <h2 class="rd-title" id="rd-title">{featured.data.title}</h2>
+          <div class="prose" id="rd-body">
+            <FeaturedContent />
+          </div>
+        </div>
+        <nav class="rd-pager" aria-label="Card navigation">
+          <button type="button" class="pgbtn prev" id="rd-prev">
+            <span class="dir">‹ Previous</span>
+            <span class="pg-title" id="rd-prev-title"></span>
+          </button>
+          <button type="button" class="pgbtn next" id="rd-next">
+            <span class="dir">Next ›</span>
+            <span class="pg-title" id="rd-next-title"></span>
+          </button>
+        </nav>
+      </article>
+    </div>
+    </div>
+  </div>
+
+  <script>
+    const paneText = document.getElementById("pane-text");
+    const rdChapter = document.getElementById("rd-chapter");
+    const rdTitle = document.getElementById("rd-title");
+    const rdImg = document.getElementById("rd-img") as HTMLImageElement | null;
+    const rdBody = document.getElementById("rd-body");
+    const prevBtn = document.getElementById("rd-prev") as HTMLButtonElement | null;
+    const nextBtn = document.getElementById("rd-next") as HTMLButtonElement | null;
+    const prevTitle = document.getElementById("rd-prev-title");
+    const nextTitle = document.getElementById("rd-next-title");
+    const entries = Array.from(document.querySelectorAll<HTMLAnchorElement>(".entry"));
+    const cache = new Map<string, string>();
+    let index = Math.max(0, entries.findIndex((e) => e.classList.contains("current")));
+
+    function setCurrent(slug: string) {
+      entries.forEach((e) => e.classList.toggle("current", e.dataset.slug === slug));
+    }
+
+    function updatePager() {
+      const prev = entries[index - 1];
+      const next = entries[index + 1];
+      if (prevBtn) prevBtn.hidden = !prev;
+      if (nextBtn) nextBtn.hidden = !next;
+      if (prevTitle && prev) prevTitle.textContent = prev.dataset.title || "";
+      if (nextTitle && next) nextTitle.textContent = next.dataset.title || "";
+    }
+
+    async function load(a: HTMLAnchorElement, push: boolean) {
+      const href = a.getAttribute("href")!;
+      const slug = a.dataset.slug!;
+      index = entries.indexOf(a);
+      if (rdChapter) rdChapter.textContent = a.dataset.chapter || "";
+      if (rdTitle) rdTitle.textContent = a.dataset.title || "";
+      if (rdImg) {
+        rdImg.src = a.dataset.img || rdImg.src;
+        rdImg.alt = a.dataset.title || "";
+      }
+      setCurrent(slug);
+      updatePager();
+      if (paneText) paneText.scrollTop = 0;
+
+      if (rdBody) {
+        try {
+          let html = cache.get(slug);
+          if (!html) {
+            const res = await fetch(href);
+            const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+            html = doc.querySelector(".prose")?.innerHTML ?? "";
+            cache.set(slug, html);
+          }
+          rdBody.innerHTML = html;
+        } catch {
+          /* leave existing content on failure */
+        }
+      }
+      if (push) history.pushState({ slug }, "", href);
+    }
+
+    entries.forEach((a) => {
+      a.addEventListener("click", (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        load(a, true);
+      });
+    });
+
+    prevBtn?.addEventListener("click", () => entries[index - 1] && load(entries[index - 1], true));
+    nextBtn?.addEventListener("click", () => entries[index + 1] && load(entries[index + 1], true));
+
+    window.addEventListener("popstate", () => {
+      const match = entries.find((a) => a.getAttribute("href") === location.pathname);
+      if (match) load(match, false);
+    });
+
+    updatePager();
+  </script>
+
+  <style>
+    /* Full-height app shell: header stays, three panes below it. */
+    .home {
+      height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .hero {
+      flex: none;
+      padding: 18px 0 12px;
+    }
+    .hero-title {
+      font-size: 1.7rem;
+      margin: 4px 0 0;
+    }
+
+    .reader {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 300px minmax(340px, 540px) minmax(360px, 1fr);
+      gap: 48px;
+      padding-bottom: 20px;
+    }
+
+    /* Contents (left) */
+    .toc {
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .toc-part {
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+    .toc-part:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    .toc-head {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .pn {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--teal);
+    }
+    .pt {
+      font-size: 1rem;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+    .toc-part.off .pt {
+      color: var(--ink-faint);
+    }
+    .toc-part ul {
+      list-style: none;
+      margin: 6px 0 0;
+      padding: 0 0 0 32px;
+    }
+    .entry {
+      display: block;
+      padding: 6px 10px;
+      margin: 1px 0;
+      border-radius: 8px;
+      color: var(--ink-soft);
+      font-size: 15px;
+      border-left: 2px solid transparent;
+    }
+    .entry:hover {
+      color: var(--ink);
+      background: var(--teal-wash);
+      text-decoration: none;
+    }
+    .entry.current {
+      color: var(--teal-dark);
+      background: var(--teal-wash);
+      border-left-color: var(--teal);
+      font-weight: 600;
+    }
+    .soon {
+      margin: 4px 0 0 32px;
+      font-size: 11.5px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    /* Middle: card image, fixed and always visible */
+    .pane-figure {
+      min-height: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .pane-figure .card-figure {
+      margin: 0;
+      width: fit-content;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .pane-figure img {
+      max-height: calc(100vh - 150px);
+      width: auto;
+      display: block;
+    }
+
+    /* Right: explanation with its own scroll */
+    .pane-text {
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding-right: 6px;
+    }
+    .pane-scroll {
+      max-width: 680px;
+      flex: 1 0 auto;
+    }
+    .rd-title {
+      font-size: 1.7rem;
+      margin: 6px 0 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .rd-pager {
+      position: sticky;
+      bottom: 0;
+      background: var(--paper);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 680px;
+      margin-top: 24px;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+    .pgbtn {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font: inherit;
+      color: var(--ink);
+      max-width: 48%;
+      transition: border-color 0.15s ease;
+    }
+    .pgbtn:hover {
+      border-color: var(--teal);
+    }
+    .pgbtn[hidden] {
+      display: none;
+    }
+    .pgbtn.next {
+      text-align: right;
+      align-items: flex-end;
+      margin-left: auto;
+    }
+    .pgbtn .dir {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+    .pgbtn .pg-title {
+      font-weight: 600;
+      font-size: 14.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* On narrow screens, fall back to normal page scrolling. */
+    @media (max-width: 1024px) {
+      .home {
+        height: auto;
+        overflow: visible;
+      }
+      .reader {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .toc,
+      .pane-text {
+        overflow: visible;
+        min-height: auto;
+      }
+      .pane-figure img {
+        max-height: none;
+        width: 100%;
+        max-width: 520px;
+      }
+      .rd-pager {
+        position: static;
+      }
+    }
+    @media (max-width: 560px) {
+      .hero-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</BaseLayout>

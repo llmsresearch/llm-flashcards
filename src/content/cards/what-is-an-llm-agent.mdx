@@ -1,0 +1,43 @@
+---
+seq: 249
+title: "What is an LLM Agent?"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "An LLM agent wraps the model in a loop: decide what to do, call a tool, read the result, decide again. A plain chat model answers once; an agent keeps acting until the task is done or a stop condition fires."
+image: "/cards/96_agents.jpg"
+status: "done"
+related:
+  - "tool-use-function-calling"
+  - "agent-loop"
+  - "stopping-conditions"
+---
+
+The card draws a contrast that matters more than any definition. On one side sits a
+plain chat model: a user asks a question, the model answers once, and the exchange ends.
+On the other sits an agent loop: the model reads the task, decides what to do next,
+calls a tool, reads what came back, and decides again. The hero diagram is that loop,
+with arrows cycling through decide, act, and observe until something tells the system
+to stop.
+
+The word "agent" here does not mean a separate kind of model. It is the same LLM,
+wrapped in orchestration code that gives it tools and keeps calling it until the job
+finishes or a budget runs out. Each pass through the loop appends new messages to the
+context: the model's own tool call, the tool's return value, and whatever the model
+says next. The growing transcript is both the agent's working memory and the record of
+everything it has tried so far.
+
+What changes compared to single-turn chat is control flow. A chat model has no channel
+to the outside world unless you paste information in. An agent can query a database,
+run code, search the web, or call any API you wire up, then fold the result back into
+the next model call. The model still only emits text, but that text can be a structured
+tool invocation rather than a final answer, and the runtime executes it and feeds the
+outcome back.
+
+The practical takeaway is architectural. Building an agent means defining which tools
+exist, how their results are formatted, when the loop stops, and what state persists
+between steps. The model supplies judgment about what to try next; the surrounding code
+supplies persistence, execution, and guardrails. Tool use, stopping conditions, and
+error handling each get their own card in this chapter because they are the parts you
+must design around the model, not properties the model provides on its own.

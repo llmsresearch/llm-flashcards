@@ -1,0 +1,44 @@
+---
+seq: 329
+title: "Token Counting & Cost"
+part: "XI. Shipping"
+partNumber: 11
+chapter: "23. APIs & Practical"
+category: "APIs & Practical"
+summary: "Inference is billed per token, with separate input and output rates. Output is usually several times pricier, and model tier can swing the per-million-token price by orders of magnitude."
+image: "/cards/164_apis.jpg"
+status: "done"
+related:
+  - "tokens-per-dollar"
+  - "max-tokens-stop-sequences"
+  - "vocabulary-size-tradeoffs"
+---
+
+The card works through one chat request as arithmetic. Input tokens multiply by
+an input rate per million. Output tokens multiply by a higher output rate. The
+example totals a few cents for a modest call. Beside that calculation sits a small
+tier table: small, mid, and frontier models with very different per-million prices.
+
+Billing follows a simple formula: cost equals input tokens times the input rate
+plus output tokens times the output rate. Providers quote those rates per million
+tokens, so you divide by one million before multiplying by your counts. The usage
+block in an API response is the ground truth after a call, but you need accurate
+estimates before you ship a feature.
+
+Two counting details matter in practice. First, input means the whole prompt the
+model sees: system message, tool definitions, retrieved documents, and full chat
+history, not only the latest user line. Second, output is usually three to five
+times more expensive per token than input on mid-tier models. Long answers cost
+more than long prompts at the same token count.
+
+The tier table shows how wide the spread can be. A frontier model can land around
+150 times the small-tier rate for the same token counts. That is not a rounding
+difference. It is a product choice about capability versus spend. The card's
+lower box lists levers: route easy steps to small models, cache stable prompt
+prefixes to avoid re-billing them, and cap max_tokens so runaway generations
+cannot blow the budget.
+
+The habit to keep is to estimate in tokens and split input from output. Count
+with the same tokenizer the provider uses when possible. When comparing models,
+compare both rates and typical output length, because a cheaper input rate does
+not help if the model writes twice as many tokens to reach the same answer.

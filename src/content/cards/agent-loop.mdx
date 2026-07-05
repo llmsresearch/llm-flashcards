@@ -1,0 +1,43 @@
+---
+seq: 254
+title: "Agent Loop"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "The agent loop is a while-loop around the model: call the LLM, check for a tool call or final answer, execute tools if needed, update state, repeat until a stopping condition fires."
+image: "/cards/98_agents.jpg"
+status: "done"
+related:
+  - "what-is-an-llm-agent"
+  - "stopping-conditions"
+  - "tool-use-function-calling"
+---
+
+The card renders the loop as pseudocode, and that framing is deliberate. This is not a
+single model invocation but a program that keeps calling the model until something
+tells it to halt. The while-block wraps each turn: append the latest messages to state,
+call the LLM, inspect the response, branch on whether it is a tool call or a final
+answer, execute tools if needed, and loop again. State, tools, and termination each have
+an explicit role in the diagram.
+
+State is the accumulated conversation plus any structured fields you maintain outside
+the model, such as a task list, retrieved documents, or intermediate results. Every
+iteration reads from that state and writes back to it. Tools are the functions the
+runtime can execute when the model requests them. Termination is the set of conditions
+that break the loop: the model emits a final answer, a step counter hits its limit, the
+same action repeats without progress, or a time or cost budget expires.
+
+The loop is where agent behavior actually lives. The model does not know it is inside a
+while-block; it sees a growing transcript and responds to the latest turn. The
+orchestrator decides whether to keep going, which tools to expose, and when to force a
+stop. That separation is useful: you can swap models, change tool sets, or tighten
+budgets without retraining anything, because the loop logic is ordinary application
+code.
+
+In production, the loop is also where reliability work concentrates. Logging each
+iteration makes debugging tractable when an agent wanders or fails silently. Wrapping
+tool execution in try/catch and feeding errors back to the model lets the agent recover
+from bad calls rather than crashing. And explicit step caps prevent runaway cost when
+the model never reaches a final answer. Stopping conditions and error handling are
+separate cards because they spell out the branches this pseudocode block depends on.

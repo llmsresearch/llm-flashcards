@@ -1,0 +1,38 @@
+---
+seq: 161
+title: "GPTQ & AWQ"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "Two widely used 4-bit weight-only quantization methods. GPTQ uses layer-by-layer error compensation; AWQ protects salient channels before quantizing. Both run without retraining."
+image: "/cards/136_quantization.jpg"
+status: "done"
+related:
+  - "post-training-quantization-ptq"
+  - "gguf-format"
+  - "fp32-vs-fp16-vs-bf16-vs-int8-vs-int4"
+---
+
+INT4 quantization saves memory, but naive rounding can hurt quality on large
+language models. GPTQ and AWQ are two widely used recipes for 4-bit weight-only
+post-training quantization that try to minimize that damage.
+
+The card splits the diagram into two panels. GPTQ works layer by layer, quantizing
+one weight matrix at a time while using second-order information from a
+calibration set to choose rounding that compensates for error introduced in
+earlier layers. AWQ takes a different path: it finds the small fraction of weights
+whose activations matter most, scales those channels up before quantization, and
+thereby protects the channels that carry the most signal through the 4-bit
+bottleneck.
+
+A shared summary row below both panels notes what they have in common. Both are
+weight-only, 4-bit, and require no retraining. Both accept a small accuracy loss
+relative to FP16. GPTQ tends to edge ahead on quality; AWQ often decodes faster at
+inference time because its scaling scheme maps well to common kernels.
+
+In practice the choice is partly about runtime support. Different inference engines
+favor one format or the other, and many models ship as pre-quantized weight files
+ready to load from disk. The card's bottom line is that these are the two common
+4-bit recipes when you need a compressed model without running a full retraining
+job.

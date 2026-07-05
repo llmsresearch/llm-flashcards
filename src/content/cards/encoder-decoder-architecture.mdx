@@ -1,0 +1,45 @@
+---
+seq: 42
+title: "Encoder-Decoder Architecture"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Two transformer stacks working together. The encoder reads the whole input at once; the decoder emits an output sequence one token at a time and uses cross-attention to look back at the encoder. This was the original 2017 design."
+image: "/cards/02_transformer.jpg"
+status: "done"
+related:
+  - "cross-attention"
+  - "decoder-only-models-gpt-style"
+  - "gpt-vs-bert-vs-t5"
+---
+
+The chapter has assembled a transformer block: attention, a feed-forward network,
+normalization, and residuals. This card is about how blocks are arranged into a full
+model, starting with the arrangement the original paper used.
+
+The diagram shows two stacks side by side. On the left, an encoder made of three
+blocks reads the whole input at once, so every position can attend to every other,
+in both directions. On the right, a decoder made of three blocks emits output token
+by token. The teal cross-attention arrows run from the encoder into each decoder
+block, and the annotation names the mechanism: the decoder attends to encoder
+outputs. That is the bridge covered in the cross-attention card, now shown in its
+original home. The decoder's own attention over what it has generated stays causal,
+while cross-attention lets it consult the fully-read input.
+
+The translation example makes the division concrete. The encoder ingests the French
+sentence, and the decoder produces the English one word at a time, checking the
+encoded French at every step through cross-attention. The two captions state the
+asymmetry cleanly: reads the whole input at once versus emits output token by token.
+One side comprehends, the other generates, and cross-attention is what connects them.
+
+The use cases box explains when the two-stack design earns its extra machinery:
+translation, summarization, and T5-style tasks, or more generally any case where
+input and output are different sequences. When the task is to transform one text into
+a distinctly different text, having a dedicated reader and a dedicated writer is a
+natural fit.
+
+The closing line, read the input then write the output, is the whole idea in five
+words. This was the 2017 starting point. The next two cards trace how the field
+split it apart, keeping only the encoder for understanding tasks or only the decoder
+for generation, and the comparison card weighs all three against each other.

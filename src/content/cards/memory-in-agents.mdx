@@ -1,0 +1,42 @@
+---
+seq: 258
+title: "Memory in Agents"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "Agents use two memory tiers: short-term memory is the live context window, and long-term memory is an external store the agent reads and writes across sessions. Summarization keeps the short-term window manageable during long runs."
+image: "/cards/100_agents.jpg"
+status: "done"
+related:
+  - "context-window"
+  - "what-is-an-llm-agent"
+  - "agent-loop"
+---
+
+The card draws a two-tier diagram. Short-term memory is the context window itself:
+every message, tool result, and reflection the agent has accumulated in the current run.
+The model can attend to all of it, but only up to the window's fixed size. Long-term
+memory sits outside the model, typically a vector store or database the agent queries
+and updates. Facts learned in one session can be written there and retrieved in the
+next, without fitting the entire history into a single prompt.
+
+Short-term memory is working memory. It holds the plan, recent observations, and
+whatever the agent needs for the next decision. As a loop runs for dozens of steps, that
+buffer fills. Tool outputs are especially bulky: a long API response or file contents
+can crowd out earlier reasoning. The card notes summarization as one way to compress
+older turns into shorter digests, keeping recent detail while dropping verbatim text
+from early steps.
+
+Long-term memory is episodic and semantic storage across runs. The agent can embed a
+note ("user prefers CSV exports"), store it, and later retrieve it when a similar task
+appears. Retrieval looks like RAG: embed the current query, pull the nearest stored
+entries, inject them into the prompt. Writes happen when the agent explicitly saves
+something or when the runtime checkpoints progress at the end of a session.
+
+The design tension is freshness versus capacity. The context window is exact but
+limited; external memory scales but may retrieve the wrong entries or stale facts.
+Production agents usually combine both: keep the active task in full detail in short-term
+memory, offload stable preferences and reference material to long-term storage, and
+summarize aggressively when step counts climb. Memory is not a feature of the model; it
+is part of the orchestration you build around the loop.

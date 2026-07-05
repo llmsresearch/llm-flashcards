@@ -1,0 +1,45 @@
+---
+seq: 39
+title: "Residual Connections (Skip Connections)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Adds a sublayer's input back to its output, so the layer only has to learn a change to the input rather than reproduce it. This shortcut keeps gradients flowing and lets very deep stacks train without collapsing."
+image: "/cards/17_transformer.jpg"
+status: "done"
+related:
+  - "pre-norm-vs-post-norm"
+  - "layer-normalization"
+  - "feed-forward-network-ffn"
+---
+
+Normalization keeps activation scales in check, but there is a second piece that
+makes depth work at all, and it is almost embarrassingly simple. A residual
+connection adds the sublayer's input straight back to its output.
+
+The diagram traces the whole idea. Input x goes into the sublayer, which is either
+attention or the FFN, producing F(x). The curved arrow on the right, the residual
+shortcut, carries x around the sublayer, and the two meet at the addition node. The
+result is output = x + F(x), stated in the formula at the top. The consequence is
+the annotation on the right: the sublayer only has to learn a delta from x. It does
+not need to reconstruct the useful information already in x and then modify it; it
+just produces the adjustment, and the shortcut supplies the rest.
+
+The small plot at the bottom is the argument for why this is not optional. Without
+residuals, loss climbs sharply as depth increases, because vanishing gradients keep
+the early layers from receiving a usable training signal. With residuals, loss stays
+flat as depth grows. The shortcut gives gradients a direct path back through every
+layer, so a network that is dozens of blocks deep still trains. This is the
+mechanism that made deep transformers possible in the first place.
+
+There is a quieter benefit in the closing line: add the input back so the network
+can ignore the sublayer if needed. If a particular sublayer is not helping for some
+input, it can learn to output something near zero, and the residual passes x through
+almost unchanged. The default behavior of a block is to preserve its input, and each
+sublayer earns its influence by improving on that.
+
+The card's other closing note ties this back to structure: every attention sublayer
+and every FFN sublayer has its own residual. Combined with the normalization
+placement from the pre-norm card, the residual is what defines the exact wiring of a
+transformer block.

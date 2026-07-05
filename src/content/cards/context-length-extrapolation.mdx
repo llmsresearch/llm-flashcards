@@ -1,0 +1,40 @@
+---
+seq: 209
+title: "Context Length Extrapolation"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "15. Context Management"
+category: "Context Management"
+summary: "Context length extrapolation lets a trained model run on sequences longer than its training maximum. Naive extension fails when position encodings see unfamiliar ranges; ALiBi, RoPE scaling, and YaRN-style fixes push usable length outward."
+image: "/cards/152_context.jpg"
+status: "done"
+related:
+  - "context-window"
+  - "alibi"
+  - "rope-rotary-position-embedding"
+---
+
+The card plots accuracy versus sequence length. A naive curve stays flat until the
+training context length, then drops sharply. An extended curve remains higher well
+past that point before tapering. A vertical dashed line marks the training-time
+maximum, with a note that positional encodings encounter unseen ranges beyond it.
+A box lists extension methods: ALiBi chosen at train time, RoPE scaling applied
+post-training, and YaRN-style selective frequency tweaks.
+
+Position information governs how tokens relate across distance. If the model only
+trained up to eight thousand tokens, raw absolute positions at eighty thousand are
+out of distribution. Attention may still run, but quality degrades. Extrapolation
+techniques rescale or reparameterize positions so distant tokens remain meaningful.
+ALiBi biases attention slopes for length generalization during training. RoPE scaling
+and YaRN adjust rotary frequencies after training for LLaMA-family checkpoints.
+
+Extending the window is not the same as using it well. Long inputs still face
+recall bias in the middle, higher KV cache cost, and slower prefill. The card links
+outward to lost-in-the-middle for that reason. Ship long context only with retrieval
+ordering, compression, and benchmarks at your target lengths.
+
+For practitioners, check whether your provider applied a known scaling recipe or
+merely increased a advertised limit. Downloaded weights may need a matching config
+change to match claimed context. The caption on the card states the goal: run on
+sequences longer than training saw, which is an encoding fix first and a prompting
+problem second.

@@ -1,0 +1,52 @@
+---
+seq: 17
+title: "What is a Transformer?"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "The transformer is a sequence architecture built from stacked, identical blocks of self-attention and a feed-forward network, with residual connections and normalization."
+image: "/cards/01_transformer.jpg"
+status: "done"
+related:
+  - "autoregressive-generation"
+---
+
+Before 2017, sequence models read text the way you might read it out loud: one
+token after another, carrying a running memory forward. That memory was the
+bottleneck. It forced the computation to be sequential, and long-range
+connections had to survive a long chain of updates to matter. The transformer
+removed the chain. Instead of passing information along step by step, it lets
+every position look at every other position directly, in one operation.
+
+That operation is self-attention, and it is the only place in the block where
+tokens exchange information. The diagram is worth reading closely, because the
+whole architecture is just two moves repeated:
+
+- **Self-attention** mixes information across positions. Each token builds its
+  new representation by pulling from the other tokens it finds relevant, which is
+  how a pronoun can reach back to the noun it refers to regardless of distance.
+- **The feed-forward network** processes each position on its own. It never looks
+  sideways. This is where most of the model's parameters live and where a lot of
+  the stored knowledge seems to sit.
+
+Wrapped around both are the two supporting pieces labelled `add & norm`. The
+"add" is a residual connection: the block's output is added back to its input, so
+each layer only has to learn an adjustment rather than rebuild the signal from
+nothing. This is what makes it safe to stack the block dozens of times without
+the signal degrading. The "norm" keeps the numbers in a stable range so training
+does not diverge.
+
+## Why stacking identical blocks works
+
+The block is deliberately uniform, and depth comes from repetition rather than
+from a sequence of specialized stages. Stack it N times and each layer refines
+what the last one produced. Earlier layers tend to capture local, surface
+patterns; later layers compose those into something closer to meaning. Nothing in
+the design assigns these roles. They emerge from training.
+
+The practical payoff is the phrase along the bottom of the card. Because
+attention handles all positions at once, the work is parallelizable, which is
+exactly what modern hardware is good at. That single property is most of the
+reason transformers scaled when earlier architectures stalled. How they are
+trained to use this capacity is the next question.

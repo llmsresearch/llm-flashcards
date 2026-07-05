@@ -1,0 +1,47 @@
+---
+seq: 122
+title: "KL Penalty"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "A regularization term that tethers the trained policy to a frozen reference. Added to the RL loss as beta times the KL divergence, it stops the model from exploiting the reward while still letting it improve, tuned by the weight beta."
+image: "/cards/67_rlhf.jpg"
+status: "done"
+related:
+  - "ppo-in-rlhf"
+  - "reward-model"
+  - "kl-divergence"
+---
+
+The KL penalty is the leash on RLHF. The card sketches policy space with two points
+in it: the frozen reference policy, which is the SFT model, and the trainable policy,
+which is being pulled away from it by the reward signal. A coiled spring connects the
+two, and the label calls the penalty a tether. That image captures the role exactly.
+Reward pulls the policy in one direction, the penalty pulls it back toward the
+reference, and where it settles depends on how strong the tether is.
+
+The formula makes the tether precise. It is the KL divergence from the policy to the
+reference, a sum over outputs of the policy's probability times the log of the ratio
+between the policy's probability and the reference's. The card's note that it is zero
+if and only if the two policies are identical is the key property. As long as the
+trained model behaves like the SFT model the penalty costs nothing, and it grows as
+the two distributions pull apart. Added to the RL loss with a weight beta, it turns
+distance from the reference into a price the policy has to pay in reward to justify.
+
+Why any of this is needed traces back to the reward model being a proxy. A policy
+free to maximize a learned reward will find responses that score high without being
+good, the failure the earlier cards kept flagging. Anchoring to the reference limits
+how strange the policy's outputs can get, because drifting into reward-hacking
+territory means drifting away from the SFT model, and the penalty makes that
+expensive. The reference has to be frozen for this to mean anything; if it drifted
+alongside the policy there would be nothing fixed to measure against.
+
+The three panels at the bottom show that beta is a real dial with two failure modes.
+Too small and the tether is slack, so the policy runs off and hacks the reward. Too
+large and the tether is rigid, so the policy can barely move and hardly learns. The
+middle panel, aligned but flexible, is the target, and the card's note to pick beta
+by validation is the honest method: there is no closed form for the right value, so
+you sweep it and keep the setting that improves genuine quality without letting the
+policy exploit the proxy. The caption sums the goal up well, learn from reward
+without forgetting how to speak.

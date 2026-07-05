@@ -1,0 +1,48 @@
+---
+seq: 121
+title: "PPO in RLHF"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "The RL algorithm most often used inside RLHF. It runs four models at once, a trainable policy and value head plus a frozen reference and reward model, and a clipped objective keeps each update from drifting too far."
+image: "/cards/66_rlhf.jpg"
+status: "done"
+related:
+  - "rlhf-overview"
+  - "reward-model"
+  - "kl-penalty"
+---
+
+PPO, short for proximal policy optimization, is the algorithm that carries out stage
+three of RLHF. The card's central image is a count of models, because the surprising
+part of PPO in this setting is how many networks are in memory at once. Four of them.
+The policy is the model being trained. A value head predicts the expected reward of a
+partial generation. A frozen reference policy is a copy of the SFT model that never
+updates. A frozen reward model supplies the score. Only the first two are learning;
+the other two are fixed graders and anchors.
+
+Following the arrows explains why each is present. A prompt goes into the policy,
+which generates a response. That response is scored three ways, as the card notes:
+the reward model rates its quality, the reference policy says how likely it would
+have been under the original SFT model, and the value head estimates how good the
+policy expected to do. The reward gives the training signal, the value head reduces
+the variance of that signal so learning is less noisy, and the reference provides the
+baseline the policy is not allowed to wander far from.
+
+The objective box holds the mechanism PPO is named for. It defines a ratio, the
+probability the current policy assigns to an action over the probability the
+reference assigned to it, and then it takes the smaller of two terms: that ratio
+times the advantage, or a clipped version of the ratio times the advantage. The clip
+holds the ratio inside a band around one, so a single update can only move the policy
+a bounded amount even when the reward suggests a large step. The card's annotation,
+that the clip keeps updates small and safe, is the whole point. Reward signals in
+this setting are noisy proxies, and an unclipped step chasing a spike in reward is
+how a policy breaks itself.
+
+Below the clipped term sits the KL penalty, beta times the divergence between the
+policy and the reference. It is the second brake, and it gets its own card next. For
+now the takeaway is the one the caption states: four models occupy memory but only
+two are trained, which is why PPO-based RLHF is expensive to run and why the simpler
+alternatives later in the chapter, DPO in particular, are attractive when the full
+apparatus is more than a project needs.

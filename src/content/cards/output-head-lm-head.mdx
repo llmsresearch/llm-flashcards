@@ -1,0 +1,46 @@
+---
+seq: 40
+title: "Output Head (LM Head)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "The final projection that turns the last hidden state into a probability distribution over the vocabulary. It is a d_model by vocab_size matrix followed by softmax, and it often shares weights with the input embedding table."
+image: "/cards/22_transformer.jpg"
+status: "done"
+related:
+  - "token-embeddings"
+  - "embedding-matrix"
+  - "language-modeling-objective"
+---
+
+The stack of blocks produces a hidden state for each position, but a hidden state
+is a vector of features, not an answer. The output head is the last step that turns
+that vector into a prediction over actual tokens.
+
+The flow down the middle of the card is short. The final hidden state h_T, of width
+d_model, goes through a linear layer that maps from d_model up to vocab_size,
+producing logits, one raw value per vocabulary entry. Softmax then converts those
+logits into probabilities that sum to one, giving the next-token distribution. The
+annotations name each step's shape: logits are one value per vocab entry, and
+softmax is what makes the result a proper distribution. Everything the model knows
+about what comes next is expressed as this single vector of probabilities.
+
+The weight-tying note is the interesting design detail. The input embedding table
+maps token IDs to vectors of width d_model; the output head maps a vector of width
+d_model back to scores over tokens. Those are inverse-shaped operations over the
+same vocabulary, so the same matrix can serve both, and the card notes the head is
+often weight-tied with the input embedding. Sharing the weights saves a large number
+of parameters and tends to help quality, though not every model does it.
+
+The box at the bottom explains why anyone cares about one linear layer. Its
+parameter count is d_model times vocab_size, and with numbers like 4096 by 50,000
+that is roughly 200 million parameters in a single matrix. The card calls it the big
+matrix and often the largest single layer. When a model has a large vocabulary, this
+one projection can dominate the parameter budget, which is part of why weight tying
+is attractive.
+
+The one-line summary is the whole chapter's endpoint: last hidden state to vocab
+logits to next-token probabilities. From here the model has a distribution to sample
+from, which is where decoding begins, and the way that distribution is trained is
+the language modeling objective.

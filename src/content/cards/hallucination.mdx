@@ -1,0 +1,45 @@
+---
+seq: 297
+title: "Hallucination"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "Hallucination is when a model produces confident, fluent text that is false. It stems from optimizing for likely text rather than true text."
+image: "/cards/154_safety.jpg"
+status: "done"
+related:
+  - "language-modeling-objective"
+---
+
+The word makes it sound like a malfunction. It is closer to the opposite. A
+hallucination is the model doing exactly what it was trained to do, which is
+produce text that is likely, applied to a case where the likely-sounding answer
+happens to be false. The three examples on the card are the shapes this takes
+most often: a citation that reads like a real reference but points to a paper
+that was never written, a code snippet that calls a method that does not exist in
+the library, a date stated with full confidence that is simply wrong.
+
+What ties them together is the tone. The output is fluent and plausible in every
+case. The model does not signal doubt, because nothing in its training gives it a
+reliable sense of the boundary between what it knows and what it is improvising.
+It generates the most probable continuation whether or not a true one is
+available.
+
+The card names three roots, and they build on each other. The training loss
+rewards likelihood, not truth, so a confident guess that fits the surrounding
+text is not penalized for being false as long as it is probable. Facts are sparse
+signals: a specific IPO date appears rarely in the training data next to a great
+deal of text that merely sounds factual, so the pattern of "sounding factual" is
+learned far more strongly than any particular fact. And by default the model has
+no channel to the outside world during generation, no lookup, no ground truth to
+check against, only its weights.
+
+Seen this way, hallucination is not a bug to be patched out so much as a property
+of the objective. That is also why the fixes do not touch the base behavior and
+instead add something around it: retrieving real documents to condition on,
+prompting the model to abstain when unsure, giving it tools that return real
+values, asking for citations that can be verified. Those mitigations each get
+their own card. The point here is diagnostic. The model emits plausible text
+regardless of whether it knows the answer, and understanding that is the first
+step to building around it safely.

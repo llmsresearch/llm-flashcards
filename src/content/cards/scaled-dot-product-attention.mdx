@@ -1,0 +1,40 @@
+---
+seq: 26
+title: "Scaled Dot-Product Attention"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "The exact formula run inside every attention head: dot the queries with the keys, divide by the square root of the key dimension, softmax into weights, then take a weighted sum of values."
+image: "/cards/07_transformer.jpg"
+status: "done"
+related:
+  - "query-key-value-vectors"
+  - "why-scale-by-sqrt-dk"
+  - "attention-head"
+---
+
+The last two cards described attention in words. This one is the equation, and it
+is worth reading as four steps rather than one dense line.
+
+The formula is Attention of Q, K, V equals softmax of Q times K transpose over the
+square root of d_k, all times V. The diagram breaks it into a pipeline. First,
+Q times K transpose computes the scores, which the card annotates as "who looks at
+whom": every query dotted with every key. Second, those scores are divided by the
+square root of d_k, the key dimension, to keep them in a stable range; the next
+card is entirely about why. Third, softmax turns the raw scores into a probability
+distribution, a set of weights that sum to one. Fourth, multiplying by V takes the
+weighted sum of value vectors. The output has the same shape as the input, so the
+operation slots cleanly into a stack of identical layers.
+
+Reading it as dot, scale, softmax, weighted sum makes the earlier cards line up.
+The dot product is the query-key similarity from the QKV card. The softmax
+produces the weights that the self-attention card summed with. The final multiply
+by V is that weighted sum. Nothing new is introduced; the formula just names the
+order precisely.
+
+The note at the bottom is the point to carry forward: this exact formula runs
+inside every attention head, in every layer. A large model is not doing something
+more elaborate at each step. It is applying this same four-operation computation
+many times, with different learned projections each time, which is what the head
+and multi-head cards cover next.

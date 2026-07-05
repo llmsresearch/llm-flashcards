@@ -1,0 +1,46 @@
+---
+seq: 227
+title: "Reranking"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "RAG"
+summary: "A second retrieval pass that reorders top candidates using a slower but more accurate cross-encoder. The first pass is for recall; reranking is for precision."
+image: "/cards/90_rag.jpg"
+status: "done"
+related:
+  - "top-k-retrieval"
+  - "hybrid-search"
+  - "embedding-for-retrieval"
+---
+
+First-pass retrieval has to be fast. Bi-encoder models embed the query and each
+document separately, then compare vectors with a cheap cosine similarity. That
+scales to large corpora but only approximates relevance, because the query and
+document never interact during encoding. Reranking adds a second pass that
+trades speed for accuracy on a short list of candidates.
+
+The card shows a three-stage flow. The first pass, labeled bi-encoder, returns
+roughly fifty candidates in milliseconds. The middle stage is a cross-encoder
+that scores each query-chunk pair jointly, feeding both texts into one model
+and producing a relevance score. The final column shows the same chunk ids in a
+new order, with the truly best passages now at the top. The set of candidates
+does not change. Only the ranking does.
+
+The architectural difference matters. A bi-encoder produces two independent
+vectors and compares them at a distance. A cross-encoder attends across query
+and document tokens together, so it can catch fine-grained signals like
+negation, entity overlap, and answer completeness. That joint attention is
+more accurate and more expensive, which is why it runs on tens of candidates,
+not millions.
+
+The note at the bottom warns against reranking too many items. Each cross-encoder
+call processes the full query and chunk together, so cost grows with candidate
+count. The standard pattern is cheap recall first, expensive precision second.
+Retrieve broadly with a bi-encoder or hybrid search, rerank the top fifty or
+so, then pass only the top three to five into the generation prompt.
+
+The practical takeaway is to add reranking when first-pass retrieval returns
+relevant chunks in the candidate set but ranks them poorly. If the right
+passage never appears in the initial pool, reranking cannot help and the
+indexing or embedding strategy needs work instead.

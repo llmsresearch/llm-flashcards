@@ -1,0 +1,42 @@
+---
+seq: 294
+title: "Chatbot Arena (ELO)"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "Crowdsourced human preference at scale. Two anonymous models answer the same prompt; the user picks the better one. ELO ratings from millions of battles rank models on a single axis."
+image: "/cards/146_evaluation.jpg"
+status: "done"
+related:
+  - "bradley-terry-model"
+  - "human-evaluation"
+  - "llm-as-a-judge"
+---
+
+Static benchmarks can be gamed and may not match real chat usage. Chatbot Arena
+turns human preference into a public leaderboard. The card traces one battle. A
+prompt goes to two hidden models. The user sees both answers without knowing which
+model produced which, picks the better one, and the vote feeds an ELO update. Model
+names are revealed only after the vote so brand recognition does not sway the choice.
+
+ELO is the aggregation mechanism. Each model carries a rating. When A beats B, A
+gains points and B loses points in proportion to the upset margin, the same logic as
+chess rankings. Millions of such pairwise outcomes compress into one number per
+model, which makes cross-model comparison simple even when not every pair has met
+directly. The sketched leaderboard in the middle shows how those ratings sort models
+into an ordered list.
+
+The design choices matter for interpretation. Crowdsourcing scales beyond what any
+lab can run internally, but the prompt distribution follows whatever users submit,
+not a fixed academic suite. That makes Arena scores a measure of open-ended chat
+preference under real traffic, not a substitute for MMLU or HumanEval. Arena is
+also harder to game than static sets because prompts rotate and models stay anonymous
+during voting, though contamination and prompt leakage remain concerns elsewhere.
+
+The card's caption states the trade clearly: human preference plus ELO yields one
+comparable number per model. Use Arena to understand how models rank in interactive
+use, especially alongside static benchmarks that test knowledge and reasoning under
+controlled conditions. Bradley-Terry and related pairwise models share the same
+mathematical roots as the ELO update, which is why preference learning and Arena
+rankings speak a common language.

@@ -1,0 +1,37 @@
+---
+seq: 159
+title: "Post-Training Quantization (PTQ)"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "Quantize a trained model in place using a small calibration set, with no further training. Quick to run; quality usually drops a little compared with full precision."
+image: "/cards/135_quantization.jpg"
+status: "done"
+related:
+  - "what-is-quantization"
+  - "gptq-awq"
+  - "fp32-vs-fp16-vs-bf16-vs-int8-vs-int4"
+---
+
+You do not always need to retrain a model to shrink it. Post-training quantization
+takes an already trained checkpoint and converts it to a lower-precision format
+using a short calibration pass.
+
+The card shows a three-box pipeline. On the left is a trained FP16 model with
+weights stored in 16-bit floats. In the middle is a calibration step: feed a
+small set of example inputs (the card suggests on the order of 128) and record
+the range of activations each layer sees. On the right emerges an INT8 model with
+quantized weights. The middle box is annotated as requiring no gradients and no
+training loop, and the output box as suited to quick deployment.
+
+Below the pipeline, a contrast panel separates PTQ from quantization-aware training
+(QAT). PTQ runs after training and takes minutes. QAT simulates quantization
+during training and takes hours, but the model learns to tolerate rounding error
+and often retains accuracy better. QAT wins when retraining is possible; PTQ wins
+when it is not.
+
+The lower panel lists when PTQ is enough: closed weights you cannot retrain, a
+small accuracy drop you can accept, or a need to ship quickly. The recipe is to
+quantize the trained model in place with a tiny calibration set, not to rebuild
+the training run.

@@ -1,0 +1,44 @@
+---
+seq: 23
+title: "ALiBi"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Model Architectures"
+summary: "Attention with Linear Biases. Rather than adding a position embedding, it subtracts a penalty from each attention score that grows with the distance between tokens."
+image: "/cards/128_architectures.jpg"
+status: "done"
+related:
+  - "rope-rotary-position-embedding"
+  - "learned-positional-embeddings"
+  - "scaled-dot-product-attention"
+---
+
+ALiBi, short for Attention with Linear Biases, is the most stripped-down way to
+tell a model about position. It adds no vectors and learns no parameters. It just
+penalizes attention for reaching far.
+
+The mechanism is the formula on the card: to the attention score between a query
+at position i and a key at position j, add a negative bias equal to minus m times
+the distance between them. The grid shows the resulting pattern. A token attending
+to itself gets no penalty. A token one step back gets a small penalty, two steps
+back twice that, and so on, growing linearly with distance. The slope m is a fixed
+constant, set per attention head rather than trained. The effect is a gentle,
+built-in preference for nearby tokens, applied directly to the scores.
+
+What makes this appealing is what it avoids. There is no position embedding added
+at the input and no table with a fixed number of rows. Position enters only as a
+distance-based bias on scores, so there is nothing that caps the sequence length.
+The card's headline claim is extrapolation: because the bias is just a function of
+distance, a model trained on short sequences keeps behaving sensibly on much
+longer ones, which is exactly where learned embeddings break.
+
+The comparison box places the three approaches on one axis. Learned embeddings are
+hard to push past the training length. RoPE rotates queries and keys and
+extrapolates well. ALiBi uses no embedding at all, only biased scores, and the
+card credits it with the best extrapolation of the three. That framing is ALiBi's
+own pitch, so treat it as the design's claim rather than a settled ranking; in
+practice RoPE is the more common default.
+
+With position handled, the chapter turns to the mechanism all of this has been
+feeding, attention itself.

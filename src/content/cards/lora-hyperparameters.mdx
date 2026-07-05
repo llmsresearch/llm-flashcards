@@ -1,0 +1,47 @@
+---
+seq: 106
+title: "LoRA Hyperparameters"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "The four knobs that configure a LoRA adapter: rank sets capacity, alpha scales the update, target_modules picks which weights get adapters, and the learning rate is usually higher than in full fine-tuning."
+image: "/cards/55_finetuning.jpg"
+status: "done"
+related:
+  - "lora-low-rank-adaptation"
+  - "qlora"
+  - "learning-rate-schedule"
+---
+
+LoRA has few moving parts, and the card lays out the four that matter, in the
+order it suggests tuning them. First is r, the rank, which sets how expressive
+the update can be; the card lists typical values of 4, 8, 16, and 32. Rank is
+the most important knob because it is the one that decides capacity: too small
+and the adapter cannot represent the change the task needs, too large and you
+give up the efficiency that made LoRA attractive in the first place.
+
+Second is alpha, a scaling factor applied to the update before it is added back
+to the frozen weights. The effective contribution of the adapter scales with
+alpha divided by r, so alpha and rank interact rather than acting independently.
+The card notes the common convention of setting alpha to twice the rank, which
+keeps the scaling roughly stable as you change r. Third is target_modules, which
+chooses which weight matrices actually receive adapters. The diagram at the
+bottom shows an attention block with its query, key, and value projections, and
+adapters attached only to Q and V. That is the usual choice, and the card marks
+it as such: adapting query and value projections tends to capture most of the
+benefit while leaving key projections untouched.
+
+Fourth is the learning rate. The card points out that LoRA needs a higher
+learning rate than full fine-tuning, in the range of 1e-4 to 5e-4, which is
+noticeably larger than the rates typical of full-model training. The reason is
+that only a small set of freshly initialized parameters is being trained, and
+they start with no useful signal, so they can and should move faster than a full
+set of pretrained weights that only needs nudging.
+
+None of these are exotic settings, and that is part of LoRA's appeal: four small
+knobs, with rank as the one to reach for first. The card's closing line makes the
+same point. Getting rank and its interaction with alpha right handles most of the
+tuning, and the module selection and learning rate tend to follow established
+defaults. The next card takes LoRA one step further by shrinking the frozen base
+itself.

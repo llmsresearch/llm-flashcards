@@ -1,0 +1,40 @@
+---
+seq: 284
+title: "MMLU"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "Massive Multitask Language Understanding: about fourteen thousand multiple-choice questions across fifty-seven academic subjects. The headline benchmark quoted in most model releases."
+image: "/cards/144_evaluation.jpg"
+status: "done"
+related:
+  - "benchmark-contamination"
+  - "humaneval-and-gsm8k"
+  - "perplexity-as-metric"
+---
+
+MMLU is the benchmark most often quoted in model release tables, and the card shows
+what a single item looks like. A college physics question asks for kinetic energy
+given mass and speed. Four options are listed, and the model picks A, B, C, or D.
+The subject tag reminds you this is one of fifty-seven topics spanning STEM,
+humanities, and social sciences.
+
+The middle summary box gives the scale. Roughly fourteen thousand questions, all
+multiple choice. Random guessing yields about twenty-five percent. Expert humans
+score near ninety percent on many subsets. That gap between random and expert sets
+the range models are measured against, which is why the headline MMLU number travels
+so quickly in papers and blog posts.
+
+The grading mechanism is simple and cheap. The model reads the question and options,
+outputs a letter, and accuracy is the fraction correct. No human rater is needed, and
+scores are reproducible given a fixed prompt and parsing setup. That simplicity is
+also the limitation. MMLU tests static question answering, not long chains of
+reasoning or tool use.
+
+The caveats box names two recurring concerns. Benchmark contamination can inflate
+scores if questions leaked into training data. And strong MMLU performance does not
+guarantee strong performance on tasks that require extended reasoning or execution.
+The card's bottom line is precise: MMLU measures broad academic knowledge in
+multiple-choice form. It is useful for comparison across models, but one number
+should not stand in for full capability.

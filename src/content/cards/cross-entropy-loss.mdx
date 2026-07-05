@@ -1,0 +1,46 @@
+---
+seq: 66
+title: "Cross-Entropy Loss"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "The standard next-token training loss: the negative log probability the model assigned to the token that actually came next."
+image: "/cards/45_training.jpg"
+status: "done"
+related:
+  - "language-modeling-objective"
+  - "perplexity"
+  - "output-head-lm-head"
+---
+
+The previous card described what the model is trying to do, predict the next
+token. This one gives the number that measures how well it did. The card states
+it in one line: the loss is the negative log of the probability the model placed
+on the true token. Nothing else about the distribution enters the calculation.
+Only the weight assigned to the one token that actually came next matters.
+
+The worked example makes the shape concrete. The model spreads its probability
+over three candidates, "dog" at 0.20, "cat" at 0.70, "car" at 0.10, and the true
+continuation turns out to be "cat". The loss is the negative log of 0.70, about
+0.36. Had the model been more confident and put 0.95 on "cat", the loss would
+have dropped toward zero. Had it hedged and left only 0.30 there, the loss would
+have climbed. The other two bars do not appear in the arithmetic at all, though
+they are not free: probabilities sum to one, so raising the weight on "cat"
+necessarily pulls it from "dog" and "car".
+
+The curve at the bottom explains why this particular function is used rather than
+something simpler like counting mistakes. As the probability on the truth falls
+toward zero, the negative log rises without bound. A model that was not just
+wrong but confidently wrong, assigning almost no weight to what actually
+happened, pays an enormous penalty. That steepness is what makes the gradient
+informative. Being nearly right produces a gentle nudge; being badly wrong
+produces a strong correction.
+
+One detail worth keeping straight is the base of the logarithm. The card writes
+plain log, and in most training code that is the natural log, which puts the loss
+in units of nats. Reported losses of around 2 to 3 for a competent language
+model are natural-log values. The choice of base only rescales the number, so it
+does not change which model is better, but it matters the moment you try to turn
+loss into the next card's quantity, perplexity, where you have to exponentiate
+with the matching base.

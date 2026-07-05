@@ -1,0 +1,37 @@
+---
+seq: 150
+title: "Speculative Decoding"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "A small draft model proposes several tokens, then the target model verifies them in one forward pass. Accepted tokens are emitted immediately, while rejected guesses are replaced."
+image: "/cards/115_inference.jpg"
+status: "done"
+related:
+  - "autoregressive-generation"
+  - "kv-cache-inference"
+  - "latency-ttft-vs-tps"
+---
+
+Autoregressive generation is slow because the target model normally produces one
+token per forward pass. Speculative decoding keeps the same target distribution but
+tries to get several accepted tokens out of one target pass.
+
+The card shows the two-model version. A small draft model runs first. Because it is
+cheap, it proposes several tokens quickly, such as "the cat sat on". The larger
+target model then checks those proposed tokens in a single forward pass. Tokens
+that match what the target would have allowed are accepted and emitted. When a
+draft token fails verification, the target's sampled token replaces it and the
+cursor resets from there.
+
+The speedup depends on how many draft tokens survive on average and how cheap the
+draft model is relative to the target. If most proposals are rejected, little is
+gained. If several are accepted per verification pass, the system has effectively
+collapsed several target decoding steps into one. The card's speedup formula is a
+rough way to say that acceptance rate is the central variable.
+
+The important word is lossless. Speculative decoding is not a smaller model taking
+over the answer. The large target model still verifies the distribution, so the
+accepted output has the same distribution the target model would have produced by
+itself. The benefit is latency, not a change in model behavior.

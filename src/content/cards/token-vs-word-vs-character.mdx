@@ -1,0 +1,44 @@
+---
+seq: 2
+title: "Token vs Word vs Character"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "The three granularities for splitting text. Characters make sequences too long, words cannot cover rare inputs, and subword tokens sit in between."
+image: "/cards/32_tokenization.jpg"
+status: "done"
+related:
+  - "what-is-tokenization"
+  - "bpe-byte-pair-encoding"
+---
+
+There are only three real choices for how finely to cut text, and the card shows
+all three on the same sentence. "I love transformers!" becomes twenty character
+tokens, or four word tokens, or five subword tokens. The differences between
+those numbers are the whole argument.
+
+Characters are the safe option that nobody uses alone. The alphabet is tiny, so
+the vocabulary never fails to represent anything, but a single character carries
+almost no meaning and the sequence gets long fast. Since attention cost grows
+with sequence length, spelling everything out one letter at a time is expensive
+for very little semantic payoff.
+
+Words look natural to us and are the worst fit for a model. The vocabulary would
+have to contain every word the model might ever see, which is impossible: names,
+typos, compounds, and words coined after training all fall outside it. The card
+labels this the out-of-vocabulary problem, and there is no graceful recovery.
+The first unfamiliar word has no ID at all.
+
+Subwords resolve the tension rather than splitting the difference arbitrarily.
+Frequent words stay whole, so common text is compact, while rare words fall back
+to smaller known pieces, so nothing is ever unrepresentable. The sequence lands
+at a medium length, and the vocabulary stays a fixed, manageable size. That
+combination, short enough to be efficient and complete enough to never break, is
+why every modern model lands here.
+
+The comparison is worth keeping in mind because the granularity is not just an
+implementation detail. It sets the sequence length the model pays for, decides
+what counts as a single unit of meaning, and quietly shapes which tasks are easy
+and which are awkward. The specific algorithm that finds a good subword
+vocabulary is the next card.

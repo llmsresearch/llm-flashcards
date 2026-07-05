@@ -1,0 +1,50 @@
+---
+seq: 248
+title: "Domain Adaptation"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "Advanced Concepts"
+summary: "Pick the right adaptation technique by where your domain knowledge lives. Documents point to RAG. Labeled examples point to fine-tuning. Lots of unlabeled domain text points to continual pretraining. Otherwise, prompt engineering."
+image: "/cards/173_advanced.jpg"
+status: "done"
+related:
+  - "rag-vs-fine-tuning"
+  - "continual-pretraining"
+  - "what-is-rag"
+---
+
+A base language model is general by design. Making it useful in a specific domain
+requires choosing how to inject that domain's knowledge, format, and vocabulary.
+Domain adaptation is the umbrella term for that choice, and the card maps four
+techniques to the shape of the data and effort you have available.
+
+The decision tree starts at the root: do you need domain capability? The first
+branch asks whether the knowledge lives in documents. If yes, RAG is the
+lightest path. You index the corpus, retrieve at query time, and update the
+index when facts change without touching model weights. The annotation marks
+this as the cheapest and fastest update cycle.
+
+If the knowledge is not sitting in retrievable documents, the tree asks whether
+you have labeled examples. Labeled input-output pairs point to fine-tuning,
+whether full supervised fine-tuning or parameter-efficient methods like LoRA.
+This path changes how the model behaves on a fixed task format when you have
+examples to train on.
+
+If you lack labels but have a large volume of unlabeled domain text, continual
+pretraining adapts the base model to the domain's language and concepts through
+further self-supervised training. This is the most expensive option and the
+biggest change to model behavior, with forgetting risk if the data mix is wrong.
+If none of these conditions apply, prompt engineering remains: instructions,
+few-shot examples, and tool use without weight updates.
+
+The footer notes that the right answer is often a combination. A legal assistant
+might use RAG over case files, a fine-tuned model trained on citation format,
+and prompt templates that enforce abstention. The tree is a starting point for
+scoping effort, not a mandate to pick exactly one technique.
+
+The practical takeaway is to match the method to where your domain knowledge
+lives and how often it changes. Documents that update frequently favor
+retrieval. Fixed behavioral patterns favor tuning. Domain language without
+labels may justify continued pretraining. Start with the lightest option that
+meets the requirement and add heavier methods only when eval shows a clear gap.

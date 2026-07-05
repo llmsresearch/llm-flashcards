@@ -1,0 +1,37 @@
+---
+seq: 145
+title: "Max Tokens & Stop Sequences"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Two request-level controls that stop generation. max_tokens caps output length, while stop sequences halt generation when a configured string appears."
+image: "/cards/116_inference.jpg"
+status: "done"
+related:
+  - "autoregressive-generation"
+  - "latency-ttft-vs-tps"
+  - "repetition-frequency-presence-penalties"
+---
+
+Generation would keep stepping forward until something tells it to stop. The API
+usually gives you two controls for that: a hard token cap and one or more stop
+strings.
+
+`max_tokens` is the blunt one. It sets the maximum number of output tokens the
+model may emit for this request. The reason to use it is practical: bounded cost,
+bounded latency, and protection against a response that runs on longer than the
+client can accept. If the cap is reached, the output may end mid-sentence. That is
+not a model judgment that the answer is finished; it is truncation, and the client
+should treat it as such.
+
+A stop sequence is a string that halts generation when it appears. The card shows
+`<<<END>>>` as the marker. The model may generate that text internally, but the
+marker itself is not returned as part of the final output. This is useful when the
+task has a known boundary: one JSON object, one answer before a delimiter, or one
+section in a larger protocol.
+
+The difference is clean endings versus guaranteed endings. `max_tokens` guarantees
+the call stops, but it may cut the answer off. A stop sequence lets the answer end
+at a deliberate marker, but only if the model produces that marker. In practice you
+usually set both, so the request has a clean stop path and a hard fallback.

@@ -1,0 +1,41 @@
+---
+seq: 15
+title: "Cosine Similarity"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "2. Embeddings: Tokens into Meaning"
+category: "Embeddings"
+summary: "A way to measure how close two embedding vectors are by the angle between them rather than their length. It runs from -1 for opposite to 1 for identical direction."
+image: "/cards/39_embeddings.jpg"
+status: "done"
+related:
+  - "embedding-space"
+  - "what-is-an-embedding"
+---
+
+The last two cards kept saying vectors are near or point the same way. Cosine
+similarity is how you actually put a number on that, and it is the measure most
+embedding systems use.
+
+The idea is to compare direction and ignore length. The card draws two vectors, u
+and v, with an angle between them. Cosine similarity is the cosine of that angle,
+which the formula computes as the dot product of the two vectors divided by the
+product of their lengths. Dividing by the lengths is the important part: it cancels
+out magnitude, so only the angle is left. Two vectors that point the same way score
+high whether one is short and the other long.
+
+The three panels give the whole range. When the vectors point in the same
+direction the angle is zero and the cosine is 1, read as same meaning. When they
+sit at a right angle the cosine is 0, meaning unrelated. When they point opposite
+ways the cosine is -1. So the score lives on a fixed scale from -1 to 1, which
+makes it easy to compare and threshold.
+
+Why angle rather than plain distance? Because in these spaces the useful signal
+is usually which way a vector points, not how far out it sits. A word that appears
+very often can end up with a longer vector without being more similar to anything,
+and cosine similarity refuses to be fooled by that. It asks only about orientation.
+
+The practical use is on the last line: nearest-neighbor search ranks candidates by
+cosine similarity. This is the engine under semantic search and retrieval. You
+embed a query, embed a pile of documents, and return the ones whose vectors point
+most nearly the same way. Later cards on retrieval lean directly on this measure.

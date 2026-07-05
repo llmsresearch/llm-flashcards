@@ -1,0 +1,46 @@
+---
+seq: 237
+title: "Context Stuffing"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "The step that places retrieved chunks into the prompt's context window. Too little context starves the answer; too much wastes tokens and dilutes the model's attention."
+image: "/cards/92_rag.jpg"
+status: "done"
+related:
+  - "top-k-retrieval"
+  - "what-is-rag"
+  - "context-window"
+---
+
+Retrieval finds relevant passages. Context stuffing is where those passages
+actually enter the model's input. The card shows the layout of a filled context
+window and why both too little and too much retrieved text cause problems.
+
+The main diagram is a horizontal bar divided into five sections. The system
+prompt sits at the left, followed by instructions, then a large middle section
+labeled for retrieved chunks, then the user question, then a slot reserved for
+the assistant reply. Retrieved text is stuffed into the middle, between the
+model's instructions and the user's question. That placement tells the model
+to treat the chunks as reference material when answering.
+
+The two variants below show the extremes. An under-stuffed window contains only
+one chunk when the answer required three. The model lacks evidence and falls
+back to parametric memory, which is where hallucination risk rises. An
+over-stuffed window packs in so many chunks that the bar overflows, latency
+climbs, cost rises, and attention spreads thin across marginally relevant
+passages. Important chunks can get lost in the middle of a long context, a
+pattern sometimes called lost in the middle.
+
+Stuffing is not just concatenation. Production templates usually wrap chunks in
+delimiters, label them with ids for citation, and order them by relevance
+score. The instruction layer often tells the model to answer only from the
+provided context and to abstain when the context is insufficient. How you
+format the stuffed text affects whether the model uses it faithfully.
+
+The practical takeaway is to stuff just enough context to answer the question
+and no more. Tie stuffing to your Top-K setting and context budget, format
+chunks clearly, and test both failure modes: missing context and context
+overflow. The model is a reasoner over supplied text, not a database that
+absorbs unlimited documents per query.

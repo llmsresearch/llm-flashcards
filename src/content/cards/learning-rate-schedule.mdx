@@ -1,0 +1,45 @@
+---
+seq: 72
+title: "Learning Rate Schedule"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "The learning rate is not held constant. It warms up from zero to a peak, holds, then decays, usually on a cosine curve."
+image: "/cards/48_training.jpg"
+status: "done"
+related:
+  - "adam-optimizer"
+  - "gradient-clipping"
+  - "batch-size-gradient-accumulation"
+---
+
+Adam adapts the step size per parameter, but there is still a global learning
+rate multiplying everything, and that number is not left fixed. The card plots
+how it moves over training: a ramp up, a short peak, then a long taper down. The
+horizontal axis is the training step, not time, and the shape is chosen
+deliberately rather than tuned away.
+
+The warmup phase is the ramp from zero. Early in training the weights are random
+and the gradients are noisy, so a large step immediately can send the model
+somewhere it cannot recover from. Starting near zero and increasing linearly over
+the first fraction of steps lets the optimizer's running averages, the m and v
+from the previous card, fill with sensible values before any large update lands.
+It is a stabilizer for the part of training that is most fragile.
+
+Once warmup ends the rate sits at its peak, the fastest useful learning the setup
+can tolerate, and then the decay phase begins. The card draws a cosine curve, the
+common choice, tapering the rate slowly toward near zero by the end of training.
+The reasoning is that large steps are good for covering ground while the model is
+still far from a good solution, and small steps are better for settling into one
+without bouncing around it. Cosine decay spends most of its length at moderate
+rates and only collapses to very small steps near the finish.
+
+A practical constraint hides in that curve. Cosine decay is scheduled against a
+planned total number of steps, so it assumes you know in advance how long
+training will run. If you stop early you never reach the low-rate refinement, and
+if you want to keep training past the planned end there is no clean way to extend
+the same curve. That rigidity is part of why some large runs prefer alternatives
+that decay toward a constant floor or hold a plateau, which are easier to resume.
+The warmup-then-decay pattern itself is nearly universal; the exact decay shape
+is where teams still differ.

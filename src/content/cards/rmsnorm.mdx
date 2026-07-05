@@ -1,0 +1,44 @@
+---
+seq: 36
+title: "RMSNorm"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Model Architectures"
+summary: "A simpler normalization that divides activations by their root-mean-square and drops the mean subtraction and bias. It is cheaper to compute than LayerNorm and matches its quality, so most recent open models use it."
+image: "/cards/130_architectures.jpg"
+status: "done"
+related:
+  - "layer-normalization"
+  - "pre-norm-vs-post-norm"
+  - "swiglu-activation"
+---
+
+LayerNorm does two things to each token's vector: it removes the mean and it
+divides by the standard deviation. RMSNorm asks whether the first of those is worth
+its cost, and the answer that held up in practice is that it mostly is not.
+
+The two formulas side by side make the difference concrete. LayerNorm subtracts the
+mean mu, divides by the standard deviation sigma, then applies a learned scale and
+a learned bias. RMSNorm keeps only the scale. It divides by the root-mean-square of
+the activations, which is the square root of the mean of the squared entries, and
+it uses no mean subtraction and no bias term. Computing the mean and then the
+variance around it is two passes over the vector; the root-mean-square is a single
+statistic. That is what the card means by one stat, simpler.
+
+The savings look small on paper and they are, per call. The reason it matters is
+that normalization runs before or after every sublayer in every layer, so a modest
+constant multiplies across the whole network. The card puts the effect at roughly
+twenty percent faster from one less reduction, and reports that quality matches or
+slightly beats LayerNorm. That combination, cheaper with no measured cost, is
+unusual enough that adoption was quick.
+
+The bottom line is worth taking at face value: drop the mean term, keep the scale,
+and it still trains fine. There is no deep theoretical guarantee being claimed
+here. The mean subtraction turned out to contribute little once the model has a
+learned scale to work with, so removing it is close to free.
+
+The named users are the tell for how settled this is. LLaMA, Mistral, and Qwen all
+use RMSNorm, which is why it appears here under model architectures rather than as a
+transformer fundamental. It is the default normalization in the current generation
+of open models, paired most often with the pre-norm placement discussed next.

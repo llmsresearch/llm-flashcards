@@ -1,0 +1,43 @@
+---
+seq: 29
+title: "Attention Head"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "A single attention computation inside multi-head attention, working at the reduced head dimension. Different heads learn different patterns, such as coreference, syntax, or local context."
+image: "/cards/10_transformer.jpg"
+status: "done"
+related:
+  - "multi-head-attention"
+  - "scaled-dot-product-attention"
+  - "query-key-value-vectors"
+---
+
+The multi-head card looked at the whole fan of heads. This card zooms into one of
+them and asks what a single head actually is and does.
+
+Inside the box on the card is the pipeline from the scaled dot-product card,
+running at the head's own reduced width. The head takes its Q, K, and V, computes
+Q times K transpose over the square root of d_k, applies softmax, multiplies by V,
+and emits a head output of size d_head. The note reminds us each head is small,
+d_head equals d_model divided by H, which is why running many of them costs about
+the same as one full-width attention.
+
+The more interesting content is the attention pattern. The grid on the right is an
+illustrative map of which positions this head attends to, and the caption suggests
+this particular head tracks the subject of a verb. That is the point of the card:
+a head is not a generic averager, it tends to converge on a specific, interpretable
+job. The list gives common examples that have been observed, attending to local
+neighbors, resolving coreference such as linking "he" back to "John", and picking
+up distant syntactic structure.
+
+A word of care on this. These patterns are found by inspecting trained models
+after the fact, not assigned in advance. Nobody tells head three to do coreference;
+it settles into something like that because the objective rewards it and the other
+heads cover other relations. The interpretations are useful and often clean, but
+they are read off the model rather than built into it.
+
+So the summary line fits: one head equals one specialized attention pattern. The
+chapter now leaves the core mechanism and turns to the variations that shape which
+positions a head is allowed to see, starting with masking.

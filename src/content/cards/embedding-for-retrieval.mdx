@@ -1,0 +1,48 @@
+---
+seq: 215
+title: "Embedding for Retrieval"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "RAG"
+summary: "Embeds queries and documents into the same vector space so that relevant pairs are close. Often uses a dedicated retrieval model trained on query-document pairs, not a general-purpose sentence embedder."
+image: "/cards/87_rag.jpg"
+status: "done"
+related:
+  - "sentence-embeddings"
+  - "cosine-similarity"
+  - "vector-database"
+---
+
+A general sentence embedder asks whether two texts are semantically similar.
+Retrieval asks a different question: does this document answer this query?
+Those are related but not identical tasks, and the card shows why the embedding
+step for search often needs its own design.
+
+The hero is the dual encoder pattern. A query encoder and a document encoder
+run in parallel, each taking a different input shape. The query side sees a
+short string like "return policy?" The document side sees a longer passage.
+Both project into the same vector space, and cosine similarity between the two
+output vectors scores how well the document matches the query. The card labels
+this shared space explicitly because alignment between the two encoders is what
+makes retrieval work.
+
+The comparison table below the diagram states the distinction plainly. A
+general embedding model is optimized for semantic similarity: are these two
+things about the same topic? A retrieval embedding model is optimized for
+relevance: does this passage answer this question? Queries are short and
+documents are long, so the task is asymmetric. Training on pairs of queries
+with their relevant documents teaches the model to place answer-bearing
+passages near the queries that would retrieve them.
+
+Often the two encoders share weights or come from the same base model, but
+they are fine-tuned on retrieval data rather than on generic similarity
+benchmarks. Models like E5, BGE, and proprietary retrieval embedders exist
+specifically for this purpose. Using a general embedder can still work, but
+relevant documents may rank lower than passages that merely share vocabulary
+with the query.
+
+The practical takeaway is to treat query and document encoding as a matched
+pair. Use the same retrieval model for indexing and for querying, and verify
+that both sides land in the same space. Swapping in a different embedder at
+query time without re-indexing breaks the alignment the search depends on.

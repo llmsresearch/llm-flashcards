@@ -1,0 +1,44 @@
+---
+seq: 31
+title: "Padding Mask"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Sequences in a batch are padded to a common length, and a padding mask blocks attention from reading those filler tokens. A separate concern from the causal mask."
+image: "/cards/20_transformer.jpg"
+status: "done"
+related:
+  - "causal-mask"
+  - "scaled-dot-product-attention"
+  - "context-window"
+---
+
+Hardware wants batches of uniform shape, but real sentences are not uniform. The
+padding mask is the small bookkeeping that lets ragged sequences share a batch
+without contaminating each other.
+
+The problem is on the card. Three sequences of different lengths are stacked
+together: "the cat sat on the mat" fills six slots, "hello world" only two, and
+so on. To make one rectangular tensor, the short ones are extended with a filler
+token, drawn as `<pad>`. Those pad tokens carry no meaning, so attention must not
+treat them as content. The padding mask marks each pad position and adds negative
+infinity to any attention score that would land on it, exactly the same negative
+infinity trick the causal mask uses, so softmax drives those weights to zero. The
+formula reads attention of i, j equals negative infinity if token j is a pad.
+
+The lower box answers why pad at all. Batches need same-shape tensors to run
+efficiently, and the mask is what isolates the real-content computation from the
+padding so the filler never leaks into a token's representation.
+
+The card is careful to distinguish this from the causal mask, and the distinction
+is worth keeping. The causal mask depends on position: it blocks the future
+regardless of what tokens are there. The padding mask depends on content: it
+blocks specific tokens, the pads, regardless of where they sit. A decoder training
+on batched data applies both at once, a lower-triangular causal mask plus a
+per-sequence padding mask, and they compose by simply adding their negative
+infinities together.
+
+With masking covered, the last attention variant in this chapter is
+cross-attention, where the queries and the keys come from different places
+entirely.

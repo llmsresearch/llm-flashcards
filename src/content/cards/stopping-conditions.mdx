@@ -1,0 +1,42 @@
+---
+seq: 267
+title: "Stopping Conditions"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "Every agent loop checks stopping signals each iteration: a final answer from the model, a step budget, detection of repeated actions, or a time and cost cap. The loop must terminate even when the model never says it is done."
+image: "/cards/106_agents.jpg"
+status: "done"
+related:
+  - "agent-loop"
+  - "error-handling"
+  - "what-is-an-llm-agent"
+---
+
+The card lays out four quadrants, one per stopping signal. Top left: the model emits an
+explicit final answer, the graceful exit. Top right: the step counter hits its maximum,
+a safety brake regardless of whether the task is finished. Bottom left: the same tool
+call repeats without progress, a loop detector fires. Bottom right: a wall-clock timer or
+dollar budget trips, cutting off runaway cost. Each quadrant has a small icon and a short
+label so the four cases read at a glance.
+
+Only one exit is initiated by the model itself. The other three are enforced by the
+runtime because models do not reliably know when to stop. An agent asked to "keep
+improving" may call tools indefinitely. A confused model may alternate between two
+equivalent actions. A long research task may burn tokens without reaching a conclusion.
+External caps guarantee termination and bound worst-case spend.
+
+Implementations often prioritize these signals in a fixed order, though the card notes
+that order varies. A common policy treats a valid final answer as highest priority, then
+cost cap, then step cap, then loop detection. The details matter less than the
+principle: check every signal after each iteration, and define what to return when
+stopped early. "Best answer so far," a partial result, or an explicit "step limit
+reached" message is better than hanging or silently truncating.
+
+Stopping conditions are part of the agent contract with users and operators. Step and
+cost limits should be configurable per task class. Loop detection needs a definition of
+"sameness," identical arguments, identical observations, or no change in state. When a
+safety stop fires, pair it with logging so you can tell whether the limit was too tight
+or the agent was genuinely stuck. A loop that always terminates is a prerequisite for
+shipping anything autonomous, even when the graceful answer case works most of the time.

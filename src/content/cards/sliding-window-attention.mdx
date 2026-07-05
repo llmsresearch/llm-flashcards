@@ -1,0 +1,45 @@
+---
+seq: 52
+title: "Sliding Window Attention"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "4. Scaling Attention: Longer & Cheaper"
+category: "Model Architectures"
+summary: "Restricts each query to attend only to the most recent W tokens, cutting attention cost from quadratic to linear in sequence length. Information beyond the window still propagates through stacked layers."
+image: "/cards/132_architectures.jpg"
+status: "done"
+related:
+  - "flash-attention"
+  - "causal-mask"
+  - "context-window"
+---
+
+Flash Attention keeps full attention but computes it more efficiently. Sliding-window
+attention takes a different route: it changes what each token is allowed to see,
+trading exact global attention for a cost that grows only linearly with length.
+
+The mask on the card shows the rule. With a band width of three, each query attends
+to itself and the two tokens before it, the shaded band along the diagonal. Older
+tokens outside that band are ignored entirely. This is a stricter version of the
+causal mask: causal attention lets a token see all earlier positions, while
+sliding-window attention sees only the last W of them. The complexity box gives the
+payoff: full attention is order N squared operations, sliding window is order N times
+W, which is linear in sequence length once W is fixed.
+
+The obvious worry is that a token then cannot access information from far back. The
+card's answer is stacking. Because each layer lets information move up to W positions,
+a token at one layer can indirectly reach content up to W positions away, and after
+several layers that reach compounds. Information at a distance greater than W
+propagates layer by layer rather than in a single hop. The effective context is
+therefore larger than W, though reaching distant information is indirect and depends
+on depth.
+
+The concrete example is Mistral 7B with a window of 4096 and an effective context
+around 32k. That gap between the 4096 window and the 32k effective context is exactly
+the stacking effect: roughly W times the number of layers of reach, not W alone.
+
+The bottom line, attend to a fixed local window rather than the whole prefix, marks
+the tradeoff. Unlike Flash Attention this does change the computation and can miss
+long-range detail that a hop through layers fails to carry, but for many tasks the
+local window captures most of what matters, and the linear cost is what makes very
+long sequences affordable.

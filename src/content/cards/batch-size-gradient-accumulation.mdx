@@ -1,0 +1,48 @@
+---
+seq: 73
+title: "Batch Size & Gradient Accumulation"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "Large batches stabilize training but cost memory. Gradient accumulation sums the gradients of several micro-batches before one optimizer step to fake a larger batch."
+image: "/cards/49_training.jpg"
+status: "done"
+related:
+  - "adam-optimizer"
+  - "mixed-precision"
+  - "learning-rate-schedule"
+---
+
+Each optimizer step is computed from a batch of examples, and the size of that
+batch matters. A larger batch averages the gradient over more samples, so the
+direction it points is less noisy and the training is steadier. The catch is
+memory. Every example in the batch has to hold its activations for the backward
+pass at once, so doubling the batch roughly doubles the memory the forward and
+backward passes need, and hardware runs out well before the batch is as large as
+you might want.
+
+Gradient accumulation gets the stabilizing effect without the memory bill. The
+card contrasts the two routes to the same result. On the left, a true batch of 64
+samples goes through the model together, produces one gradient, and takes one
+step. On the right, the 64 are split into four micro-batches of 16. Each
+micro-batch runs its own forward and backward pass, its gradient is added to a
+running sum, and only after all four have contributed does the optimizer take a
+single step using the summed gradient.
+
+The reason this works is that the gradient of a sum is the sum of the gradients.
+Processing four micro-batches and adding their gradients gives the same total as
+processing all 64 together, so the update is mathematically the batch-of-64
+update. What changes is peak memory: only 16 examples' activations exist at any
+moment, since each micro-batch is freed before the next begins. The bottom line
+states the bookkeeping, effective batch equals micro-batch size times the number
+of accumulation steps, 64 equals 16 times 4.
+
+Two details keep the equivalence exact. The gradients must be averaged
+consistently with how the loss is normalized, otherwise the accumulated step is
+scaled wrong and effectively changes the learning rate. And the optimizer step,
+along with any gradient clipping, happens once per effective batch, not once per
+micro-batch, so the clip threshold from the next card applies to the full summed
+gradient. Accumulation trades time for memory: four sequential passes are slower
+than one big parallel pass, which is why it is a lever for fitting large
+effective batches on limited hardware rather than a free improvement.

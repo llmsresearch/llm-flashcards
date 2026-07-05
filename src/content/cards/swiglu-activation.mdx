@@ -1,0 +1,43 @@
+---
+seq: 34
+title: "SwiGLU Activation"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Model Architectures"
+summary: "A gated feed-forward variant used by LLaMA and most modern open models. One branch is passed through Swish and multiplied elementwise with a second branch, trading extra parameters for lower loss."
+image: "/cards/129_architectures.jpg"
+status: "done"
+related:
+  - "feed-forward-network-ffn"
+  - "rmsnorm"
+  - "llama-architecture"
+---
+
+The previous card described the standard feed-forward network. SwiGLU is a
+redesign of that block's middle, and it is now the default in the LLaMA family and
+most modern open models, so it is worth seeing side by side with the vanilla
+version.
+
+The card puts them next to each other. Vanilla FFN is a single path: expand with
+one linear layer, apply ReLU or GELU, project back. SwiGLU splits the expansion
+into two parallel projections of the input, W and V. The W branch is passed
+through Swish, a smooth activation, and the result is multiplied elementwise by
+the V branch. A final linear layer projects that product back down. The formula
+reads SwiGLU of x equals Swish of W times x, elementwise multiplied by V times x.
+
+The idea is gating. The Swish branch acts as a learned gate, a set of values
+between roughly zero and one, and it modulates the content branch position by
+position and dimension by dimension. Rather than a fixed activation deciding what
+passes, the model learns a gate that controls the flow. The card frames it as gate
+times content, and as replacing the FFN's activation with a learned gate.
+
+There is a real cost, called out on the card. Two input projections instead of one
+means about fifty percent more parameters in the FFN. The trade the design accepts
+is that, for the same total parameter budget, a SwiGLU model reaches lower loss
+than a vanilla FFN model. In practice implementations shrink the hidden width so
+the three matrices land near the same total size as the original two, which keeps
+the comparison fair.
+
+SwiGLU is one of a small set of changes, alongside RMSNorm and RoPE, that separate
+a modern open model from the original transformer. RMSNorm is the next card.

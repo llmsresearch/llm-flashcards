@@ -1,0 +1,43 @@
+---
+seq: 266
+title: "Error Handling"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "Agent failures fall into recognizable categories, each with a recovery action: retry transient errors, re-prompt on bad tool output, revise the plan on logic mistakes, and stop with a clear message when limits are hit."
+image: "/cards/105_agents.jpg"
+status: "done"
+related:
+  - "react-framework"
+  - "stopping-conditions"
+  - "agent-loop"
+---
+
+The card is a dispatch chart. Four failure categories each map to a recovery action.
+Transient errors, timeouts, rate limits, get a retry with backoff. Malformed tool
+calls or schema violations trigger a re-prompt so the model can correct its output.
+Logical mistakes, wrong tool choice, misread observation, route to plan revision or a
+reflection step. Hard stops, budget exhausted, permission denied, unrecoverable tool
+failure, exit the loop and surface a clear status to the user. A one-line note at the
+bottom says what to show the user: what failed, what was tried, and what they can do
+next.
+
+Agents fail often and in boring ways. Treating every exception as a generic "error
+occurred" gives the model nothing to recover from and gives the user no trust in the
+system. Feeding structured error messages back into the loop ("tool X returned 404,
+available IDs are ...") turns failures into observations the agent can act on, the same
+way ReAct intends.
+
+The category matters because recovery strategies differ. Retrying a 503 from an API is
+reasonable; retrying the same wrong SQL ten times is not. Detecting repeated identical
+tool calls is a loop-detection problem, not a transient error. Permission failures
+should not be retried silently; they need escalation or a user prompt. Mapping errors to
+actions in code keeps the model from improvising unsafe fixes.
+
+What to surface to the user is a product decision as much as an engineering one. Internal
+loops can retry quietly when the stakes are low. High-impact actions should report
+partial progress before aborting. Logs for operators should contain full traces; messages
+for end users should be short and actionable. Error handling sits between the agent loop
+and stopping conditions: it decides whether to continue, branch, or halt, and it sets
+the quality bar for how failures feel when autonomy meets the real world.

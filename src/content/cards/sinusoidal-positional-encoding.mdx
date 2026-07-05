@@ -1,0 +1,44 @@
+---
+seq: 20
+title: "Sinusoidal Positional Encoding"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "The original transformer's position signal. Each dimension is a sine or cosine of position at a different frequency, computed by formula rather than learned."
+image: "/cards/12_transformer.jpg"
+status: "done"
+related:
+  - "positional-encoding"
+  - "learned-positional-embeddings"
+  - "rope-rotary-position-embedding"
+---
+
+The first way anyone gave a transformer a sense of position was to compute it,
+not learn it. This card is that method, the one from the original transformer
+paper.
+
+The idea is to build each position vector out of sines and cosines. The formula
+sets even dimensions to a sine of position and odd dimensions to a cosine, and
+crucially each dimension uses a different frequency. The plot shows the effect:
+the low dimensions wave slowly and act as a coarse position signal, while the high
+dimensions wave quickly and pin down fine position. Together, across many
+dimensions at many frequencies, the set of values is distinct for each position,
+so the model can read out where a token sits.
+
+Two properties make this more than a party trick. First, it is fixed, computed
+straight from the formula with no training involved. That means it costs no
+parameters and requires no data to set up. Second, and this is the subtle one, the
+encoding is built so that shifting by a fixed offset is a linear function of the
+encoding. A position a few steps away is reachable by a fixed linear transform,
+which gives the model a clean handle on relative position, the distance between
+two tokens rather than their absolute slots.
+
+Because it is a formula rather than a table, it can in principle produce a vector
+for any position, including ones longer than anything seen in training. The card
+notes this extrapolation holds in principle. In practice the benefit is partial,
+which is part of why later methods were developed.
+
+This is the baseline the next cards measure against. Learned embeddings drop the
+formula for a trained table, and RoPE keeps the rotational idea but applies it
+inside attention rather than adding it at the input.

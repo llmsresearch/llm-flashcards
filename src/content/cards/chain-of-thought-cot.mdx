@@ -1,0 +1,41 @@
+---
+seq: 184
+title: "Chain-of-Thought (CoT)"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "14. Reasoning"
+category: "Prompting"
+summary: "Chain-of-thought prompting asks the model to write intermediate steps before the final answer. On multi-step math and logic tasks, explicit reasoning often reduces jump-to-wrong-answer errors compared with answering directly."
+image: "/cards/76_prompting.jpg"
+status: "done"
+related:
+  - "zero-shot-cot"
+  - "self-consistency"
+  - "chain-of-thought-faithfulness"
+---
+
+The card places two panels under the same word problem. In the direct panel, the
+model states a wrong final number with no work shown. In the chain-of-thought
+panel, it writes intermediate calculations, then reaches the correct result. The
+only change is whether the prompt requests step-by-step reasoning before the
+answer line.
+
+Mechanically, later tokens attend to earlier ones. When the model commits intermediate
+results to text, those tokens become anchors for subsequent steps, similar to
+scratch work on paper. CoT does not guarantee correctness; each step can still
+drift. It does increase the chance that errors are localized and that the model
+allocates capacity to decomposition rather than pattern completion alone.
+
+Few-shot CoT includes worked examples with visible reasoning traces before the new
+question. Zero-shot CoT uses a short trigger phrase such as "think step by step"
+without exemplars; that variant has its own card. In either form, ask for the final
+answer in a fixed format after the reasoning block so downstream parsers can
+separate work from result. For production, consider hiding the chain from end users
+while logging it for debugging.
+
+Use CoT when tasks involve carrying values across steps, comparing constraints, or
+combining multiple facts. Skip it for pure retrieval or single-hop questions where
+extra tokens add latency without accuracy gains. Pair CoT with temperature zero
+when you want deterministic arithmetic, and with self-consistency when stochastic
+sampling helps explore alternate paths. The card's contrast is the core lesson:
+same question, visible steps, different error profile.

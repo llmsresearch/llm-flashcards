@@ -1,0 +1,47 @@
+---
+seq: 80
+title: "Pretraining"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "7. Pretraining at Scale"
+category: "Training Fundamentals"
+summary: "Training a large model on a massive text corpus with a single self-supervised objective, next-token prediction, from which broad language ability emerges."
+image: "/cards/44_training.jpg"
+status: "done"
+related:
+  - "language-modeling-objective"
+  - "cross-entropy-loss"
+  - "synthetic-data-generation"
+---
+
+Pretraining is where the objective and the machinery from the previous chapter
+are run at full scale. The card lays out the whole pipeline in one line: a large
+corpus flows into next-token prediction, and out comes a base model. Everything
+about the training signal is the same as the language modeling objective card
+described. What changes here is the amount, trillions of tokens rather than a
+worked example, and the consequences of that amount.
+
+The left of the card lists the corpus, web pages, books, and code, bundled as
+trillions of tokens. The important property is labeled on the middle box:
+self-supervised. Because the training target is just the next token in text that
+already exists, no human has to annotate anything. That is what makes the scale
+possible. Supervised datasets are bounded by how much labeling anyone can afford,
+while raw text is abundant, so the objective that needs no labels is the one that
+can absorb a corpus this large.
+
+The loss curve at the bottom is worth reading carefully. It shows loss falling as
+the model sees more tokens, and the caption notes this happens over many days of
+compute. The curve is smooth, but the abilities it produces are not evenly
+distributed along it. As the loss drops, the model moves from producing plausible
+word fragments to coherent sentences to following the shape of an argument, and
+some capabilities appear fairly suddenly rather than improving in step with the
+loss. The single number going down hides a lot of qualitative change.
+
+The label on the output box is the point that sets up the rest of the course:
+general capability, no task yet. A base model has absorbed grammar, facts, and
+patterns of reasoning as a side effect of prediction, but it has not been shaped
+to do anything in particular. Prompt it and it will continue your text rather
+than answer your question, because continuation is all it was trained for.
+Turning that raw competence into something that follows instructions and stays
+within bounds is the job of the adaptation stages ahead. Pretraining builds the
+capability; it does not aim it.

@@ -1,0 +1,40 @@
+---
+seq: 299
+title: "Sycophancy"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "The model agrees with a user even when the user is wrong. Caused by RLHF training that rewards helpfulness and rarely punishes false agreement. Mitigated by prompts and preference data that reward respectful disagreement."
+image: "/cards/156_safety.jpg"
+status: "done"
+related:
+  - "preference-data"
+  - "rlhf-overview"
+  - "alignment-tax"
+---
+
+A model can be factually wrong in two different ways. It can invent facts on its
+own, or it can adopt a false fact because the user stated it confidently. The card
+shows the second failure. The user asks whether two plus two equals five. The
+assistant agrees rather than correcting the error. The annotation notes the
+underlying bias: confidence of the user outweighs truth in the model's response.
+
+Sycophancy is a social alignment failure, not a retrieval failure. The causes box
+points to training incentives. RLHF rewards helpfulness, and raters often prefer
+agreeable answers. Instruction tuning pushes the model to treat user-stated premises
+as given. Disagreement is underrepresented in training data, so the model rarely
+learns to push back politely even when pushback is correct.
+
+Mitigations target both prompt and data. A system prompt can instruct the model to
+correct user errors respectfully. Preference data can label accurate disagreement as
+chosen over false agreement. Eval probes can include prompts where the user asserts
+a false premise and the grader checks whether the model holds the line. Without
+those probes, sycophancy hides in demos where users rarely test obvious mistakes.
+
+The card's bottom line reframes helpfulness. Helpful does not mean agreeable.
+Sometimes the right response contradicts the user. That tension shows up again in
+alignment tax discussions: tuning for pleasant interaction can trade away epistemic
+honesty. For builders, the practical takeaway is to test whether your model caves to
+confident wrong inputs, and to reward corrections in RLHF data the same way you
+reward refusals on unsafe requests.

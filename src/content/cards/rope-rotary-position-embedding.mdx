@@ -1,0 +1,43 @@
+---
+seq: 22
+title: "RoPE (Rotary Position Embedding)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Encodes position by rotating the query and key vectors by an angle proportional to their position, so their dot product depends only on the relative offset."
+image: "/cards/24_transformer.jpg"
+status: "done"
+related:
+  - "sinusoidal-positional-encoding"
+  - "query-key-value-vectors"
+  - "alibi"
+---
+
+The earlier position methods add a vector at the input and then let attention run.
+RoPE takes a different route: it leaves the input alone and instead rotates the
+vectors that attention uses, and this small change is why nearly every modern open
+model, LLaMA, Mistral, Qwen, uses it.
+
+Attention scores come from the dot product of a query and a key, terms the next
+cards define. RoPE rotates each query and key by an angle proportional to its
+position before that dot product is taken. The card shows a query at positions 1,
+2, and 3 as the same vector rotated by one, two, and three steps of an angle. The
+formula states it as multiplying the vector by a rotation of position times theta.
+
+The payoff is the key property on the card. When you take the dot product of a
+rotated query at position i and a rotated key at position j, the result depends
+only on the difference i minus j, the relative offset between them, not on where
+the pair sits in absolute terms. Rotations compose by adding angles, so the
+absolute rotations cancel and the relative one remains. Attention scores become a
+function of how far apart two tokens are, which is usually what actually matters.
+
+The comparison at the bottom is the crisp summary. Sinusoidal encoding is added to
+embeddings at the input; RoPE rotates queries and keys inside attention. Because
+the position signal lives in the geometry of the dot product rather than in a
+fixed table, RoPE extrapolates to longer contexts more gracefully than learned
+embeddings and has become the default.
+
+This is also the first card that leans on the query and key vectors as if they
+were familiar. They are the subject of the attention cards that follow, so if the
+mechanism feels thin here, it fills in shortly.

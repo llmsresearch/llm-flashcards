@@ -1,0 +1,44 @@
+---
+seq: 48
+title: "Grouped Query Attention (GQA)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "4. Scaling Attention: Longer & Cheaper"
+category: "Transformer Architecture"
+summary: "A middle ground between multi-head and multi-query attention. Query heads are split into groups, and each group shares one key and value head, which cuts KV cache memory at a small quality cost. It is standard in LLaMA-family models."
+image: "/cards/26_transformer.jpg"
+status: "done"
+related:
+  - "multi-query-attention"
+  - "multi-head-attention"
+  - "kv-cache"
+---
+
+The KV cache grows with the number of attention heads, so one way to shrink it is to
+use fewer key and value heads than query heads. Grouped-query attention does exactly
+that, and it has become the default choice for balancing memory against quality.
+
+The two diagrams show the change. On the left, standard multi-head attention gives
+each of the eight query heads its own key and value head, one Q per K/V. On the
+right, grouped-query attention with four groups pairs the eight query heads into four
+groups, and each group shares a single K/V head, so it is two Q per K/V. The queries
+stay fully independent; only the keys and values are shared within a group. The
+annotation reports the effect: roughly half the KV cache memory in this four-group
+example, since there are half as many K/V heads to store.
+
+The reason this works with little damage is that the query heads, which do the actual
+distinguishing between what different heads look for, remain separate. Sharing keys
+and values reduces the diversity of what can be matched against, but empirically that
+loss is small on large models. The summary box frames it as a spectrum: multi-head
+attention gives max quality at max KV memory, GQA takes a small quality dip for much
+less memory, and multi-query attention, the next card, pushes to a single K/V head
+for all query heads as the most extreme point.
+
+The annotation calling GQA the LLaMA-family default is the practical takeaway. When a
+recent open model reports its attention configuration, it is usually GQA with some
+number of groups, chosen to fit the KV cache within a memory budget while keeping
+quality close to full multi-head attention.
+
+The bottom line, groups of query heads share keys and values to shrink the cache, is
+the whole idea. The next card takes the same axis to its endpoint with multi-query
+attention.

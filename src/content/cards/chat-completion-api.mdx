@@ -1,0 +1,46 @@
+---
+seq: 321
+title: "Chat Completion API"
+part: "XI. Shipping"
+partNumber: 11
+chapter: "23. APIs & Practical"
+category: "APIs & Practical"
+summary: "The standard request/response shape for chat LLMs. Send a model name, a messages array, and parameters; receive choices with finish reasons and a usage block for billing."
+image: "/cards/162_apis.jpg"
+status: "done"
+related:
+  - "max-tokens-stop-sequences"
+  - "temperature"
+  - "tokens-per-dollar"
+---
+
+The card draws the dominant API shape for talking to chat-style LLMs as two
+side-by-side JSON blocks. On the left is the request: a model name, a messages
+array, and a few parameters. On the right is the response: an id, one or more
+choices, and a usage block. A red arrow between them marks the HTTPS POST that
+carries the exchange.
+
+The messages field is the structural center. It is an ordered array of role and
+content pairs, typically system, user, and assistant turns. That array is how the
+API represents a multi-turn conversation in one call. The model reads the full
+sequence, not just the latest user line, so system instructions and prior turns
+ride along in the same payload.
+
+The response mirrors that structure. Each choice contains an assistant message and
+a finish_reason that tells you why generation stopped: a natural stop, a length
+cap, a content filter, or a tool call. The usage block reports prompt_tokens and
+completion_tokens. Providers use those counts for billing, so the numbers in the
+response are the authoritative record of what the call consumed.
+
+Below the pair, a small parameter list names the knobs most clients touch.
+Temperature and top_p control sampling. max_tokens and stop sequences bound
+output length and termination. tools and tool_choice enable function calling.
+response_format can request JSON or schema-constrained output. The exact names
+vary slightly by vendor, but the layout is largely OpenAI-compatible across
+major providers today.
+
+The practical takeaway is to treat this endpoint as a contract, not a chat window.
+You assemble the messages array deliberately, set parameters for the task, and
+read finish_reason plus usage on the way out. If generation ends on length rather
+than stop, the answer may be truncated. If usage is higher than expected, the
+full prompt, including system text and history, is what counted.

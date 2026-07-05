@@ -1,0 +1,48 @@
+---
+seq: 35
+title: "Layer Normalization"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Rescales each token's activation vector to zero mean and unit variance across its features, then applies a learned scale and shift. It keeps activation magnitudes controlled so deep stacks stay trainable, and it does not depend on batch size."
+image: "/cards/15_transformer.jpg"
+status: "done"
+related:
+  - "rmsnorm"
+  - "pre-norm-vs-post-norm"
+  - "residual-connections"
+---
+
+Attention and the feed-forward network do the work of a transformer block, but
+they only stay trainable when something keeps their outputs from drifting to
+extreme scales as the stack gets deep. That is the job of normalization, and
+LayerNorm is the original version.
+
+The two histograms show what it does in practice. Before the operation, a token's
+activations have some arbitrary mean and a spread that varies from token to token.
+After it, the same values have been recentered to zero mean and squeezed to unit
+variance. The formula in the middle box states the mechanism exactly: subtract the
+mean, divide by the standard deviation, then multiply by a learned scale gamma and
+add a learned shift beta. The normalization is fixed arithmetic; gamma and beta are
+parameters the model trains, so it can undo or reshape the normalization when that
+helps.
+
+The detail that separates LayerNorm from its predecessor is in the annotation:
+mean and standard deviation are computed per token across features. Each token's
+vector is normalized using only its own entries. Nothing is shared across the
+tokens in a sequence or across examples in a batch. That is why the card stresses
+it works batch-size agnostic, unlike batch normalization. Batch norm pools
+statistics over the batch dimension, which makes it sensitive to batch size and
+awkward for variable-length sequences. LayerNorm sidesteps that entirely, which is
+one reason transformers adopted it.
+
+The three payoffs at the bottom follow from this. Stabilizing training of deep
+stacks and keeping activation scale under control are the same point stated two
+ways: without a per-layer reset, small scale differences compound through dozens of
+layers and either blow up or collapse. Being batch-size agnostic is what makes the
+method practical for the ragged batches that language data produces.
+
+Where the normalization sits relative to the sublayer is a separate design choice,
+covered in the pre-norm versus post-norm card. And LayerNorm itself has a cheaper
+successor, RMSNorm, which most current open models use in its place.

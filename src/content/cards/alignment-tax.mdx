@@ -1,0 +1,46 @@
+---
+seq: 134
+title: "Alignment Tax"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "The capability cost of alignment training. Helpfulness and harmlessness rise while raw benchmark scores dip by a few points. The tax is usually small and can be mostly recovered with careful tuning."
+image: "/cards/70_rlhf.jpg"
+status: "done"
+related:
+  - "catastrophic-forgetting"
+  - "kl-penalty"
+  - "rlhf-overview"
+---
+
+The alignment tax is the price a model pays for being aligned. The card's table makes
+it concrete with before-and-after numbers across three axes. Helpfulness climbs from
+40 to 85 percent, harmlessness from 60 to 92, and these are exactly the behaviors
+RLHF was meant to improve. But raw MMLU, a broad knowledge and reasoning benchmark,
+slips from 68 to 64. The aligned axes go up and a capability axis goes down, and that
+small drop on the thing alignment was not targeting is the tax.
+
+The bar diagram gives the intuition for why this happens. The base model has some
+amount of raw capability. The RLHF model keeps most of it but shrinks slightly, and
+alignment behavior is added on top. The picture is not that alignment destroys
+ability; it is that pushing the model's outputs toward a preferred style and a
+refusal boundary pulls its weights away from the configuration that maximized raw
+benchmark performance. This is the same mechanism as catastrophic forgetting from the
+fine-tuning chapter, narrowed to the case where the new objective is human
+preference rather than a single domain.
+
+The reason the tax stays small rather than large connects back to the KL penalty. The
+policy is anchored to the SFT model, so it cannot drift far enough to lose its
+general competence even while it shifts toward preferred behavior. A weaker anchor
+would let alignment improve faster but would cost more capability; a stronger one
+protects capability but slows alignment. The tax is one visible symptom of exactly
+the tradeoff that beta controls.
+
+The card's mitigations are the standard levers. Mixing capability data into the RLHF
+stage keeps the model rehearsing the skills it might otherwise shed, and using a
+weaker KL constraint carefully lets it improve without drifting, though that has to
+be balanced against the reward-hacking risk. The annotation that this recovers most
+of the tax is the measured claim. You still pay something for behavioral alignment,
+as the caption says, but with attention to the data mix and the anchor strength the
+cost can be kept to a few points rather than a serious regression.

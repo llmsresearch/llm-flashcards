@@ -1,0 +1,47 @@
+---
+seq: 97
+title: "Overtrained vs Undertrained"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "8. Scaling Laws"
+category: "Scaling Laws"
+summary: "Two ways to sit off the Chinchilla line. Overtrained models take more tokens than the rule prescribes and serve cheaply; undertrained models are too large for their data and waste compute."
+image: "/cards/123_scaling.jpg"
+status: "done"
+related:
+  - "chinchilla-optimal"
+  - "compute-optimal-training"
+  - "flops-estimation"
+---
+
+The Chinchilla line is a single diagonal on the parameters-versus-tokens plane, so
+any real model is either on it or on one side of it. This card names the two
+sides. A model above the line has more tokens than the ratio prescribes, D much
+greater than 20 times N, and is called overtrained. A model below the line has
+too few tokens for its size, D much less than 20 times N, and is called
+undertrained. The words describe the data-to-size balance, not whether training
+ran too long in any absolute sense.
+
+The overtrained side is the useful one, which is worth stating clearly because the
+name sounds like a defect. An overtrained model reaches a target loss with fewer
+parameters than Chinchilla would use, because the extra data compensates for the
+smaller size. The box on the card gives the payoff: same loss, smaller
+parameters, so it is cheaper to serve, at the cost of slightly more training
+compute. That trade, spend more on the one training run to save on every
+inference, is exactly why the production model families train far past the
+Chinchilla point. The card marks their choice directly, LLaMA and Mistral pick
+this side.
+
+The undertrained side is the one to avoid. A model below the line is bigger than
+its data can justify, so it carries parameters it never learned to use well. The
+box lists the consequence: it wastes both training and serving cost, large enough
+to be expensive to run yet not fed enough to earn that size in quality. There is
+no regime where undertraining is the deliberate goal; it is what happens when a
+model is scaled up without scaling its data to match, which is the mistake the
+earlier Gopher point on the Chinchilla card illustrated.
+
+The bottom caption compresses the whole chapter's practical advice into one line:
+train past Chinchilla if you will serve a lot, never undertrain. Chinchilla marks
+the training-optimal point, but the right target depends on how the model will be
+used. Overtraining is a considered choice that trades training cost for cheaper
+inference; undertraining is simply waste on both sides of the line.

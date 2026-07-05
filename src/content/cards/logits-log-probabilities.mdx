@@ -1,0 +1,40 @@
+---
+seq: 138
+title: "Logits & Log Probabilities"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "The model's next-token scores can be read as logits, log probabilities, or probabilities. They carry the same information, but each form is useful at a different step of decoding."
+image: "/cards/113_inference.jpg"
+status: "done"
+related:
+  - "output-head-lm-head"
+  - "temperature"
+  - "autoregressive-generation"
+---
+
+The output head does not hand back a word. It hands back a score for every token
+in the vocabulary. This card is about the three forms those scores usually take
+once they leave the model: logits, log probabilities, and probabilities.
+
+Logits are the raw scores. They are unbounded, can be negative, and do not have to
+sum to anything. A higher logit means the model prefers that token more, but the
+number is not yet a probability. Softmax turns the whole vector of logits into a
+distribution by exponentiating the scores and normalizing them. The result is a
+probability for each token, all adding to one, which is the form the sampler draws
+from.
+
+Log probabilities sit between those two views. Taking the log of each probability
+makes every value less than or equal to zero, with values closer to zero meaning
+more likely. That looks less intuitive than percentages, but it is the natural
+form for comparing whole answers. A generated sentence is a product of token
+probabilities, and products of many small numbers underflow quickly. Summing log
+probabilities gives the same ranking without the numerical trouble.
+
+The table at the bottom is the practical rule. Use logits when you still need to
+modify the distribution, because temperature, penalties, and other decoding knobs
+act before softmax. Use probabilities when you are sampling the next token. Use the
+sum of log probabilities when you want to compare how likely two candidate answers
+were under the model. Same scores, three representations, each useful at a
+different point in the decoding pipeline.

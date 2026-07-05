@@ -1,0 +1,47 @@
+---
+seq: 228
+title: "What is RAG?"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Retrieval-Augmented Generation fetches relevant documents from a vector store and pastes them into the prompt before the model answers. Adds fresh, private knowledge without retraining the model."
+image: "/cards/84_rag.jpg"
+status: "done"
+related:
+  - "vector-database"
+  - "embedding-for-retrieval"
+  - "chunking"
+---
+
+A language model answers from what it learned during training. That knowledge
+is fixed at deployment time and has no access to your private documents, this
+week's data, or facts that changed after the model was built. Retrieval-Augmented
+Generation, RAG, is the pattern for bringing external text into the answer at
+query time.
+
+The card lays out four stages in a horizontal pipeline. First, the query is
+embedded. Second, the system retrieves the top-K similar documents from a
+vector store. Third, those documents are pasted into the prompt as context,
+wrapping the user's question. Fourth, the model generates an answer conditioned
+on that context. The example uses a return-policy question and shows the model
+quoting a thirty-day window grounded in retrieved text rather than inventing a
+policy from memory.
+
+The acronym spells out the steps: Retrieval, Augment, Generate. Retrieval
+fetches facts. Augmentation places them in the prompt. Generation writes the
+prose. A vector database handles the retrieval stage, but RAG is the larger
+idea that connects search to language model output. The model still does the
+writing. Retrieval supplies the evidence.
+
+This matters because it separates knowledge storage from language ability. You
+can update the document index without retraining weights. You can point the
+same model at different corpora for different customers. Answers can reflect
+your sources rather than the model's parametric memory, which reduces fabricated
+details on domain-specific questions.
+
+The practical takeaway is that RAG is a system architecture, not a single
+model feature. It requires an indexed corpus, an embedding and search stack, a
+prompt template that accepts retrieved context, and eval to confirm the model
+uses that context faithfully. The cards that follow in this chapter each zoom
+into one stage of the pipeline.

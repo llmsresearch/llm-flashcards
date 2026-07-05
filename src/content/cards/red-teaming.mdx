@@ -1,0 +1,47 @@
+---
+seq: 135
+title: "Red Teaming"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "Adversarial testing of an aligned model. People or other models try to make it produce harmful or off-spec output, and the successful attacks are folded back into training so the next version resists them."
+image: "/cards/71_rlhf.jpg"
+status: "done"
+related:
+  - "jailbreaking-guardrails"
+  - "constitutional-ai"
+  - "rlhf-overview"
+---
+
+Red teaming is how an aligned model gets stress-tested before and after release. The
+card draws it as a cycle. A red team, which can be people, other models, or both,
+writes attacks. The model responds. Harmful outputs get flagged. Those failures are
+patched via SFT or RLHF, and the loop repeats with the hardened model. The premise is
+that alignment training never produces a model that refuses everything it should;
+there are always gaps, and the only way to find them is to have someone actively look.
+
+The loop's value is that it converts adversarial effort into training signal. Each
+successful attack is not just a bug report, it is a labeled example of behavior the
+model should not have produced, and the card's note that each failure becomes
+training data is the mechanism. Feeding those examples back through the same SFT and
+RLHF machinery that aligned the model in the first place teaches it to refuse the
+newly discovered case. The bottom row shows this playing out across versions: model
+v1 plus red team data yields v2, v2 plus more red team data yields v3, and the
+annotation notes it gets harder to break each round.
+
+The list of common attack categories frames how red teamers actually probe. Jailbreaks
+that try to override instructions, direct requests for harmful information,
+social-engineering personas that coax the model into a role, and attempts to get it
+to produce unsafe code or tool calls. The card's remark that breadth matters more
+than depth is the strategic point. Finding one clever exploit is less useful than
+mapping the many different shapes an attack can take, because the model is patched
+against categories of failure, and a category left untested is a category left
+undefended.
+
+The honest limit is that this is an arms race, not a finish line. Patching the known
+attacks makes the next version harder to break, but it does not prove the model is
+safe, only that it resists the attacks tried so far. New jailbreak families keep
+appearing, which is why red teaming is a standing process rather than a one-time
+audit, and why it pairs with the layered defenses on the next card rather than
+replacing them.

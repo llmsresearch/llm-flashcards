@@ -1,0 +1,43 @@
+---
+seq: 171
+title: "In-Context Learning"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "13. Prompting"
+category: "Prompting"
+summary: "In-context learning changes model behavior through examples in the prompt, without gradient updates. Traditional learning updates weights; in-context learning updates the input the model conditions on for that forward pass only."
+image: "/cards/75_prompting.jpg"
+status: "done"
+related:
+  - "zero-one-few-shot-prompting"
+  - "supervised-fine-tuning-sft"
+  - "lora-low-rank-adaptation"
+---
+
+The card splits the diagram in two. On the left, traditional learning: a training
+loop sends gradients back into the weights and permanently changes parameters. On
+the right, in-context learning: examples sit in the prompt, the forward pass runs
+once, and the weights stay fixed while behavior shifts for that request. The
+contrast is the whole idea: learning without an optimizer step.
+
+Mechanically, the model treats prompt tokens like any other context. Attention
+layers relate the new task token to demonstration tokens, and the next-token
+distribution shifts toward patterns that fit the demonstrated mapping. This is
+why a handful of labeled pairs can steer classification, extraction, or style on
+the fly. It is also why the effect is fragile: remove the examples and the
+behavior reverts, change their order or labels and performance can swing.
+
+In-context learning explains why prompting feels like teaching in the moment and
+why it is not a substitute for fine-tuning when you need stable, high-volume
+behavior. ICL is fast to iterate, requires no GPU training job, and works well for
+format and style transfer. Fine-tuning bakes knowledge and habits into weights,
+survives absent prompts, and scales better when every token of context counts. Most
+production systems combine both: tuned weights for baseline competence, few-shot
+or instruction text for task-specific edges.
+
+The practical takeaway is to see the prompt as a temporary task specification. You
+are not updating the model; you are supplying additional evidence the architecture
+already knows how to use. That framing clarifies limits as well as strengths. ICL
+cannot add facts the model never saw reliably, and it competes with history,
+retrieval, and system instructions for the same window. Use it where flexibility
+matters; use training where persistence matters.

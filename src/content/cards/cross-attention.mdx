@@ -1,0 +1,43 @@
+---
+seq: 32
+title: "Cross-Attention"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "The attention sublayer that bridges an encoder and a decoder. Queries come from the decoder while keys and values come from the encoder's output, so each decoder position can read the full encoded input."
+image: "/cards/21_transformer.jpg"
+status: "done"
+related:
+  - "self-attention-mechanism"
+  - "encoder-decoder-architecture"
+  - "query-key-value-vectors"
+---
+
+Every attention layer so far drew its queries, keys, and values from one place.
+Cross-attention breaks that symmetry, and it is the connection that lets an
+encoder-decoder model use its input at all.
+
+The setup on the card has two stacks. The encoder has already processed the input
+and produced a set of output vectors. The decoder, generating its own sequence,
+forms a query at each of its positions. Cross-attention feeds the decoder's query
+in as Q, while the keys and values both come from the encoder's output. So the
+decoder is asking a question, and the encoder's representation is what gets
+searched and summed. The card puts it well: the decoder asks, the encoder answers.
+
+The contrast box makes the one difference precise. In self-attention, Q, K, and V
+all come from the same stack, so a sequence attends to itself. In cross-attention,
+Q comes from the decoder and K and V come from the encoder, so one sequence
+attends to another. Everything else, the dot product, the scaling, the softmax,
+the weighted sum of values, is identical. Only the source of the vectors changes.
+
+This is why cross-attention is described as the bridge between encoder and
+decoder. Without it the decoder would generate text with no access to the input it
+is supposed to be conditioned on, which is fine for a pure language model but
+useless for translation or summarization where the output must depend on a
+specific source.
+
+Notice that this whole mechanism presumes there is an encoder to attend to.
+Decoder-only models, the dominant design for modern chat LLMs, have no separate
+encoder and therefore no cross-attention. That architectural fork is exactly where
+the chapter goes next.

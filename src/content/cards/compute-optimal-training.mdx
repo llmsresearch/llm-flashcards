@@ -1,0 +1,47 @@
+---
+seq: 96
+title: "Compute-Optimal Training"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "8. Scaling Laws"
+category: "Scaling Laws"
+summary: "Turning the Chinchilla rule into a recipe: given a compute budget, solve for the model size and token count that sit on the optimal frontier."
+image: "/cards/120_scaling.jpg"
+status: "done"
+related:
+  - "chinchilla-optimal"
+  - "overtrained-vs-undertrained"
+  - "flops-estimation"
+---
+
+The previous card stated the Chinchilla ratio. This one runs it as a procedure.
+The question it answers is the one a team actually faces: I have decided how much
+compute I can spend, what size model should I build and how many tokens should I
+train it on. The card lays the answer out as three boxes, budget to solved sizes
+to a concrete recipe.
+
+The first box fixes the budget. Compute is C equals 6 times N times D, and you
+pick a target C in FLOPs, say 10 to the 22. The second box solves for the two
+unknowns by combining that constraint with the Chinchilla ratio D equals about 20
+times N. Substituting one into the other leaves a single equation, and the card
+writes its solution as the optimal parameter count N-star equal to the square
+root of C over 120, with the optimal token count D-star then being 20 times
+N-star. The constant 120 is just 6 times 20, the FLOPs factor times the ratio,
+folded together. The third box reads off the result: for 10 to the 22 FLOPs, that
+is roughly 10 billion parameters trained on 200 billion tokens.
+
+The value of the recipe is that it removes guesswork from the largest decision in
+a training run. Rather than picking a model size by intuition and hoping the data
+matches, you start from what you can afford and let the rule place you on the
+frontier. Both sizes fall out of one budget number.
+
+The modern caveat box is the part that keeps this honest, and it echoes the
+warning from the last card. Chinchilla minimizes training compute, but a deployed
+model is run many times, and inference cost scales with model size, not with how
+long it was trained. A smaller model trained well past the Chinchilla point,
+overtrained in the strict sense, can match a larger model's quality while costing
+far less to serve. That is why production models like the LLaMA and Mistral
+families train on well over a hundred tokens per parameter rather than twenty. The
+caption draws the line: Chinchilla is compute-optimal for training, not for
+deployment. Which side of the frontier you want depends on whether the dominant
+cost is the one training run or the millions of queries after it.

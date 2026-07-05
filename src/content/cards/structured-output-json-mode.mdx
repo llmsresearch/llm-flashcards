@@ -1,0 +1,43 @@
+---
+seq: 174
+title: "Structured Output (JSON Mode)"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "13. Prompting"
+category: "Prompting"
+summary: "Structured output returns machine-readable JSON instead of free-form prose. JSON mode enforces syntactic validity; schema-constrained APIs can mask invalid tokens so the completion matches a declared shape. Provider support varies."
+image: "/cards/81_prompting.jpg"
+status: "done"
+related:
+  - "delimiters-and-format"
+  - "max-tokens-stop-sequences"
+  - "temperature"
+---
+
+The card contrasts two outputs for the same extraction task. On the left, the
+model answers in conversational prose with numbers and booleans embedded in
+sentences, which is readable but brittle to parse with regex. On the right, the
+model returns a compact JSON object with typed fields. Below both halves, a
+mechanism box lists how providers enforce structure: JSON mode, declared schemas,
+and constrained decoding that blocks tokens which would break the schema.
+
+JSON mode typically guarantees valid JSON syntax: braces balance, strings quote
+correctly, trailing commas are suppressed. That alone removes a large class of
+integration bugs. Structured output goes further when the API accepts a schema and
+applies logit masking or grammar guidance so required keys appear and enum fields
+stay in range. Not every endpoint offers full schema enforcement; some only nudge
+format through prompting plus JSON mode.
+
+Use structured output anywhere downstream code consumes model results: tool
+arguments, form filling, agent plans, evaluation pipelines. Keep schemas small and
+name fields clearly in the prompt even when the API enforces shape. Reserve
+temperature near zero for deterministic fields. Validate on your side anyway;
+syntax validity does not guarantee semantic correctness, and null or empty strings
+can still slip through valid JSON.
+
+The card's caption states the integration goal: let the model talk to programs,
+not only humans. Free text is fine for chat; contracts between services need
+parseable types. When schema support is weak, combine JSON mode with delimiters
+and a strict system instruction, then run a repair pass or retry on validation
+failure. Treat provider capabilities as part of the design checklist, not an
+afterthought.

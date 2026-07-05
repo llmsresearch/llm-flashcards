@@ -1,0 +1,39 @@
+---
+seq: 208
+title: "Conversation Truncation"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "15. Context Management"
+category: "Context Management"
+summary: "When chat history exceeds the context window, truncation chooses what to drop: oldest turns, summarized middle with recent verbatim tail, or system plus the last K turns. Each strategy preserves different information."
+image: "/cards/150_context.jpg"
+status: "done"
+related:
+  - "context-compression"
+  - "token-budget"
+  - "lost-in-the-middle"
+---
+
+The card draws a long chat timeline overflowing a window boundary. Three strategies
+appear below. Drop-oldest removes early turns until the thread fits. Summarize-then-
+keep-recent replaces the distant past with a short summary while leaving the latest
+exchanges intact. System plus last K turns keeps only the system message and a
+fixed number of recent user-assistant pairs, discarding everything earlier.
+
+Truncation is the default behavior in many SDKs when you do nothing. That makes the
+choice explicit policy. Dropping oldest is simple and stateless but forgets user
+preferences stated at the start unless they live in system. Summary buffers preserve
+themes but can smear details. Last-K is predictable for billing and debugging but
+may delete tool results the model still needs.
+
+Implement truncation with token counts, not turn counts alone, because one message
+can carry a huge paste or retrieval payload. Reinsert immutable instructions into
+system after aggressive cuts. When tools wrote critical facts to early turns, mirror
+those facts into a scratch summary or external memory before deletion. Surface to
+users when context was trimmed so they know to restate constraints.
+
+Truncation interacts with lost-in-the-middle: keeping only recent turns puts old
+facts far away or out entirely. Retrieval-augmented context can re-inject facts on
+demand instead of hoarding full transcripts. The card's point is comparative: all
+three strategies fit the same limit, but they forget different things, so pick based
+on what your application cannot lose.

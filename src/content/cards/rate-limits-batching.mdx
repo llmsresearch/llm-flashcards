@@ -1,0 +1,47 @@
+---
+seq: 330
+title: "Rate Limits & Batching"
+part: "XI. Shipping"
+partNumber: 11
+chapter: "23. APIs & Practical"
+category: "APIs & Practical"
+summary: "Providers cap both requests per minute and tokens per minute. Exceeding either limit yields 429 responses. Clients backoff to stay under both axes, and bulk work can move to discounted batch endpoints."
+image: "/cards/165_apis.jpg"
+status: "done"
+related:
+  - "token-counting-cost"
+  - "api-error-handling"
+  - "latency-optimization"
+---
+
+The hero diagram is a two-axis plot. The horizontal axis is requests per minute,
+RPM. The vertical axis is tokens per minute, TPM. Two limit lines form an
+allowed rectangle in the lower-left corner. Dots inside the rectangle represent
+traffic that passes. Dots beyond either line are hatched and labeled rejected
+with HTTP 429.
+
+Rate limits are simultaneous constraints, not either/or rules. You can stay under
+the request cap and still get throttled if your prompts are large enough to blow
+the token cap, and the reverse also happens with many tiny calls. A healthy client
+tracks both dimensions and shapes traffic to fit under both ceilings. When a call
+is rejected, the right first move is to slow down with exponential backoff rather
+than retrying immediately at the same pace.
+
+The middle box on the card lists mitigation patterns that production clients
+use. A token-bucket limiter on the client side smooths bursts before they hit the
+API. Spreading load across keys or regions can raise effective quotas where your
+account allows it. Sending fewer, larger requests can help when the provider
+permits batching inside a single call, though that trades parallelism for
+efficiency.
+
+The lower box contrasts the live endpoint with a batch API. Batch submission
+queues thousands of requests offline, processes them over hours, and often runs
+at a meaningful discount compared with realtime calls. That path fits workloads
+where latency is flexible: overnight evals, bulk labeling, or large backfills. It
+does not replace interactive chat, but it can absorb volume that would otherwise
+hammer RPM and TPM during the day.
+
+Treat rate limits as part of the API contract. Design retries for 429 with jitter,
+surface sustained throttling to operators, and route non-urgent bulk jobs to batch
+when the economics justify the wait. Staying inside both axes is cheaper than
+fighting the limiter with blind retries.

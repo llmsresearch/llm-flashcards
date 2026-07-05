@@ -1,0 +1,38 @@
+---
+seq: 156
+title: "Latency: TTFT vs TPS"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Streaming inference has two visible latency metrics. TTFT measures the wait before the first token, while TPS measures the steady decode rate after generation begins."
+image: "/cards/117_inference.jpg"
+status: "done"
+related:
+  - "autoregressive-generation"
+  - "kv-cache-inference"
+  - "speculative-decoding"
+---
+
+A streaming model response has two different waits hidden inside it. The first is
+the wait before anything appears. The second is the pace at which tokens arrive
+after that.
+
+TTFT, time to first token, measures the first wait. It starts when the request is
+sent and ends when the model emits the first output token. Most of that time is
+prefill: the model runs one large forward pass over the prompt, builds the initial
+KV cache, and gets ready to decode. Long prompts push TTFT up because the model has
+more input tokens to process before it can produce even one output token.
+
+TPS, tokens per second, measures the steady decode rate after the first token. In
+the timeline on the card, this is the row of output-token pills in the decode
+region. Each new token requires another step through the model using the KV cache.
+Model size, batch shape, cache size, and memory bandwidth all affect this rate.
+The reciprocal is the time per output token, which is what the bracket between two
+tokens marks.
+
+The distinction matters for product feel. TTFT determines the blank wait before a
+streaming response starts, so it controls first paint. TPS determines whether the
+answer feels quick once it is moving. A system can have a good TPS and still feel
+slow if prefill is large, and a system can start quickly but feel sluggish if decode
+tokens arrive slowly.

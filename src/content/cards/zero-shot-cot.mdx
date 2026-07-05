@@ -1,0 +1,41 @@
+---
+seq: 185
+title: "Zero-Shot CoT"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "14. Reasoning"
+category: "Prompting"
+summary: "Zero-shot chain-of-thought uses a short trigger phrase instead of worked examples to elicit step-by-step reasoning. It is cheaper in tokens than few-shot CoT and often reaches similar gains on structured math and logic tasks."
+image: "/cards/77_prompting.jpg"
+status: "done"
+related:
+  - "chain-of-thought-cot"
+  - "reasoning-in-llms"
+  - "self-consistency"
+---
+
+The card contrasts two ways to invoke chain-of-thought on the same problem. The
+few-shot side shows a long prompt with multiple worked examples, each with full
+reasoning traces. The zero-shot side shows only the question plus a brief trigger
+such as "let's think step by step," with no exemplars. Both paths reach a correct
+final answer; the zero-shot prompt is much shorter.
+
+The trigger works because large models have seen many texts where explicit
+deliberation precedes conclusions. The phrase shifts the prior toward emitting
+intermediate steps before the answer token distribution sharpens. No gradient step
+is involved; it is pure conditioning. Effectiveness depends on model scale and
+instruction tuning. Small or lightly aligned models may ignore the trigger or
+produce shallow filler steps.
+
+Zero-shot CoT is the default first experiment when you want reasoning without
+curating examples. It saves context for retrieval, tools, and conversation history.
+When accuracy plateaus, add one or two targeted few-shot traces that mirror your
+domain notation and failure modes. Always separate the final answer with a clear
+delimiter so you can strip reasoning for display or evaluation.
+
+Latency and cost still rise because the model generates more tokens than direct
+answering. Monitor whether extra steps actually change outcomes on your benchmark;
+some tasks show no gain. Combine with self-consistency only when the added sample
+cost is justified. The card highlights efficiency: similar reasoning quality, far
+fewer demonstration tokens, which makes zero-shot CoT attractive in long-context
+pipelines where every exemplar competes with user data.

@@ -1,0 +1,43 @@
+---
+seq: 67
+title: "Perplexity"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "Cross-entropy loss exponentiated back into token units: roughly how many choices the model is effectively torn between at each step."
+image: "/cards/46_training.jpg"
+status: "done"
+related:
+  - "cross-entropy-loss"
+  - "language-modeling-objective"
+  - "vocabulary-size-tradeoffs"
+---
+
+Cross-entropy loss is the right quantity to optimize, but it is awkward to read.
+A loss of 1.4 does not mean much on its own. Perplexity takes that same number
+and puts it back into units a person can reason about. The card gives the whole
+definition in one step: exponentiate the loss. If the loss is measured in nats,
+you raise e to the loss; the two operations have to use the same base to line up.
+
+The payoff is the interpretation in the middle box. Perplexity is roughly the
+effective number of tokens the model is torn between at each position. A model
+that always knew the next token exactly would have perplexity 1, one choice, no
+hesitation. A model that had learned nothing and guessed uniformly across a
+vocabulary of size V would have perplexity V, as confused as a fair die with V
+faces. Real models sit between those poles, and the number tells you where.
+
+The ladder at the bottom turns that into a rough quality scale. A random model
+over a 50,000-token vocabulary sits near 50,000. A decent base model lands around
+20, meaning at each step it behaves as if choosing among roughly twenty
+plausible tokens rather than fifty thousand. A strong LLM pushes down toward 4 or
+lower. Each drop is larger than it looks, because perplexity is exponential in
+the loss: shaving a small amount off cross-entropy moves perplexity a lot at the
+low end.
+
+Two cautions keep the number honest. Perplexity is only comparable across models
+that share a tokenizer, since it is measured per token and a different
+tokenization chops the same text into a different number of pieces. It also only
+reflects how well the model predicts held-out text, not whether that text is true
+or useful. It is the cleanest single readout of the training objective, which is
+exactly why it says nothing about the objective's blind spots.

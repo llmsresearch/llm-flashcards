@@ -1,0 +1,45 @@
+---
+seq: 331
+title: "API Error Handling"
+part: "XI. Shipping"
+partNumber: 11
+chapter: "23. APIs & Practical"
+category: "APIs & Practical"
+summary: "HTTP status codes from LLM APIs map to different client actions. Fix 4xx locally without retrying; treat 429 and 5xx as transient and retry with exponential backoff and jitter."
+image: "/cards/167_apis.jpg"
+status: "done"
+related:
+  - "rate-limits-batching"
+  - "token-counting-cost"
+  - "chat-completion-api"
+---
+
+The card centers on a two-column table. The left column lists HTTP status codes
+you will see on LLM APIs. The right column pairs each code with what it means and
+what the client should do next. Below the table sit a retry-strategy box and a
+short logging checklist.
+
+Not every error deserves another request. A 400 bad request usually means the
+payload is invalid: prompt too long, malformed JSON, or a schema the model cannot
+satisfy. That is a local bug. Fix the input and do not retry the same body. A 401
+or 403 points to credentials: missing key, expired token, or insufficient
+permission. Surface that to an operator and stop automatic retries.
+
+429 rate limited is the status most production clients see in normal operation.
+It means you exceeded a quota, not that the model failed. Slow down, honor
+Retry-After when present, and use exponential backoff with jitter so many clients
+do not recover in lockstep. Transient 5xx responses from the provider may merit a
+small number of retries, but repeated hammering on a flapping endpoint makes
+outages worse for everyone.
+
+The retry box on the card keeps the policy narrow: retry only on 429 and 5xx,
+back off on a schedule such as one, two, four, and eight seconds, and add jitter
+to spread load. The logging box reminds you to capture request_id from response
+headers plus model name, version, and token counts. Those fields matter when you
+open a support ticket or debug a spike in failures.
+
+The practical line at the bottom is the rule to internalize: not every error means
+try again, some mean fix your code. Classify by status before you loop. Agent-level
+failure handling covers tool mistakes and planning loops; this card is the HTTP
+layer underneath, where the first decision is whether the request was wrong,
+forbidden, throttled, or temporarily unavailable.

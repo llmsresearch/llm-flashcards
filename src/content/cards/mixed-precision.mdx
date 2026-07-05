@@ -1,0 +1,48 @@
+---
+seq: 74
+title: "Mixed Precision (FP16/BF16)"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "Training keeps a master copy of the weights in FP32 but runs the forward and backward passes in FP16 or BF16 to save memory and time."
+image: "/cards/50_training.jpg"
+status: "done"
+related:
+  - "batch-size-gradient-accumulation"
+  - "adam-optimizer"
+  - "gradient-clipping"
+---
+
+Memory pressure keeps coming up because the numbers themselves take space. A
+weight stored in full 32-bit precision is four bytes, and a large model has
+billions of them, with the optimizer state and activations stored the same way.
+Mixed precision cuts that by doing most of the arithmetic in a 16-bit format
+while keeping full precision only where it is actually needed.
+
+The card lays out the three formats by how they split their bits. FP32 spends 1
+bit on sign, 8 on exponent, and 23 on the fraction, giving both wide range and
+fine precision at four bytes each. FP16 halves the storage to two bytes but
+shrinks the exponent to 5 bits, which narrows the range of representable
+magnitudes and makes very small or very large values overflow or underflow to
+zero. BF16 keeps the full 8-bit exponent of FP32 and gives up fraction bits
+instead, so it covers the same range as FP32 at lower precision. That range is
+why BF16 has become the more common choice for large training runs: it rarely
+overflows, so it needs less of the careful scaling that FP16 requires.
+
+The flow at the bottom is the actual scheme. A master copy of the weights is held
+in FP32. Each step, those weights are cast down to 16-bit for the forward and
+backward passes, which is where nearly all the compute lives, so it runs faster
+and with less memory. The resulting gradients are then applied back to the FP32
+master copy, so the running accumulation of tiny updates happens in full
+precision. The caption states the tradeoff plainly: precision where it matters,
+speed where it does not.
+
+The reason the master copy cannot be dropped is subtle but important. Individual
+weight updates are often much smaller than the weight itself, and in 16 bits such
+a small change can round away to nothing, so training would stall as if the
+learning rate were zero. Keeping the accumulator in FP32 preserves those small
+updates. FP16 setups add one more piece not drawn here, loss scaling, which
+multiplies the loss up before the backward pass so that small gradients stay
+inside FP16's range and then divides them back down before the update. BF16 mostly
+avoids needing it.

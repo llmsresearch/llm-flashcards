@@ -1,0 +1,40 @@
+---
+seq: 144
+title: "Repetition/Frequency/Presence Penalties"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Three logit-level penalties that discourage repeated output. Repetition penalty rescales seen tokens, frequency penalty grows with count, and presence penalty fires once a token has appeared."
+image: "/cards/112_inference.jpg"
+status: "done"
+related:
+  - "logits-log-probabilities"
+  - "temperature"
+  - "top-p-nucleus-sampling"
+---
+
+The previous decoding knobs reshape or truncate the whole next-token distribution.
+Repetition, frequency, and presence penalties are more targeted. They look at what
+has already been generated and lower the logits of tokens that would repeat it.
+
+The first row is repetition penalty. If a token has appeared before, its logit is
+divided by a value greater than one, such as 1.1. This is a multiplicative penalty
+on tokens already seen, and it is mainly aimed at obvious loops where the model
+keeps saying the same phrase.
+
+Frequency penalty is count-based. Each time a token appears, the penalty grows, so
+the logit is reduced by alpha times the number of prior occurrences. A token used
+five times is pushed down more than a token used once. This is useful when the
+failure mode is not a single repeated phrase but gradual token spam, where the same
+word keeps reappearing because it remains locally likely.
+
+Presence penalty is binary. Once a token has appeared at least once, subtract beta
+from its logit. It does not care whether the token appeared once or ten times. That
+makes it a rougher tool for encouraging topic movement: mention something, then
+make it slightly less attractive to mention again.
+
+All three penalties are applied before softmax, so they compose with temperature,
+top-K, and top-P. They do not make the model understand boredom or redundancy. They
+just change the scores so the sampler is less likely to walk back into the same
+tokens.

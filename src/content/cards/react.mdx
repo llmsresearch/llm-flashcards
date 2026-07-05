@@ -1,0 +1,39 @@
+---
+seq: 203
+title: "ReAct"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "14. Reasoning"
+category: "Prompting"
+summary: "ReAct interleaves natural-language thoughts, tool actions, and environment observations in a loop. The model plans, calls a tool, reads the result, and continues until it can answer. It grounds reasoning in external feedback."
+image: "/cards/79_prompting.jpg"
+status: "done"
+related:
+  - "program-aided-lms-pal"
+  - "multi-hop-reasoning"
+  - "test-time-compute"
+---
+
+The card diagrams the Thought, Action, Observation, Thought cycle as a loop. A
+concrete trace sits beside it: the model wonders who won a recent tournament,
+issues a search action with a query string, receives a snippet observation, thinks
+again, and finishes with a cited answer. The hero is alternation between internal
+planning and external evidence, not a single monologue.
+
+Thought tokens let the model decompose goals and choose tools without committing to
+a final answer prematurely. Action tokens map to a structured call your runtime
+executes: search, calculator, database lookup, code run. Observation tokens inject
+tool output back into context so the next thought conditions on fresh facts. The
+pattern reduces hallucination on questions where parametric memory is stale or
+ambiguous.
+
+Implementations need a strict action parser, timeouts, and permission checks. The
+loop stops when the model emits a finish action or when you hit step limits.
+Without caps, agents can repeat useless searches. Log each leg for debugging and
+apply instruction hierarchy so observations from the open web stay untrusted input.
+
+ReAct sits between pure CoT and full autonomous agents. It is CoT plus grounded
+steps you control. Pair it with retrieval-augmented context when conversations are
+long and facts arrive just in time. The card's trace is the design template: name
+the gap, act to close it, read the world, then reason forward until the user
+question resolves.

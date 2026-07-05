@@ -1,0 +1,48 @@
+---
+seq: 69
+title: "Adam Optimizer"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "The default optimizer for language models: it tracks running averages of the gradient and the squared gradient, then adapts each parameter's step size."
+image: "/cards/47_training.jpg"
+status: "done"
+related:
+  - "cross-entropy-loss"
+  - "gradient-clipping"
+  - "learning-rate-schedule"
+---
+
+The loss tells the model how wrong it is. The optimizer decides what to do about
+it. The simplest choice, plain gradient descent, moves every parameter by the
+same learning rate times its gradient. The card's left panel shows the cost of
+that uniformity: in a valley that is steep in one direction and shallow in
+another, a single step size makes the path zig-zag across the steep walls while
+crawling along the shallow floor. Adam is the fix that nearly every LLM uses
+instead.
+
+Adam keeps two running averages per parameter. The first, written m, is a
+smoothed average of recent gradients. This is momentum: it damps the zig-zagging
+by averaging out directions that keep flipping sign and reinforcing directions
+that stay consistent. The second, written v, is a smoothed average of squared
+gradients, a measure of how large that parameter's gradients have been recently.
+The two update rules on the card have the same form, a decay factor beta times
+the old average plus a small slice of the new value, with beta1 controlling the
+gradient average and beta2 the squared-gradient average.
+
+The final line is where the adaptation happens. The parameter moves by the
+learning rate times m divided by the square root of v. Dividing by the square
+root of v is the key idea: parameters whose gradients have been large get their
+steps shrunk, and parameters whose gradients have been small get their steps
+kept large. The right panel shows the result, a fairly direct path to the bottom
+because each coordinate is scaled to its own gradient history rather than sharing
+one global rate.
+
+A few practical notes the card leaves implicit. The version used in practice is
+almost always AdamW, which handles weight decay separately from the gradient
+update and tends to generalize better on large models. Adam also carries a real
+memory cost, because m and v are full copies of the parameters, so an optimizer
+state can be twice the size of the model itself. That overhead is one of the
+reasons large-scale training pushes so hard on the memory-saving techniques in
+the cards that follow.

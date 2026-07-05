@@ -1,0 +1,43 @@
+---
+seq: 255
+title: "ReAct Framework"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "ReAct interleaves reasoning traces with tool actions: the model thinks, acts, observes, and repeats. The card shows the production state machine around that pattern, including retries after tool failures and clean termination."
+image: "/cards/101_agents.jpg"
+status: "done"
+related:
+  - "agent-loop"
+  - "error-handling"
+  - "tool-use-function-calling"
+---
+
+ReAct, short for Reasoning and Acting, names a pattern where the model alternates
+between explicit thought steps and tool use. The card does not show a single example
+trace. It shows the state machine you wrap around an LLM in production: states for
+reasoning, acting, observing results, handling failures, and stopping. That framing
+matters because a research paper trace and a deployed agent are different things.
+
+In the ideal trace, the model writes out what it plans to do, calls a tool, reads the
+observation, updates its reasoning, and continues. The production view adds the parts
+a demo often skips. When a tool call fails, the machine routes to a retry or fallback
+path rather than passing a raw stack trace to the user. When the model emits malformed
+JSON, a parser error loops back for correction. When the same action repeats without
+progress, a detector forces exit. Each transition is an explicit branch, not an
+accident of prompt wording.
+
+The value of interleaving thought and action is interpretability and grounding. The
+reasoning steps give you a readable log of why the agent chose each tool. The
+observation steps anchor those choices in returned data rather than in guesses from
+weights. Neither guarantee is perfect: reasoning can be post-hoc rationalization and
+observations can be misread. But the structure makes failures easier to diagnose than
+a black-box sequence of tool calls.
+
+Building ReAct in practice means defining the message format the model should follow,
+training or prompting it to respect that format, and implementing the state machine that
+enforces retries, budgets, and termination. The agent loop card describes the outer
+while-block; ReAct describes one disciplined way to structure what happens inside each
+iteration. Error handling and stopping conditions are the other half of making that
+pattern reliable enough to ship.

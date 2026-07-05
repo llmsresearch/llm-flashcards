@@ -1,0 +1,36 @@
+---
+seq: 142
+title: "Top-P (Nucleus) Sampling"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Top-P sampling keeps the smallest set of tokens whose probabilities add up to a chosen mass P. The number of candidates grows or shrinks with model uncertainty."
+image: "/cards/111_inference.jpg"
+status: "done"
+related:
+  - "top-k-sampling"
+  - "temperature"
+  - "logits-log-probabilities"
+---
+
+Top-P sampling, also called nucleus sampling, fixes the weakness of a fixed K. It
+does not ask for a set number of candidate tokens. It asks for enough tokens to
+cover a chosen amount of probability mass.
+
+The two histograms use the same P threshold, 0.9, under two different model
+states. On the left the model is confident. One token already carries most of the
+probability, so the nucleus is small and top-P may keep only that token. On the
+right the model is uncertain. Probability is spread across several plausible
+tokens, so the nucleus grows until the kept set reaches the same cumulative mass.
+
+The rule in the center is the whole method: sort tokens by probability and keep
+the smallest prefix whose probabilities sum to at least P. Then renormalize that
+kept set and sample from it. With P at 0.9 or 0.95, the sampler preserves most of
+the model's probability mass while discarding the tail that usually contains
+low-quality surprises.
+
+This makes top-P adaptive in a way top-K is not. It is strict when the model is
+confident and permissive when the model is unsure. Temperature and top-P are often
+used together: temperature reshapes the distribution first, and top-P decides how
+much of the reshaped distribution remains eligible for sampling.

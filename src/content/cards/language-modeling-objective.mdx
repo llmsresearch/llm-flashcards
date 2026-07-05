@@ -1,0 +1,42 @@
+---
+seq: 65
+title: "Language Modeling Objective"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training Fundamentals"
+summary: "Language models are trained to predict the next token from the preceding ones, minimizing the negative log-likelihood of the true next token."
+image: "/cards/43_training.jpg"
+status: "done"
+related:
+  - "what-is-tokenization"
+  - "hallucination"
+---
+
+The task the model learns is almost embarrassingly simple. Given the tokens so
+far, guess the next one. The card shows it directly: the prefix "The cat sat on
+the" goes in, and the model produces a probability spread over the whole
+vocabulary, leaning toward "mat" but leaving weight on "floor" and "roof" too. It
+is a fill-in-the-blank exercise run over and over across a very large amount of
+text.
+
+What makes this work as a training signal is that the answer is already in the
+data. The true next token is simply the word that came next in the original text,
+so no human has to label anything. The loss on the card, the negative log of the
+probability the model assigned to that true token, is large when the model is
+surprised and small when it was confident and correct. Training nudges the
+weights to make the observed continuation a little more likely each time, summed
+across every position in every sequence.
+
+The surprising part is how much falls out of such a plain objective. To reliably
+predict the next token across billions of examples, a model ends up having to
+represent grammar, facts, a sense of tone, the shape of an argument, even
+fragments of reasoning, because all of those help it guess better. None of it is
+targeted directly. It is a side effect of getting good at prediction.
+
+That framing also explains a limitation that shows up much later. The objective
+rewards continuations that are *likely*, which is not the same as continuations
+that are *true*. A fluent, plausible sentence and a correct one look identical to
+this loss as long as both are probable under the training text. The model is
+optimized to sound like its data, and most of what a deployed LLM does well, and
+some of what it does badly, traces back to that single line.

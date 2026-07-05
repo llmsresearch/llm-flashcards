@@ -1,0 +1,37 @@
+---
+seq: 141
+title: "Top-K Sampling"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Top-K sampling keeps only the K most likely next tokens, drops the long tail, renormalizes the survivors, and samples from that smaller set."
+image: "/cards/110_inference.jpg"
+status: "done"
+related:
+  - "temperature"
+  - "top-p-nucleus-sampling"
+  - "logits-log-probabilities"
+---
+
+Top-K sampling starts from the probability distribution over the next token and
+cuts it down to a fixed count. Keep the K most likely tokens, drop everything
+else, renormalize the survivors so they sum to one, then sample.
+
+The histogram makes the operation visible. The model gives some probability to a
+long list of tokens, including many that are technically possible but poor in
+context. With K set to three, only "cat", "dog", and "bird" survive. The rest of
+the bars are cut before sampling, so an unlikely token from the tail cannot appear
+just because random sampling happened to hit it.
+
+Renormalization is the step people often skip when describing the method. Once
+the tail is removed, the surviving probabilities no longer sum to one. The lower
+chart shows the remaining three tokens inflated into a valid distribution, and the
+actual sample is drawn from that smaller set. Temperature can still be applied
+before this cutoff, but the cutoff itself is a separate operation.
+
+The limitation is that K is fixed even when the model's confidence changes. If
+the model is already sure, keeping fifty options may keep too much noise. If the
+model is uncertain, keeping only three may remove reasonable alternatives. Top-P
+sampling changes that by truncating to probability mass rather than to a fixed
+number of tokens.

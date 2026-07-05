@@ -1,0 +1,47 @@
+---
+seq: 229
+title: "Chunking"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Splits long documents into smaller passages before indexing. Each passage gets embedded and stored separately so retrieval returns the most relevant sections instead of whole documents."
+image: "/cards/85_rag.jpg"
+status: "done"
+related:
+  - "what-is-rag"
+  - "chunk-size-overlap"
+  - "vector-store"
+---
+
+RAG indexes documents, but it rarely retrieves a full document at once. A
+policy PDF, a wiki page, or a codebase file may run to thousands of tokens.
+Embedding the whole thing produces one vector that averages over many topics,
+and returning the entire file would waste most of the context window. Chunking
+is the preprocessing step that splits source material into smaller passages
+before indexing.
+
+The card shows one source document at the top, a returns policy with sections on
+returns, exchanges, and refunds. Horizontal dashed lines mark chunk boundaries
+at natural section breaks. Below, three separate chunk rectangles each carry
+its own id and a subset of the original text. Each chunk is embedded and stored
+independently, so a query about refunds can retrieve the refunds section
+without pulling in unrelated exchange rules.
+
+The reasons box lists why splitting helps. Embedding models handle short text
+more reliably than very long inputs. Retrieval should return only the section
+that answers the question, not an entire manual. Smaller chunks also fit more
+cleanly into the context window alongside instructions and the user question.
+The annotation notes that smaller is not always better, which is the subject of
+the next card on chunk size and overlap.
+
+Boundary choice affects recall. Splitting on headings and paragraphs preserves
+semantic units. Splitting on fixed token counts is simpler but may cut sentences
+in half. Either way, the goal is units that are small enough to be specific
+and large enough to carry a complete thought.
+
+The practical takeaway is to chunk along natural boundaries when the document
+structure allows it, and to treat chunking as part of index design rather than
+an afterthought. Every chunk becomes one row in the vector store, so the
+granularity you choose at index time determines what retrieval can return at
+query time.

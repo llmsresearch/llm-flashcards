@@ -1,0 +1,39 @@
+---
+seq: 204
+title: "Token Budget"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "15. Context Management"
+category: "Context Management"
+summary: "A fixed context window forces explicit allocation across system instructions, chat history, retrieved chunks, the user question, and reserved output tokens. Planning the budget prevents silent truncation and incomplete replies."
+image: "/cards/151_context.jpg"
+status: "done"
+related:
+  - "context-window"
+  - "conversation-truncation"
+  - "retrieval-augmented-context"
+---
+
+The card shows a stacked bar for one request against a hard context limit. Segments
+label system prompt, prior turns, retrieved passages, the current user message, and
+a reserved slice for the model's reply. A side note lists ways to reclaim tokens:
+shorten system text, compress history, retrieve fewer chunks, or lower max output.
+
+Every component competes for the same ceiling. If retrieval and history consume
+most of the window, the model may never see the latest user instruction or may stop
+mid-answer when output space runs out. APIs often expose input and output token
+counts separately, but the underlying constraint is unified: what fits in one forward
+pass. Budgeting is therefore a product decision, not an afterthought.
+
+Start from the output reserve. If you need a thousand tokens of JSON, subtract that
+before choosing how many documents to inject. Measure typical system and tool
+schemas with your tokenizer; byte estimates mislead on multilingual or code-heavy
+prompts. Instrument per-request breakdowns in logs so spikes in history length are
+visible before users hit quality cliffs.
+
+Reclaim strategies trade fidelity for space. Summaries lose detail. Dropping oldest
+turns forgets early constraints unless the system prompt repeats them. Aggressive
+retrieval top-k cuts recall. The card's stacked bar is a checklist: name each
+consumer, assign a cap, and revisit when you change models because window size and
+tokenizer vary across providers. Good answers depend as much on what you omit as on
+what you include.

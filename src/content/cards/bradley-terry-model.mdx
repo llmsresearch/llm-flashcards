@@ -1,0 +1,48 @@
+---
+seq: 120
+title: "Bradley-Terry Model"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "A probability model for pairwise comparisons. Each item carries a latent score, and the chance one beats the other depends only on the gap between scores through a sigmoid. The same math behind chess Elo underlies preference reward learning."
+image: "/cards/65_rlhf.jpg"
+status: "done"
+related:
+  - "reward-model"
+  - "preference-data"
+  - "activation-functions"
+---
+
+The Bradley-Terry model is the bridge between binary comparisons and a continuous
+score, and it answers a question the preference data leaves open: if all a human ever
+tells us is that A beat B, where do the numbers a reward model outputs come from? The
+answer is to assume each item has a hidden score and that the outcome of any matchup
+is probabilistic, driven entirely by the difference between the two scores. The card
+gives the formula: the probability that item i beats item j is the exponential of i's
+score over the sum of the exponentials of both scores.
+
+That expression simplifies to something already familiar from earlier in the course.
+The card notes the equivalent form, a sigmoid of the score difference. Dividing the
+exponential of i's score by the sum of both exponentials is algebraically the same as
+applying the logistic sigmoid to the quantity s_i minus s_j, so the whole model
+reduces to running the score gap through the sigmoid curve drawn below the formula.
+When the two scores are equal the difference is zero, the sigmoid returns one half,
+and the matchup is a coin flip. As the gap grows the curve saturates toward one, and
+a large enough lead makes the outcome nearly certain.
+
+The chess example grounds the abstraction. Two players rated 1500 and 1400 differ by
+100 points, and running that gap through the model gives the stronger player roughly
+a 64 percent chance to win. This is not a coincidence of notation. Elo ratings are
+built on the same pairwise-comparison logic, which is why the card says the math that
+powers chess rankings also powers preference reward learning. In both cases we never
+observe a score directly; we observe who beat whom and infer scores that make the
+observed wins likely.
+
+For RLHF the connection closes the loop. The reward model's loss on the previous card
+was the negative log sigmoid of the reward gap between chosen and rejected, which is
+exactly the Bradley-Terry likelihood of the observed preference. Training the reward
+model is therefore fitting latent scores to a pile of pairwise outcomes, the same
+estimation problem as assigning Elo ratings from game results. The scalar reward a
+response receives is its fitted latent score, meaningful only in relation to other
+responses rather than on any absolute scale.

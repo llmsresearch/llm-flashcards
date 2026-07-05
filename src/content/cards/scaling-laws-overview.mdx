@@ -1,0 +1,48 @@
+---
+seq: 92
+title: "Scaling Laws Overview"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "8. Scaling Laws"
+category: "Scaling Laws"
+summary: "Test loss falls as a power law in model size, training tokens, and compute, down to an irreducible floor. Loss becomes a predictable function of scale."
+image: "/cards/118_scaling.jpg"
+status: "done"
+related:
+  - "power-laws"
+  - "flops-estimation"
+  - "chinchilla-optimal"
+---
+
+The last two chapters showed how a model is trained and what pretraining
+produces. Scaling laws answer the question that comes next for anyone spending
+the compute: if I make it bigger, how much better does it get, and can I know in
+advance. The finding on the card is that the answer is unusually regular. Test
+loss falls as a power law in three quantities, the number of model parameters N,
+the number of training tokens D, and the total compute C.
+
+The plot shows what a power law looks like once the axes are logarithmic: a
+straight line. Each of the three quantities traces its own descending line, and
+the caption states the practical reading, more N, D, or C gives predictably lower
+loss. Straightness on a log-log plot is the signature that a relationship is a
+power law, which is the subject of the next card. The point here is that the
+relationship holds across many orders of magnitude, which is what makes it useful
+for planning rather than just describing.
+
+The formula boxes the shape. Loss as a function of any one of these quantities is
+approximately a constant A times that quantity raised to a negative exponent,
+plus a term written L-infinity. The exponent, called alpha, is the slope of the
+line on the log-log plot, and it sets how fast loss falls as you scale. The
+L-infinity term is the piece that does not go away: an irreducible floor, the
+loss you would still have with infinite scale, set by the inherent unpredictability
+of language itself. Scaling buys you the gap down to that floor, not below it.
+
+What makes this more than a curiosity is that it turns training into something
+you can forecast. Fit the curve on small, cheap runs, and you can project the
+loss of a run far too expensive to try more than once, which is exactly how large
+models are planned before the budget is committed. Two cautions come with it. The
+laws predict loss, not any particular downstream skill, and the connection between
+lower loss and better behavior on real tasks is looser than the clean line
+suggests. And the fitted exponents are empirical, specific to an architecture and
+data distribution, so they describe the regime they were measured in rather than
+a law of nature.

@@ -1,0 +1,46 @@
+---
+seq: 94
+title: "FLOPS Estimation"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "8. Scaling Laws"
+category: "Scaling Laws"
+summary: "A rule of thumb for training compute: roughly six floating-point operations per parameter per token, so total compute is about 6 times parameters times tokens."
+image: "/cards/124_scaling.jpg"
+status: "done"
+related:
+  - "scaling-laws-overview"
+  - "chinchilla-optimal"
+  - "compute-optimal-training"
+---
+
+Scaling laws are written in terms of compute, so it helps to have a cheap way to
+turn a training plan into a compute number. The card gives the standard one: total
+training compute C is approximately 6 times the number of parameters N times the
+number of training tokens D. It is a rule of thumb, but a reliable one, accurate
+to within about ten percent for standard dense transformer training.
+
+The factor of 6 is the part worth understanding rather than memorizing. Each token
+passes through the model twice per training step, once forward to compute the loss
+and once backward to compute the gradient. A matrix multiply and its gradient cost
+roughly two floating-point operations per parameter per token, and the accounting
+comes out to about two operations for the forward pass and four for the backward
+pass, which is where the annotations 2 forward plus 4 backward come from. Six
+operations per parameter per token, multiplied across all parameters and all
+tokens, gives the total.
+
+The worked example fixes the scale. A 7-billion-parameter model trained on 1.4
+trillion tokens needs about 6 times 7e9 times 1.4e12, which is roughly 5.9 times
+10 to the 22 FLOPs. That is the kind of figure quoted in model reports, and the
+unit ladder on the card places it: 10 to the 15 is a petaFLOP, 10 to the 18 an
+exaFLOP, 10 to the 21 a zettaFLOP, with frontier runs sitting in the upper part of
+that range. The example run is a few hundred zettaFLOPs of total work.
+
+Two limits keep the estimate honest. The formula counts the arithmetic of the
+matrix multiplies and ignores overheads like attention on very long sequences,
+data movement, and hardware inefficiency, so real wall-clock cost is higher than
+the raw FLOP count implies. And the factor of 6 assumes a dense model where every
+parameter is used on every token; a mixture-of-experts model activates only a
+fraction of its parameters per token, so its training cost tracks the active
+count rather than the total. Within those bounds, C equals 6 times N times D is
+the workhorse that connects a model plan to the scaling curves.

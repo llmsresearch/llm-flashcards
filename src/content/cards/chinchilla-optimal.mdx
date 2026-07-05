@@ -1,0 +1,46 @@
+---
+seq: 95
+title: "Chinchilla Optimal"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "8. Scaling Laws"
+category: "Scaling Laws"
+summary: "For a fixed compute budget, loss is minimized when model size and token count scale together, roughly twenty training tokens per parameter."
+image: "/cards/119_scaling.jpg"
+status: "done"
+related:
+  - "compute-optimal-training"
+  - "overtrained-vs-undertrained"
+  - "flops-estimation"
+---
+
+The FLOPs formula says compute is parameters times tokens times six, which leaves
+a choice: for a fixed budget, you can spend it on a bigger model trained on less
+data, or a smaller model trained on more. Chinchilla answered which split
+minimizes loss. The finding on the card is that model size and token count should
+scale together, at a ratio of roughly twenty training tokens per parameter.
+
+The contour plot shows why there is a right answer. The concentric rings are lines
+of equal loss over the plane of parameters N against tokens D, and loss is lowest
+at the center. The compute-optimal frontier, the diagonal line, traces the best
+point for each compute budget, and it passes through the middle of the rings. The
+labeled point, Chinchilla at 70 billion parameters and 1.4 trillion tokens, sits
+on that line. The name comes from the model DeepMind trained to demonstrate the
+rule: at the same compute as the earlier 280-billion-parameter Gopher, a smaller
+model fed far more data reached lower loss.
+
+The two crossed-out points make the failure modes concrete. Gopher, at 280 billion
+parameters on 300 billion tokens, sits below the line, too few tokens for its
+size, a large model starved of data. The other cross sits above the line, a small
+model trained on more tokens than its size warrants. Both waste part of the
+budget relative to a model placed on the frontier. The rule of thumb at the bottom
+compresses it: tokens should be about twenty times parameters for a given compute
+budget. The caption states the lesson bluntly, bigger is not better if you cannot
+feed it enough tokens.
+
+One annotation on the card is important enough to carry forward: the rule breaks
+down at very large scale, and modern recipes train longer. Chinchilla answers a
+specific question, how to minimize training loss for a fixed training budget. It
+says nothing about the cost of running the model afterward, and once inference is
+in the picture the optimal shifts toward smaller models trained on far more than
+twenty tokens per parameter. The next two cards take up exactly that tension.

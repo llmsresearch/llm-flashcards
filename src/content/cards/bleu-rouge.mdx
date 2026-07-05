@@ -1,0 +1,41 @@
+---
+seq: 282
+title: "BLEU & ROUGE"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "Classic n-gram overlap metrics for translation and summarization. BLEU scores precision of candidate n-grams against a reference; ROUGE scores recall. Both are fast and automatic but blind to paraphrase."
+image: "/cards/141_evaluation.jpg"
+status: "done"
+related:
+  - "human-evaluation"
+  - "llm-as-a-judge"
+  - "perplexity-as-metric"
+---
+
+BLEU and ROUGE are the oldest automatic metrics still cited in NLP evaluation, and
+the card shows why they persist with two concrete panels. On the left, a translation
+example compares a reference sentence to a candidate. Matching n-grams are
+highlighted, and BLEU reports precision plus a brevity penalty. On the right, a
+summarization example pairs a reference summary with a candidate. ROUGE asks how
+much of the reference appears in the candidate, a recall-oriented view of overlap.
+
+The comparison box below spells out the asymmetry. BLEU asks how much of the
+candidate appears in the reference, which suits translation where extra words hurt.
+ROUGE asks how much of the reference appears in the candidate, which suits
+summarization where missing key facts hurts. Both reduce quality to shared n-gram
+counts, which makes them cheap to compute at scale.
+
+The blind spot is paraphrase. A candidate can be fluent and accurate while sharing
+few n-grams with the reference, and both metrics will score it low. The annotation
+on the card calls this out directly: low score with good output is common. That is
+why teams use BLEU and ROUGE to track trends across training runs or model versions,
+not to settle absolute quality judgments on their own.
+
+For LLM work, these metrics still appear in machine translation pipelines and
+summarization benchmarks, but they are a weak fit for open-ended generation where
+many valid wordings exist. The practical takeaway is to treat n-gram overlap as a
+noisy proxy. Use it when you need a reproducible automatic signal, and reach for
+human evaluation or LLM-as-a-judge when paraphrase and meaning matter more than
+surface overlap.

@@ -1,0 +1,36 @@
+---
+seq: 157
+title: "What is Quantization?"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization & Efficiency"
+summary: "Replaces continuous weight values with a small set of discrete levels. Drops memory and speeds up inference at a small accuracy cost."
+image: "/cards/133_quantization.jpg"
+status: "done"
+related:
+  - "fp32-vs-fp16-vs-bf16-vs-int8-vs-int4"
+  - "post-training-quantization-ptq"
+  - "mixed-precision"
+---
+
+A trained model stores billions of weights as floating-point numbers. Each value
+can land anywhere on a continuous number line. Quantization replaces that smooth
+range with a fixed set of discrete buckets.
+
+The card draws that change on two horizontal number lines. The top line is FP32:
+many scattered dots at irregular positions, each weight free to sit anywhere on
+the axis. The bottom line is INT4: the same dots mapped onto 16 evenly spaced
+ticks, with short arrows showing each weight rounded to its nearest bucket. The
+label notes that 2^4 gives only 16 representable values.
+
+The middle panel lists why this tradeoff is worth making. Four-bit weights need
+roughly eight times less storage than 32-bit weights, which lets larger models
+fit in the same VRAM and can speed up matrix math on integer-friendly hardware.
+The cost is approximation error: a weight that sat between two buckets gets
+snapped to one of them, and the network output shifts slightly.
+
+Quantization is inference-time compression. Training may still use full precision;
+deployment often cannot afford to keep every weight at 32 bits. The card's
+closing line states the core idea plainly: discrete weights approximate
+continuous ones, with savings that grow as the number of levels shrinks.

@@ -1,0 +1,49 @@
+---
+seq: 115
+title: "Overfitting in Fine-Tuning"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Fine-Tuning"
+summary: "Training loss keeps falling while validation loss bottoms out and then rises, the sign that the model is memorizing the fine-tune set instead of generalizing. Watch the validation curve, not the training curve."
+image: "/cards/60_finetuning.jpg"
+status: "done"
+related:
+  - "catastrophic-forgetting"
+  - "dropout-in-transformers"
+  - "full-fine-tuning-vs-peft"
+---
+
+Overfitting is the failure that hides inside a training run that looks like it is
+going well. The card plots two curves against epochs. The training loss keeps
+dropping the whole time. The validation loss follows it down at first, reaches a
+minimum, and then turns back up. The point where they part ways is the moment the
+model stops learning the task and starts memorizing the specific examples it was
+trained on.
+
+The reason the two curves diverge is the whole lesson. Training loss measures how
+well the model fits the data it is being updated on, so it can always be driven
+lower by memorizing that data more precisely. Validation loss measures
+performance on held-out examples the model never trains on, which is the thing we
+actually care about. Once the model begins fitting the noise and idiosyncrasies
+of the fine-tune set rather than its general structure, it keeps improving on the
+training set while getting worse on everything else. The card's annotation names
+this directly: train still drops, validation rises, that is overfitting. The
+takeaway line reinforces it, validation loss is the trustworthy signal, not
+training loss.
+
+Fine-tuning is especially exposed to this because the datasets are small compared
+to pretraining. A model has enough capacity to memorize a few thousand examples
+outright, and with limited data it can reach that point in only a few epochs, so
+the window before overfitting sets in is short. This is the same overfitting risk
+that made dropout worth reintroducing during fine-tuning even after large-scale
+pretraining had made it optional.
+
+The card lists three mitigations in rough order of impact. More diverse training
+data comes first, since giving the model more genuine variation makes memorizing
+harder and generalizing easier. Weight decay and dropout come next as
+regularizers that penalize over-precise fits. Early stopping or PEFT comes third:
+early stopping simply halts training at the validation minimum marked on the
+plot, and PEFT limits how much the model can memorize by restricting how many
+parameters can move at all. The next card turns from these fine-tuning failures
+to a heavier form of adaptation that reruns the pretraining objective itself.

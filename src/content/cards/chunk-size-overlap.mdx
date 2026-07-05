@@ -1,0 +1,48 @@
+---
+seq: 230
+title: "Chunk Size & Overlap"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Two knobs in chunking. Size controls how much context each chunk carries; overlap lets neighboring chunks share a sliver of text so an answer on a boundary is not lost."
+image: "/cards/86_rag.jpg"
+status: "done"
+related:
+  - "chunking"
+  - "top-k-retrieval"
+  - "context-stuffing"
+---
+
+Chunking splits documents into passages, but the split parameters are not
+obvious defaults. Chunk size and overlap are the two knobs that most affect
+retrieval quality, and the card shows the tradeoffs for each.
+
+The upper section compares three chunk sizes along a horizontal scale. Small
+chunks around one hundred tokens are precise: each vector represents a narrow
+topic, so similarity scores are focused. They can also be myopic, missing
+context that sits just outside the window. Medium chunks around five hundred
+tokens are the usual starting point for general documentation. Large chunks
+around two thousand tokens carry more surrounding context but produce vaguer
+vectors that match many queries weakly. The bracket above notes that the right
+size depends on document type and query style, and is typically found by trial
+on held-out questions.
+
+The lower section shows overlap between neighboring chunks. Chunk A and Chunk B
+share a hatched region containing the same sentences at their boundary. When an
+answer spans the line between two sections, overlap ensures that at least one
+chunk contains the full relevant passage. A common setting is ten to twenty
+percent of chunk size, enough to catch boundary straddling without nearly
+doubling index size.
+
+Size and overlap interact. Larger chunks need less overlap to preserve context
+because each chunk already carries more surrounding text. Smaller chunks benefit
+more from overlap because the risk of cutting an answer in half rises. Neither
+parameter has a universal optimum; both should be tuned against retrieval eval
+on representative queries.
+
+The practical takeaway is to treat chunk size as a precision-versus-context
+tradeoff and overlap as insurance against boundary splits. Start near five
+hundred tokens with modest overlap, measure recall on real questions, then
+adjust before investing in reranking or query rewriting to fix retrieval gaps
+that chunking caused.

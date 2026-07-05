@@ -1,0 +1,41 @@
+---
+seq: 302
+title: "Memorization vs Generalization"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "A spectrum from copying training strings verbatim to inferring patterns. Memorization risks leaking PII or copyrighted text. Generalization is the goal. Rare repeated phrases sit at the most-memorized end."
+image: "/cards/160_safety.jpg"
+status: "done"
+related:
+  - "data-contamination"
+  - "benchmark-contamination"
+  - "overfitting-in-fine-tuning"
+---
+
+Language models are trained to predict text, but the training goal is not to store
+text. The card contrasts two outputs from the same underlying idea. On the memorized
+side, the model regurgitates a unique training quote verbatim, including a rare
+edition marker. On the generalized side, it paraphrases the same scene with
+different wording. One behavior copies strings; the other extracts a pattern.
+
+Memorization sits on a spectrum, not a binary switch. The when box lists conditions
+that push toward copying. Rare phrases that appear many times in training are
+highest risk. Large models trained for many epochs retain more surface detail.
+Low-entropy template-like text, licenses, boilerplate, and repeated headers, is easy
+to echo. The annotation on the memorized panel names the deployment risk: PII leak
+and copyright exposure when verbatim spans leave the model.
+
+Generalization is what pretraining is for. The model should compress regularities
+into weights so it can produce novel sentences that follow learned structure. Exact
+memorization wastes capacity and creates extractable copies of private or protected
+content. Membership-inference probes and extraction attacks test how far a model sits
+toward the memorized end on specific strings.
+
+Mitigations are mostly upstream. Deduplicate training data so the same article does
+not appear ten times. Filter unique repeated strings that look like secrets or
+licensed prose. Evaluate with extraction prompts and loss-based membership tests
+after training. The card's closing line is the design target: learn patterns, not
+strings. Benchmark contamination and data contamination cards cover related leakage
+paths; this card names the per-example behavior those problems enable.

@@ -1,0 +1,44 @@
+---
+seq: 304
+title: "Data Contamination"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "Unwanted content in the training corpus: benchmark answers, personally identifying info, copyrighted material, near-duplicates. Each category carries different risks. All must be filtered before pretraining begins."
+image: "/cards/161_safety.jpg"
+status: "done"
+related:
+  - "benchmark-contamination"
+  - "memorization-vs-generalization"
+  - "pretraining"
+---
+
+Benchmark contamination is one slice of a larger problem. Data contamination is the
+umbrella: unwanted content that enters a pretraining corpus and shapes the model in
+ways you did not intend. The card draws a funnel with four labeled categories.
+Benchmark test answers inflate eval scores without capability gain. PII such as
+names, emails, and secrets creates painful deploy-time leaks. Copyrighted books and
+code create legal exposure. Near-duplicates of the same article waste compute and
+encourage memorization.
+
+Each category fails differently. PII is annotated as the most painful at deploy
+time because extraction attacks can surface it in completions. Near-duplicates are
+annotated as wasteful because they overweight a single source and push the model
+toward verbatim recall. Benchmark leakage is the eval integrity problem covered on
+the benchmark contamination card. Copyright sits between legal risk and memorization
+risk depending on what the model later emits.
+
+The mitigation pipeline runs before pretraining starts. Benchmark filtering with
+exact and near-match rules. PII detectors on crawled text. Copyright filters and
+opt-out lists aligned with publisher policies. MinHash-style deduplication to collapse
+near-identical documents. The annotation stresses timing: you cannot unbake a
+contaminated training run. Filters belong upstream, not as an afterthought once
+weights are baked.
+
+The card's closing line frames the design priority. The corpus is the model's diet,
+and quality matters more than quantity. A smaller clean corpus often beats a larger
+dirty one when the failure modes are leaks, lawsuits, or bogus leaderboard scores.
+Pair corpus hygiene with post-training probes for memorization and benchmark
+rephrase tests so contamination risks surface before release, not after users or
+auditors find them in the wild.

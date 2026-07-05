@@ -1,0 +1,41 @@
+---
+seq: 257
+title: "Reflexion"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "Reflexion adds a self-improvement loop: the agent attempts a task, receives a verdict, writes a reflection note, and retries with that note in context. Failed attempts become guidance for the next try."
+image: "/cards/102_agents.jpg"
+status: "done"
+related:
+  - "agent-loop"
+  - "error-handling"
+  - "planning-task-decomposition"
+---
+
+The card shows two attempts side by side. In the first, the agent tries the task and
+fails: a test does not pass, a tool returns an error, or an external checker marks the
+output wrong. Instead of starting from scratch, the agent writes a reflection, a short
+note to itself about what went wrong and what to try differently. In the second
+attempt, that note sits in context, and the agent succeeds by avoiding the earlier
+mistake. The hero is the loop: attempt, verdict, reflect, retry.
+
+Reflexion treats failure as data rather than as a dead end. The verdict can come from
+unit tests, a human label, a reward model, or a simple rule that checks the output
+format. The reflection step asks the model to articulate the gap between what it did
+and what was required. That text is cheap to generate and cheap to store, but it
+carries forward lessons that would otherwise disappear when you reset the conversation.
+
+Mechanically, this is still the same agent loop with an extra message type. After a
+failed attempt, the runtime appends the reflection to persistent state and either
+restarts the inner loop or continues within a step budget. The model does not update
+its weights; learning happens in context, across attempts within a session. That makes
+Reflexion a prompting and orchestration technique rather than a training method.
+
+The practical limit is how honest and specific the reflection is. Vague notes ("try
+harder") help little. Useful ones name the failed assumption, the wrong tool choice, or
+the misread observation. Pairing Reflexion with concrete verifiers, tests, lint output,
+or structured error messages, gives the reflection step something real to react to.
+Used that way, it is a lightweight way to squeeze more success out of a fixed model
+without fine-tuning.

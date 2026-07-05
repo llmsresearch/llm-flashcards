@@ -1,0 +1,44 @@
+---
+seq: 25
+title: "Query, Key, Value Vectors"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Each token's vector is projected through three learned matrices into a query, a key, and a value. Queries and keys decide where to look; values decide what gets passed along."
+image: "/cards/06_transformer.jpg"
+status: "done"
+related:
+  - "self-attention-mechanism"
+  - "scaled-dot-product-attention"
+  - "multi-head-attention"
+---
+
+The previous card leaned on "learned similarity" and "value vectors" without
+saying where they come from. This card is that source. Every token's hidden
+vector is turned into three separate vectors, and the three roles are the whole
+trick behind attention.
+
+The token's hidden vector, written h on the card, is multiplied by three learned
+matrices, W_Q, W_K, and W_V, producing a query Q, a key K, and a value V. These
+matrices are trained; the model discovers during training what each projection
+should extract. The card gives each vector a plain-language role. The query asks
+"what am I looking for?" The key answers "what do I represent?" The value carries
+"what info do I carry?"
+
+The way they combine is the part worth holding onto. A token's query is compared
+against every token's key by a dot product, and that comparison produces the
+attention weights, the same weights the self-attention card summed with. Then
+those weights are applied to the value vectors, and the weighted sum of values is
+the output. The card states it compactly: attention of Q and K gives weights via
+dot-product, and output equals weights times V.
+
+Splitting a token into three views is what lets attention separate two questions
+that would otherwise be tangled. Where should I look is answered by queries and
+keys. What should I take from the places I look is answered by values. A token can
+be a strong match to look at, through its key, while carrying different content to
+pass on, through its value.
+
+These three vectors feed straight into the exact formula on the next card, which
+puts the dot product, the scaling, the softmax, and the weighted sum together in
+one line.

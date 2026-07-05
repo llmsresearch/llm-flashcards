@@ -1,0 +1,44 @@
+---
+seq: 55
+title: "Mixture of Experts (MoE)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "5. Beyond the Standard Transformer"
+category: "Model Architectures"
+summary: "Replaces a single dense feed-forward network with many expert FFNs and a router that sends each token to only a few of them. This lets total parameter count grow large while per-token compute stays small."
+image: "/cards/127_architectures.jpg"
+status: "done"
+related:
+  - "feed-forward-network-ffn"
+  - "llama-architecture"
+  - "self-attention-mechanism"
+---
+
+The FFN card noted that the feed-forward network holds most of a transformer's
+parameters and most of its compute. Mixture of experts breaks the link between those
+two by making the parameters large while keeping the compute per token small.
+
+The diagram traces one token through the mechanism. Instead of a single FFN, the
+block has N experts, here eight, and a router, also called the gating network. The
+router reads the token and scores the experts, a softmax over experts as the
+annotation notes, then selects the top K, shown as two: E3 and E7. Only those two
+experts run. Their outputs are combined into a weighted sum using the router's
+scores, and that becomes the block's output. The other six experts sit idle for this
+token. A different token may route to a different pair.
+
+The left box is the whole point. Total parameters scale with the number of experts,
+which can be very large, but the activated parameters per token are only the K
+experts that fire. A model can therefore hold a large parameter count for capacity
+while each token pays for just a small slice of it. That is why MoE models advertise
+two numbers, total and active, that differ by a wide margin.
+
+The tradeoffs on the right are the reasons it is not universal. Load balancing is a
+real training problem: if the router favors a few experts, the rest never learn, so
+models add auxiliary losses to spread traffic across experts. Memory is the other
+cost. Every expert must sit in VRAM whether or not a given token uses it, so the
+savings are in compute, not in memory footprint. An MoE model needs the memory of its
+full parameter count even though it computes as if it were much smaller.
+
+The bottom line, replace one dense FFN with many sparse FFNs and a router, is the
+design in a sentence. It is the main way current frontier models push parameter
+counts far past what dense scaling alone would allow.

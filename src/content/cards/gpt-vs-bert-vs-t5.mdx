@@ -1,0 +1,47 @@
+---
+seq: 45
+title: "GPT vs BERT vs T5"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Model Architectures"
+summary: "Three foundational transformer recipes side by side. GPT is decoder-only and predicts the next token, BERT is encoder-only and fills in masked tokens, and T5 is encoder-decoder and treats every task as text-to-text."
+image: "/cards/125_architectures.jpg"
+status: "done"
+related:
+  - "decoder-only-models-gpt-style"
+  - "encoder-only-models-bert-style"
+  - "encoder-decoder-architecture"
+---
+
+The last three cards each covered one arrangement of transformer blocks. This card
+places all three together so the pattern behind them is visible: architecture is not
+chosen for its own sake, it follows from the training objective, which in turn
+follows from the intended use.
+
+The three columns line up the recipes. GPT is a stack of decoder blocks with causal
+attention, trained to predict the next token, a causal language model, and it is good
+at open-ended generation and chat. BERT is a stack of encoder blocks with
+bidirectional attention, trained to fill in masked tokens through masked language
+modeling, and it is good at classification and embeddings. T5 keeps both stacks, with
+cross-attention bridging them as the annotation notes, and is trained to fill in
+masked spans, called span corruption. Because its input and output are both text, T5
+can frame any task as text-to-text.
+
+The distinction worth holding onto is between the objectives. Next-token prediction
+needs a causal mask, which suits generation. Masked-token prediction wants to see
+both sides, which suits understanding. Span corruption sits between them, reading a
+corrupted input and writing the missing spans, which suits transforming one text into
+another. The architecture in each case is whatever makes its objective learnable.
+
+The family-by-use box reports where each recipe landed in practice: chat models are
+GPT-style decoder-only, dense retrievers are BERT-style encoder-only, and translation
+or summarization systems are T5-style encoder-decoder. These are tendencies rather
+than hard rules. Decoder-only models have grown capable enough that they now handle
+many tasks once reserved for the other two, which is part of why they dominate
+today's frontier systems.
+
+The bottom line is the sentence to carry out of this chapter: architecture follows
+the objective, and the objective follows the use case. With that, the transformer
+block and the three ways to wire it into a model are complete, and the next chapter
+turns to scaling attention itself.

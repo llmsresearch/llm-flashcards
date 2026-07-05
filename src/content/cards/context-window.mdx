@@ -1,0 +1,47 @@
+---
+seq: 46
+title: "Context Window"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "4. Scaling Attention: Longer & Cheaper"
+category: "Transformer Architecture"
+summary: "The maximum number of tokens a model can attend over in a single forward pass. It has grown by orders of magnitude across model generations, and extending it depends on position encodings that scale and on cheaper attention."
+image: "/cards/27_transformer.jpg"
+status: "done"
+related:
+  - "rope-rotary-position-embedding"
+  - "flash-attention"
+  - "kv-cache"
+---
+
+Everything so far has described a single forward pass without asking how long the
+input can be. The context window is that limit: the largest number of tokens the
+model can hold in view at one time. This chapter is about pushing that limit and
+paying for it.
+
+The bar traces how the limit has moved. GPT-2 era models sat near 2k tokens, the
+GPT-4 and Claude 2 generation reached the tens of thousands, and frontier 2024 and
+later models advertise up to a million, what the card calls book-length context. The
+annotation notes that most recent releases now move this knob, meaning context length
+has become one of the headline numbers a new model is judged on. The scale is
+logarithmic, so each labeled step is a large multiplicative jump, not a linear one.
+
+Two things make extension possible, listed on the left. Position encodings have to
+keep working at lengths never seen in training, which is why methods like RoPE and
+ALiBi matter here, both covered earlier. Attention has to stay affordable, which is
+where Flash Attention and sliding-window attention come in, both later in this
+chapter. Careful long-context training is the third piece: a model does not reliably
+use a long window just because the architecture permits it, it has to be trained on
+long inputs.
+
+The right box is honest about what long context costs. Attention is quadratic in
+sequence length without special techniques, so doubling the window quadruples the
+attention compute. The KV cache grows linearly with length, consuming memory that
+scales with every token kept. And the lost-in-the-middle effect means recall of
+information placed in the center of a long input degrades, so a large window does not
+guarantee the model actually attends well across all of it.
+
+That last point is worth keeping separate from the headline number. A one-million
+token window is a capacity, not a promise of uniform attention across it. The rest of
+this chapter covers the techniques that make long windows both possible and cheaper,
+starting with the KV cache.

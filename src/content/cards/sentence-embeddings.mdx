@@ -1,0 +1,48 @@
+---
+seq: 214
+title: "Sentence Embeddings"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "Embeddings"
+summary: "Aggregates per-token vectors into one fixed-length vector for a whole sentence. Common methods include mean pooling, the [CLS] token, or a dedicated sentence encoder trained for similarity."
+image: "/cards/40_embeddings.jpg"
+status: "done"
+related:
+  - "what-is-an-embedding"
+  - "cosine-similarity"
+  - "embedding-space"
+---
+
+Earlier cards showed how a single token maps to a vector. Retrieval and semantic
+search need a vector for an entire sentence or passage, not six separate token
+vectors. Sentence embeddings are the step that collapses many token-level
+vectors into one.
+
+The card draws a pipeline. A sentence sits at the top, flows down to a row of
+per-token vectors, one for each word, then branches into three pooling
+strategies. Mean pooling averages all token vectors. The [CLS] token approach
+takes the special classification token that BERT-style models prepend. A
+sentence encoder like SBERT is a model trained end to end so that similar
+sentences land close together. All three paths converge on a single output
+vector with fixed length regardless of how long the input sentence is.
+
+That fixed length matters for storage and search. A vector database expects
+every stored item to have the same dimensionality. Pooling, or a dedicated
+encoder, guarantees that a three-word query and a thirty-word document both
+produce vectors of the same size. Without this step, you cannot compare or
+index whole passages.
+
+The choice of pooling method affects retrieval quality. Mean pooling is simple
+and works well for many models. The [CLS] token carries a summary signal in
+encoder-only architectures. Dedicated sentence encoders are trained with
+contrastive or similarity objectives, so their vectors are tuned for nearest
+neighbor search rather than for downstream classification. In practice, teams
+often start with mean pooling on a general model and move to a retrieval-trained
+encoder when search quality falls short.
+
+The practical takeaway is that semantic search operates on sentence-level
+vectors, not token-level ones. Every document chunk and every query must pass
+through the same pooling or encoding step before it enters the vector store.
+The next cards in this chapter build the storage, search, and retrieval stack on
+top of that single-vector representation.

@@ -1,0 +1,43 @@
+---
+seq: 263
+title: "Multi-Agent Systems"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "18. Agents & Tools"
+category: "Agents & Tools"
+summary: "Multiple specialized agents coordinate on one task through a central orchestrator or direct peer messages. Common patterns include orchestrator-worker fan-out, sequential handoffs, and debate between agents with different roles."
+image: "/cards/103_agents.jpg"
+status: "done"
+related:
+  - "planning-task-decomposition"
+  - "what-is-an-llm-agent"
+  - "agent-loop"
+---
+
+The card shows several agents around a single task, connected through a central
+orchestrator or through direct messages between peers. Each agent has a narrow role:
+researcher, coder, reviewer, or domain specialist. The orchestrator assigns sub-tasks,
+collects results, and decides what happens next. Three small sub-diagrams sketch
+common patterns: one lead agent delegating to workers, a chain where output passes from
+agent to agent, and a group that argues or critiques before converging on an answer.
+
+The motivation is specialization and context isolation. One model trying to plan,
+implement, test, and document in a single thread accumulates noise and conflicting
+instructions. Splitting roles gives each agent a shorter prompt, clearer tools, and a
+smaller slice of the problem. A coding agent does not need the researcher's full web
+search history; it needs the spec. That separation also limits how far a mistake in
+one branch propagates.
+
+Coordination cost is the tradeoff. Every handoff adds latency, tokens, and opportunities
+for miscommunication. An orchestrator must serialize results, detect when a worker is
+stuck, and merge partial outputs into something coherent. Without explicit schemas for
+what each agent returns, synthesis becomes another fragile LLM call. Patterns that look
+elegant in a diagram can be expensive and brittle if sub-tasks are too fine-grained.
+
+Use multi-agent setups when the problem naturally factorizes and when parallel work
+saves wall-clock time, not when a single well-tooled loop would suffice. Orchestrator-worker
+fits independent sub-tasks like gathering sources in parallel. Sequential handoffs fit
+pipelines where each stage transforms the artifact. Debate or reviewer agents help when
+you want a second opinion on high-stakes output, at the price of extra model calls.
+The underlying building block is still one agent loop per participant; the system
+design is how those loops connect.

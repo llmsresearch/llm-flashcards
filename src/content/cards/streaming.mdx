@@ -1,0 +1,45 @@
+---
+seq: 322
+title: "Streaming"
+part: "XI. Shipping"
+partNumber: 11
+chapter: "23. APIs & Practical"
+category: "APIs & Practical"
+summary: "Streaming returns tokens over a server-sent-events channel instead of one final blob. Total wall-clock time is unchanged, but the client can render output as it arrives."
+image: "/cards/163_apis.jpg"
+status: "done"
+related:
+  - "latency-ttft-vs-tps"
+  - "autoregressive-generation"
+  - "latency-optimization"
+---
+
+The card splits a timing diagram into two halves. On the left, non-streaming mode
+shows a long flat wait and then the full response appearing at once. On the right,
+streaming mode shows small token pills arriving at regular intervals across the
+same overall duration. The labels make the contrast explicit: silence until done
+versus tokens arriving as generated.
+
+Mechanically, streaming does not skip work. The model still runs prefill over the
+prompt and then decodes output tokens one at a time. Total latency to the last
+token stays near t_full in both modes. What changes is when bytes reach the
+client. In non-streaming, nothing is visible until the server has finished. In
+streaming, the first token can appear at t_TTFT while decode continues.
+
+The API switch is a request flag, usually stream set to true. The response then
+uses server-sent events rather than a single JSON body. Chunks arrive as small
+JSON objects, often carrying a delta with the next text fragment and sometimes a
+finish_reason on the final event. The content type is text/event-stream, and the
+client must parse a sequence of partial updates rather than one parsed object.
+
+That difference is almost entirely about perceived speed. Users see progress
+immediately, which makes chat UIs feel responsive even when the model is still
+thinking or decoding. The card's bottom note states the point plainly: total
+latency is the same, streaming just hides it behind early tokens. Standard chat
+interfaces adopt streaming for that reason.
+
+For implementation, wire the client to append deltas as they land and to handle
+an abrupt end if the connection drops mid-stream. Measure TTFT separately from
+throughput after the first token. Streaming improves first paint; it does not by
+itself reduce the bill or shorten the full decode unless you also cap output or
+change the model.

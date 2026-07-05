@@ -1,0 +1,40 @@
+---
+seq: 292
+title: "LLM-as-a-Judge"
+part: "IX. Measuring"
+partNumber: 9
+chapter: "20. Evaluation & Benchmarks"
+category: "Evaluation & Benchmarks"
+summary: "A strong LLM scores other models' outputs against a written rubric. Much cheaper than human evaluation and useful for fast iteration, but carries biases around position, length, and style."
+image: "/cards/143_evaluation.jpg"
+status: "done"
+related:
+  - "human-evaluation"
+  - "chatbot-arena-elo"
+  - "preference-data"
+---
+
+Human evaluation is reliable but costly, so teams substitute a strong model as
+rater. The card shows the pipeline. Two candidate answers branch from the same
+prompt. A rubric pill defines what good means, for example correctness and clarity.
+A judge LLM reads both answers against the rubric and returns a structured verdict
+with a winner and a short reason.
+
+The rubric is what makes the setup more than vibes. Without it, the judge drifts
+toward its own preferences. With it, you get repeatable criteria you can tune across
+runs. A capable judge model is important: it needs enough reasoning depth to
+compare answers fairly. Weaker judges correlate poorly with humans and with each
+other, which limits how much trust you can place in the scores.
+
+The known biases box is the price of automation. Position bias favors whichever
+answer appears first. Length bias favors longer answers even when shorter ones are
+clearer. Self-preference favors outputs that match the judge's own style. LLM judges
+also inherit human rater biases at scale because they were trained on human text and
+often calibrated on human labels. Mitigations include swapping A and B order and
+averaging, using multiple judge prompts, and spot-checking against human ratings.
+
+The practical division of labor is stated in the footer note. LLM-as-a-judge is much
+cheaper than humans and works well for iteration during model development. It is a
+weak substitute for final release decisions where stakes and edge cases matter. Use
+it to rank checkpoints quickly, log regressions, and filter candidates for human
+review, but do not treat a single judge score as proof of user-facing quality.

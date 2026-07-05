@@ -1,0 +1,53 @@
+---
+seq: 1
+title: "What is Tokenization?"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "Tokenization splits raw text into integer IDs from a fixed vocabulary. Common words map to a single token, rare words break into subword pieces."
+image: "/cards/28_tokenization.jpg"
+status: "done"
+related:
+  - "language-modeling-objective"
+---
+
+A model never sees your text. It sees numbers. Tokenization is the step that
+turns a string into the sequence of integers the network actually reads, and
+every other part of an LLM sits downstream of the choices made here.
+
+The vocabulary is fixed before training starts. It is a list of maybe thirty to
+two hundred thousand pieces, each with an integer ID. Frequent words like "the"
+usually earn a slot of their own. Rarer words get assembled from smaller pieces
+the tokenizer already knows, which is why "unbelievable" can come back as `un`
+plus `believable`. Nothing is ever truly out of vocabulary, because in the worst
+case a word decomposes all the way down to single characters.
+
+## Why subwords, and not just words
+
+The card frames this as a compromise, and it is worth sitting with why. A
+character vocabulary is tiny and can spell anything, but a single character
+carries almost no meaning and sequences become very long. A word vocabulary is
+the opposite: each token is meaningful, but the list can never be complete, and
+the first genuinely new word breaks it. Subwords land in between. They keep
+sequences short enough to be practical while still handling names, typos, and
+words that did not exist when the tokenizer was built.
+
+## Where it leaks into everything else
+
+Because the model reasons over tokens rather than letters, some tasks that look
+trivial to us are genuinely hard for it. Counting the letters in a word, or
+reversing a string, runs against the grain of a system that only sees `un` and
+`believable`. A space is often part of the token that follows it, so `transform`
+at the start of a sentence and ` transform` mid-sentence can be different IDs
+entirely.
+
+Tokenization also decides what you pay for. Pricing and context limits are
+counted in tokens, not words, and the ratio is not fixed: dense English runs
+around three-quarters of a word per token, while code, rare names, and other
+languages can cost far more. Two prompts that look the same length to you can
+differ by a wide margin once they are tokenized.
+
+Every model ships its own tokenizer, and the IDs are not portable between them.
+Once the text is a list of integers, the next question is what the model is
+actually trained to do with them.

@@ -1,0 +1,50 @@
+---
+seq: 124
+title: "DPO (Direct Preference Optimization)"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "Trains the policy directly on chosen-versus-rejected pairs with a closed-form loss derived from the Bradley-Terry model, skipping the separate reward model and the RL loop. Simpler and more stable, often as good as PPO."
+image: "/cards/68_rlhf.jpg"
+status: "done"
+related:
+  - "ppo-in-rlhf"
+  - "reward-model"
+  - "bradley-terry-model"
+---
+
+DPO is the answer to a natural question about the PPO pipeline: if the reward model is
+only a proxy fitted to preference pairs, and the policy is what we actually want, can
+we train the policy on the pairs directly and drop the machinery in between? DPO shows
+that you can. The card puts the two recipes side by side. PPO-style RLHF is three
+stages: an SFT model, a trained reward model, then PPO optimizing against that reward.
+DPO is two: an SFT model, then a single loss applied straight to the preference pairs.
+The reward model and the reinforcement learning loop both disappear.
+
+The loss on the card is what makes the shortcut work. It is the negative log sigmoid
+of a difference of two terms. The first term is beta times the log-ratio of the
+policy's probability of the chosen response to the reference's probability of it; the
+second is the same log-ratio for the rejected response. Training pushes the chosen
+response's ratio up and the rejected response's ratio down, which the annotations
+label directly. The shape is the Bradley-Terry likelihood again, the same form the
+reward model used, but the score being fit is no longer a separate network's output.
+It is the policy's own log-probability relative to the reference.
+
+That substitution is the insight the caption states: there is no separate reward
+model because the policy is the reward. The derivation behind DPO shows that the
+optimal RLHF policy can be written in closed form in terms of the reward, and that
+relationship can be inverted so the reward is expressed through the policy. Plugging
+that into the Bradley-Terry objective yields a loss over policy probabilities alone,
+with the reference model held frozen the same way PPO froze it. The KL constraint has
+not vanished; it is folded into the log-ratios and controlled by beta, so DPO still
+keeps the policy anchored to the SFT baseline, just without a separate penalty term.
+
+The practical result is fewer moving parts. One extra training stage instead of two,
+no reward model to train and store, no four-model RL loop to stabilize, and a
+supervised-style loss that behaves more predictably than PPO's noisy updates. The
+card's closing line, simpler and more stable and often as good as PPO, is the
+measured claim the evidence supports. DPO is not universally better; PPO can still
+edge ahead when a high-quality reward model generalizes past the fixed preference set.
+But for many alignment jobs DPO reaches comparable quality at a fraction of the
+engineering cost, which is why it spread quickly once it appeared.

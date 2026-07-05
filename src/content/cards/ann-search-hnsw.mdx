@@ -1,0 +1,48 @@
+---
+seq: 223
+title: "ANN Search (HNSW)"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "Embeddings"
+summary: "Approximate nearest neighbor search trades exact results for speed. HNSW builds a multi-layer graph so queries descend from a sparse top layer to a dense bottom layer, hopping to closer neighbors at each step."
+image: "/cards/42_embeddings.jpg"
+status: "done"
+related:
+  - "vector-database"
+  - "cosine-similarity"
+  - "embedding-space"
+---
+
+A vector database may hold billions of embeddings. Comparing the query against
+every stored vector on each request is exact but slow, scaling linearly with
+corpus size. Approximate nearest neighbor search accepts a small accuracy
+tradeoff in exchange for query times that stay practical at scale.
+
+The card shows HNSW, Hierarchical Navigable Small World, one of the most widely
+used ANN algorithms. Three horizontal layers form a stack. The top layer is
+sparse, with only a few nodes and long-range links. The bottom layer is dense,
+with every vector present and many local connections. A query enters at the top,
+lands on a nearby node, then descends layer by layer, moving to closer neighbors
+at each step until it reaches the bottom layer and finds an approximate nearest
+neighbor.
+
+The navigation path is the key idea. Instead of scanning the full corpus, the
+query hops through a graph structure that was built at index time. Long links
+at the top layers provide coarse jumps across the space. Short links at the
+bottom layers refine the position. The result is not guaranteed to be the true
+nearest neighbor, but it is usually close enough for retrieval, where ranking
+roughly correct passages matters more than finding the mathematically optimal
+one.
+
+The complexity comparison at the bottom states the gain plainly. Brute force
+search costs O(N) per query, one comparison per stored vector. HNSW typically
+costs around O(log N), with the exact constant depending on graph parameters
+like how many neighbors each node links to and how many layers the index has.
+That difference is what makes billion-vector indexes feasible.
+
+The practical takeaway is that your vector database almost certainly uses an
+ANN algorithm like HNSW under the hood, not exhaustive search. Tune recall
+versus latency through index parameters, and validate retrieval quality on
+your own queries rather than assuming exact nearest-neighbor guarantees. For
+most RAG systems, approximate search is the right default.

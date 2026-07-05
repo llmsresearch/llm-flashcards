@@ -1,0 +1,38 @@
+---
+seq: 10
+title: "Tokens per Dollar"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "APIs bill by token, not by word or character, so the same meaning can cost very different amounts across languages and formats."
+image: "/cards/34_tokenization.jpg"
+status: "done"
+related:
+  - "vocabulary-size-tradeoffs"
+  - "tokenization-artifacts"
+---
+
+Once you know a tokenizer splits text unevenly, the billing consequence follows
+directly: providers charge per token, so the cost of a request depends on how the
+tokenizer happens to cut your specific text, not on how much you meant to say.
+
+The card lines up three inputs of roughly equal meaning. "hello world" in English
+is two tokens. The same greeting in Chinese is eight. A short line of code is
+four. The words carry the same information, but the token counts, and therefore
+the prices, are several times apart. The reason is the one from the vocabulary
+cards: tokenizers are trained mostly on English-heavy text, so English gets long,
+efficient tokens while other scripts fall back to many small pieces.
+
+The takeaway box makes the asymmetry concrete. At a fixed price per million
+tokens, Chinese runs around four times the cost of English for the same content.
+That is not a surcharge anyone set deliberately. It is a side effect of where the
+tokenizer's merges were learned, and it lands on exactly the users whose language
+was underrepresented in training.
+
+The practical habit this should leave you with is to budget in tokens, not words
+or characters. A document that looks short can be expensive if it is in a script
+the tokenizer handles poorly, or full of unusual formatting, or heavy with
+numbers that fragment. When you estimate cost or fit something into a context
+limit, count the tokens the actual tokenizer produces rather than trusting the
+visible length.

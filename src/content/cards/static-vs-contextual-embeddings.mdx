@@ -1,0 +1,42 @@
+---
+seq: 16
+title: "Static vs Contextual Embeddings"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "2. Embeddings: Tokens into Meaning"
+category: "Embeddings"
+summary: "Static embeddings give a word one fixed vector. Contextual embeddings, produced by transformers, give the same word a different vector depending on the sentence around it."
+image: "/cards/37_embeddings.jpg"
+status: "done"
+related:
+  - "what-is-an-embedding"
+  - "what-is-a-transformer"
+---
+
+Everything so far quietly assumed a word has one vector. That is true for the
+first generation of embeddings and false for the models this course is really
+about. The card draws the split.
+
+The top half is static embeddings, the word2vec and GloVe era. Each word gets one
+fixed vector, decided during training and then frozen. The trouble is words with
+more than one sense. The card uses "bank": the river bank and the money bank both
+map to the same vector, so the two meanings are averaged into one blurry point.
+The representation cannot tell them apart, because it was built before the
+sentence was known.
+
+The bottom half is contextual embeddings, produced by transformers like BERT and
+GPT. Here the vector for a word is computed after reading the sentence, so "bank"
+in "I sat by the river bank" gets a different vector from "bank" in "I deposited
+cash at the bank". Same word, different vectors, because the surrounding words
+shaped each one. The representation is no longer a fixed property of the word but
+an output that depends on context.
+
+That shift is the hinge of the whole field. Once a model can assign meaning per
+occurrence rather than per word, it can handle ambiguity, track what a pronoun
+refers to, and let a word's sense bend to its sentence. The line at the bottom
+states the mechanism plainly: transformers produce one vector per token per
+position. Every token comes out carrying not just its own identity but a reading
+of where it sits.
+
+The natural question is how the sentence gets mixed into each vector. That is
+exactly what attention does, and it is where the next part of the course begins.

@@ -1,0 +1,43 @@
+---
+seq: 33
+title: "Feed-Forward Network (FFN) in Transformers"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "A two-layer MLP applied independently at each position. It expands to a wider hidden size, applies a non-linearity, then projects back, and holds most of a transformer's parameters."
+image: "/cards/14_transformer.jpg"
+status: "done"
+related:
+  - "self-attention-mechanism"
+  - "swiglu-activation"
+  - "layer-normalization"
+---
+
+A transformer block is attention followed by a feed-forward network. The
+attention cards covered the first half; this card is the second, and despite being
+simpler it holds the bulk of the model's parameters.
+
+The FFN is a two-layer MLP with a clear shape. A linear layer expands the vector
+from d_model to four times that width, a non-linearity such as GELU or ReLU is
+applied, and a second linear layer projects back down to d_model. Input and output
+have the same width, so the block stacks cleanly. The one property to hold onto is
+in the annotation: it is applied independently at each position. Attention is
+where tokens exchange information; the FFN never looks sideways, it transforms
+each position's vector on its own.
+
+That division of labor is the mental model the bottom line offers: mix by
+attention, then think per position, with the FFN as the thinking step. Attention
+gathers context into each token's vector, and the FFN then does nonlinear
+processing on that enriched vector, one position at a time.
+
+The parameter fact is the reason this modest layer matters so much. The card notes
+roughly two thirds of a transformer's parameters live in the FFNs versus about one
+third in attention, and it is the dominant consumer of compute and memory. The 4x
+expansion is why: those two wide matrices are large. When people discuss shrinking
+or speeding up models, the FFN is often the first target precisely because that is
+where the weight sits.
+
+The FFN also became a place to innovate. The next card, SwiGLU, replaces the plain
+expand-activate-project design with a gated variant that most modern open models
+now use.

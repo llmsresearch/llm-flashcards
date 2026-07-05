@@ -1,0 +1,45 @@
+---
+seq: 49
+title: "Multi-Query Attention (MQA)"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "4. Scaling Attention: Longer & Cheaper"
+category: "Model Architectures"
+summary: "The extreme end of key-value sharing: one key and value projection serves every query head. It gives the smallest possible KV cache, which speeds up decoding, but can cost quality on smaller models."
+image: "/cards/131_architectures.jpg"
+status: "done"
+related:
+  - "grouped-query-attention"
+  - "multi-head-attention"
+  - "kv-cache"
+---
+
+Grouped-query attention shrinks the KV cache by giving each group of query heads a
+shared key and value head. Multi-query attention takes that idea as far as it goes:
+all query heads share a single K and V projection.
+
+The three panels place the variants on one axis. Multi-head attention has eight K/V
+heads for eight query heads, one per query. Grouped-query with four groups has four
+K/V heads, two queries each. Multi-query has a single K/V head that all eight queries
+attend to, eight Q per K/V. The heading captures the progression: same number of
+query heads throughout, fewer key and value heads moving to the right, with
+multi-query giving the cheapest KV cache.
+
+The table quantifies it. KV cache size scales with the number of K/V heads, so
+multi-head needs eight times sequence length times the per-head dimension,
+grouped-query with four groups needs four times, and multi-query needs one times,
+the smallest. The annotation notes multi-query uses eight times less KV cache than
+multi-head in this eight-head example. Since the KV cache is a major memory
+consumer during long-context decoding, that reduction directly enables longer
+sequences and higher throughput.
+
+The tradeoff is stated plainly at the bottom: multi-query shrinks KV memory the
+most, but can hurt quality on small models. With only one key-value head, every query
+head must match against the same keys and mix the same values, which limits how
+differently the heads can behave. Large models have enough capacity elsewhere to
+absorb this, but smaller ones can lose measurable quality, which is why grouped-query
+attention became the common compromise.
+
+The closing note, that multi-head, grouped-query, and multi-query are points on the
+same axis, is the right way to hold all three. The choice is not categorical; it is
+where on the memory-versus-quality line a given model decides to sit.

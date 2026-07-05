@@ -1,0 +1,45 @@
+---
+seq: 54
+title: "LLaMA Architecture"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "5. Beyond the Standard Transformer"
+category: "Model Architectures"
+summary: "The decoder-only design used by LLaMA and most modern open-weight models. It keeps the standard transformer skeleton and swaps in four upgrades: RMSNorm with pre-norm, RoPE positions, grouped-query attention, and a SwiGLU feed-forward network."
+image: "/cards/126_architectures.jpg"
+status: "done"
+related:
+  - "rmsnorm"
+  - "rope-rotary-position-embedding"
+  - "grouped-query-attention"
+---
+
+Several earlier cards introduced components as improvements over the original design:
+RMSNorm, pre-norm placement, RoPE, grouped-query attention, and the SwiGLU
+feed-forward network. This card is where they come together. LLaMA is not a new
+architecture so much as the standard decoder-only transformer with each of those
+swaps applied at once.
+
+The block diagram shows the assembled result. The skeleton is the same as any
+transformer block: normalize, attend, normalize, feed-forward, with a residual around
+it. What differs is the specific choice at each slot. Normalization is RMSNorm placed
+before each sublayer, the pre-norm arrangement. Attention uses RoPE for positions and
+grouped-query attention to shrink the KV cache. The feed-forward network uses SwiGLU.
+The annotation adds one detail not covered separately: no bias terms anywhere, a
+small simplification that modern models adopt because the biases contribute little.
+
+The comparison table is the clearest summary of the deltas. Vanilla transformer
+against LLaMA, row by row: LayerNorm post-norm becomes RMSNorm pre-norm, learned
+position embeddings become RoPE, multi-head attention becomes grouped-query
+attention, and a ReLU or GELU feed-forward network becomes SwiGLU. Each row is a
+change this course already explained on its own; the table just collects them.
+
+The framing worth keeping is the bottom line: same skeleton as a transformer, four
+upgraded parts inside. None of these changes alters what a transformer fundamentally
+does. They are refinements that improve training stability, length handling, memory
+use, and quality, each validated separately and then combined.
+
+The reason this configuration matters is stated at the top: it is what LLaMA and most
+modern open-weight models use. When you load a recent open model, this is very likely
+the block you are running, which makes it the concrete reference point for the rest of
+the course.

@@ -1,0 +1,44 @@
+---
+seq: 273
+title: "CLIP"
+part: "VIII. Beyond Text"
+partNumber: 8
+chapter: "19. Multimodal"
+category: "Advanced Concepts"
+summary: "CLIP trains separate image and text encoders with contrastive learning so matched pairs land close in a shared embedding space and mismatched pairs are pushed apart. The result is a joint space for retrieval and zero-shot classification."
+image: "/cards/169_advanced.jpg"
+status: "done"
+related:
+  - "multimodal-llms"
+  - "cosine-similarity"
+  - "what-is-an-embedding"
+---
+
+The card shows two parallel branches. An image passes through a vision encoder, typically
+a ViT, and becomes an image embedding. A caption passes through a text encoder, a
+transformer, and becomes a text embedding. A cosine similarity score sits between them.
+Below, a small matrix visualizes contrastive training: diagonal cells (matched pairs)
+are pulled together, off-diagonal cells (mismatched pairs) are pushed apart. The closing
+line states the outcome: image and text in the same space, learned by contrastive
+training.
+
+CLIP does not generate captions or answer questions directly. It aligns representations.
+During training, the model sees many (image, text) pairs drawn from the web and learns
+to raise similarity on true pairs and lower it on pairs crossed within a batch. No
+classification labels are required for each image; the caption is the supervision. That
+scale of weakly paired data is what makes the embedding space general enough for
+downstream tasks the model was never explicitly trained on.
+
+Zero-shot image classification is the familiar demo. At inference time, you embed an
+image once, embed a handful of candidate text prompts ("a photo of a dog," "a photo of
+a cat," ...), and pick the highest cosine similarity. No fine-tuning step is needed for
+those candidates because the space already aligns language and vision. The same geometry
+supports text-to-image retrieval, image search by natural language, and ranking content
+by semantic nearness.
+
+Many multimodal LLMs reuse CLIP-style or ViT-family encoders, sometimes initialized
+from CLIP weights, as the front end that produces visual tokens or features for the
+language model. The multimodal LLM card shows what happens after encoding; CLIP shows
+how a shared image-text space is learned in the first place. Cosine similarity in that
+shared space is the scoring function that makes retrieval and zero-shot selection work,
+which is why the embedding geometry matters as much as the encoder architecture.

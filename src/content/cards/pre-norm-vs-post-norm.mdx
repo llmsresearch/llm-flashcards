@@ -1,0 +1,45 @@
+---
+seq: 37
+title: "Pre-Norm vs Post-Norm"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Two placements of normalization in a transformer block. Post-norm normalizes after the residual add, as in the original design; pre-norm normalizes before the sublayer and trains more stably at depth, which made it the modern default."
+image: "/cards/16_transformer.jpg"
+status: "done"
+related:
+  - "layer-normalization"
+  - "residual-connections"
+  - "rmsnorm"
+---
+
+The previous cards covered what normalization does and a cheaper way to do it. This
+one is about where it goes. The pieces of a block are the same either way; the order
+in which normalization, the sublayer, and the residual add are wired together is the
+whole question, and the card's closing line is right that the order matters a lot.
+
+The two diagrams show the split. In post-norm, the original 2017 design, the input
+goes through the sublayer, the residual adds the input back, and normalization comes
+last, after the add. In pre-norm, normalization comes first: the input is normalized,
+then passed to the sublayer, and the residual adds the untouched input back at the
+end. The label captures it in four words on each side, LN after residual versus LN
+before sublayer.
+
+Why the placement matters comes down to the residual path. In pre-norm, the shortcut
+from input to output carries the signal without any normalization sitting on it, so
+gradients flow back through the stack cleanly. In post-norm, normalization sits on
+that path, and across many layers this makes very deep models harder to train
+without extra care such as learning-rate warmup or careful initialization. The card
+states the tradeoff plainly: post-norm is harder to train deep, pre-norm gives
+stable gradients and is much easier to scale.
+
+That is a genuine tradeoff rather than a free win. Post-norm can reach slightly
+better final quality at moderate depth when it does train, which is part of why the
+original transformer used it. As models grew deeper, the training stability of
+pre-norm mattered more than that margin, and the field moved.
+
+The annotation records where things landed: modern LLMs such as GPT, LLaMA, and
+Mistral use pre-norm, and the note calls it the de facto standard today. Pair that
+placement with RMSNorm as the normalization itself and you have the configuration
+most current open models ship with.

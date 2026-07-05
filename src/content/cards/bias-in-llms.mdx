@@ -1,0 +1,42 @@
+---
+seq: 300
+title: "Bias in LLMs"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "Models inherit biases from their training corpus and can amplify them. Visible in gendered pronoun defaults, stereotyped associations, and skewed completions. Mitigated by data balancing, RLHF, and bias-specific evaluations."
+image: "/cards/157_safety.jpg"
+status: "done"
+related:
+  - "preference-data"
+  - "rlhf-overview"
+  - "sycophancy"
+---
+
+Bias in language models is not a single bug with a single fix. The card opens with a
+small completion test. Given CEO walked into the room, the model continues with He.
+Given nurse walked into the room, it continues with She. The job titles are neutral;
+the pronoun defaults are not. Same structure, different demographic skew, which is
+how bias often appears in practice: not as an explicit rule, but as a statistical
+tilt in otherwise ordinary text.
+
+The pipeline below traces where that tilt enters. Training data reflects societal
+patterns in web text. The model learns those patterns and may amplify or dampen
+them depending on architecture and training dynamics. The biased output then feeds
+future corpora if scraped back into training, which closes a feedback loop the card
+labels as bias amplification over time.
+
+Mitigation spans data, tuning, and measurement. Filter and rebalance training data
+where feasible. Use RLHF preference labels that mark stereotyped completions as
+undesirable. Run bias benchmarks such as BBQ and StereoSet to track regressions
+across model versions. None of these steps removes bias entirely, but they make skew
+visible and give teams a lever when releases must meet policy thresholds.
+
+The caption states the root cause without drama: the model reflects its training
+data, and the training data reflects the world. That is why bias evaluation belongs
+alongside capability benchmarks. A model can score well on MMLU while still
+defaulting to skewed pronouns or stereotyped associations on open-ended prompts.
+Measure on targeted probes, document known failure modes, and treat bias reduction
+as an ongoing process tied to data choices and preference data, not a one-time
+filter.

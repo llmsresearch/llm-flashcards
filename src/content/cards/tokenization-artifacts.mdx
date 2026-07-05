@@ -1,0 +1,42 @@
+---
+seq: 9
+title: "Tokenization Artifacts"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "Because models see tokens rather than letters, some tasks fail in surprising ways: letter counting, arithmetic, and sensitivity to a leading space."
+image: "/cards/35_tokenization.jpg"
+status: "done"
+related:
+  - "what-is-tokenization"
+  - "tokens-per-dollar"
+---
+
+Most of the odd, viral failures of language models trace back to one fact from
+the very first card: the model reads tokens, not characters. The card collects
+three cases where that gap becomes visible.
+
+The first is the letter-counting question that keeps going wrong. Ask how many
+r's are in "strawberry" and the model often miscounts, because it never sees the
+letters. To it, "strawberry" is two tokens, `straw` and `berry`, and the
+individual characters inside those tokens are not something it has direct access
+to. Counting letters asks it to look at a level it does not operate on.
+
+The second is leading-space sensitivity. The card shows "hello" and " hello"
+mapping to two completely different token IDs. A word at the start of a line and
+the same word after a space are, to the model, different inputs, and can lead to
+different continuations. This surprises people because the two look identical on
+screen. The space is quietly part of the token.
+
+The third is arithmetic. "380 + 17" might tokenize cleanly, or it might split as
+`3`, `80`, `1`, `7` depending on the surrounding text. Numbers do not have stable
+token boundaries, so the digits the model needs to add are not laid out
+consistently. Inconsistent splits make reliable place-value arithmetic hard,
+which is part of why models reach for tools when the math has to be exact.
+
+None of these are bugs in a particular model. They are consequences of the
+representation, so they tend to appear across models and improve slowly. Knowing
+the cause is the useful part: when a model fumbles spelling, counting, or digits,
+the tokenizer is usually the reason, and the fix is to change the task rather than
+scold the model.

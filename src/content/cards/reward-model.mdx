@@ -1,0 +1,47 @@
+---
+seq: 119
+title: "Reward Model"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "10. RLHF, Preferences & RL"
+category: "RLHF & Alignment"
+summary: "A separate model that reads a prompt-response pair and returns one scalar reward. Trained on preference pairs so the chosen response scores above the rejected one, it becomes a learned stand-in for human judgment."
+image: "/cards/64_rlhf.jpg"
+status: "done"
+related:
+  - "preference-data"
+  - "bradley-terry-model"
+  - "ppo-in-rlhf"
+---
+
+The reward model is the piece that lets reinforcement learning grade responses no
+human has looked at. The card draws it as a familiar transformer, usually a copy of
+the SFT model, with the language modeling head swapped for a one-dimensional output.
+A prompt and a response go in; a single number comes out. That number is the model's
+estimate of how much a person would prefer this response, and it is the only signal
+stage three of RLHF gets to optimize against.
+
+Replacing the head is a small architectural change with a large consequence. The
+usual head produces a distribution over the vocabulary, one score per possible next
+token. Here it produces one scalar for the whole sequence, read off the final
+position. The body of the network is left intact and warm-started from the SFT model,
+so the reward model already understands language before it ever sees a preference
+label. Training only has to teach it to compress that understanding into a single
+quality number, which is why a copy of the SFT model is the natural starting point.
+
+The training objective on the card is where the preference data from the previous
+card turns into a score. The loss is the negative log of a sigmoid applied to the
+reward of the chosen response minus the reward of the rejected one. Read plainly, it
+pushes the chosen score above the rejected score, and the sigmoid means the loss
+keeps caring until the gap is comfortably positive rather than merely nonzero. This
+is the Bradley-Terry form spelled out in full on the next card; here it is enough to
+see that the model never predicts an absolute quality, only the direction of each
+comparison, and the scalar emerges from fitting many of them at once.
+
+The worked example makes the payoff concrete. Response A scores 1.8, response B
+scores negative 0.4, and the higher number wins, so A is judged the better answer.
+The caption's framing, that the reward model is a learned proxy for human
+preference, is the honest description and also the warning. It is a proxy, not the
+thing itself, so a policy that optimizes it too aggressively can climb the proxy's
+score while drifting away from what people actually wanted. That gap is exactly what
+the KL penalty later in the chapter exists to contain.

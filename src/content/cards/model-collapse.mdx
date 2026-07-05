@@ -1,0 +1,39 @@
+---
+seq: 303
+title: "Model Collapse"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "When models train mostly on prior models' outputs, each generation loses tail diversity. The distribution narrows toward the most common patterns. Mitigated by always blending in fresh human data."
+image: "/cards/159_safety.jpg"
+status: "done"
+related:
+  - "synthetic-data-generation"
+  - "memorization-vs-generalization"
+  - "data-contamination"
+---
+
+Model collapse is what happens when training data stops looking like the open web and
+starts looking like last year's model outputs. The card shows four histograms in a
+row. Generation zero is human text with a wide, lumpy distribution and a long tail.
+Each later generation trains on the previous model's outputs. By generation five the
+distribution is a single narrow peak. The tail is gone. Diversity collapses.
+
+The mechanism is sampling bias compounded over rounds. Rare patterns appear less
+often in model-generated corpora than in human text. Retraining reweights toward
+common modes. Errors and omissions from one generation become the dominant signal
+for the next. Without fresh ground-truth human data, the process is hard to reverse
+because each round bakes in the previous round's shrinkage.
+
+This matters for teams considering synthetic data loops. Generating training text
+with your own model and feeding it back can cheaply scale data, but it also shifts
+the corpus toward the model's existing blind spots. Tail concepts, minority phrasings,
+and edge cases thin out. Output becomes more uniform even as loss may look stable.
+
+Mitigations are straightforward in principle and hard in practice. Keep a steady
+stream of fresh human-written data in the mix. Detect and exclude AI-generated text
+from crawls when building new pretraining sets. Treat collapse risk as a reason to
+audit synthetic pipelines, not as a reason to avoid them entirely. The card's tagline
+states the intuition: feed models their own output long enough and the world in the
+weights gets smaller.

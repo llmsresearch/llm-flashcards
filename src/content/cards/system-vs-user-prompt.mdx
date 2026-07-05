@@ -1,0 +1,44 @@
+---
+seq: 169
+title: "System vs User Prompt"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "13. Prompting"
+category: "Prompting"
+summary: "Chat APIs split input into roles. The system message sets persona and rules, the user message carries the request, and the assistant role holds prior replies. System instructions set default behavior, though later user or injected text can still override them in practice."
+image: "/cards/73_prompting.jpg"
+status: "done"
+related:
+  - "role-prompting"
+  - "instruction-hierarchy"
+  - "prompt-injection"
+---
+
+The card shows a single conversation as three stacked message bubbles labeled
+system, user, and assistant. The system bubble carries developer-set instructions
+that the end user never sees. The user bubble holds the actual question. The
+assistant bubble is the model reply, shaped by both. A small priority badge beside
+the stack notes that system instructions set default behavior, and a line below
+lists the message array the API actually sends.
+
+That role split is how modern chat endpoints structure every request. The system
+role is where you place persona, safety rules, output format, and tool-use policy.
+The user role is the live task. The assistant role replays prior model turns so
+the model can continue a thread. Nothing in the architecture hard-blocks a later
+user message from contradicting an earlier system rule; the model weighs all
+tokens in context and may follow whichever instruction seems most salient at
+decode time.
+
+The practical takeaway is to treat the system prompt as persistent configuration
+and the user prompt as variable input. Put stable constraints in system. Put the
+task in user. If a rule must hold even when user text pushes back, you need more
+than wording alone: output validation, tool permissions, retrieval boundaries,
+and the instruction hierarchy patterns covered on later cards. The card's closing
+line captures the default: system shapes behavior, user gives the task, and
+override remains possible without additional guards.
+
+For API design, keep the system message short and explicit. Long system prompts
+consume context budget and can dilute individual rules. For products where users
+can edit prompts, assume they will test boundaries and design downstream checks
+accordingly. The three-role layout is not decorative; it is the contract between
+your application and the model on every call.

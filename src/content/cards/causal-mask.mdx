@@ -1,0 +1,42 @@
+---
+seq: 30
+title: "Causal Mask"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "3. The Transformer Block"
+category: "Transformer Architecture"
+summary: "Blocks each token from attending to future positions by setting those attention scores to negative infinity before softmax, so a decoder-only model can train on all positions at once without seeing the answer."
+image: "/cards/19_transformer.jpg"
+status: "done"
+related:
+  - "scaled-dot-product-attention"
+  - "decoder-only-models-gpt-style"
+  - "padding-mask"
+---
+
+Self-attention as described so far lets every position see every other position.
+For a model that generates text left to right, that is a problem: predicting the
+next token while already looking at it teaches nothing. The causal mask enforces
+the rule that a token may look at the past and itself, never the future.
+
+The mechanism is a single addition. Before softmax, the score from query i to key
+j is left alone if j is at or before i, and set to negative infinity otherwise.
+The formula on the card states it exactly: mask_ij equals 0 if j is less than or
+equal to i, else negative infinity. Softmax turns negative infinity into a weight
+of zero, so the masked positions contribute nothing. The grid shows the result, a
+lower-triangular pattern where each row i can attend only up to column i, with the
+diagonal marking the causal boundary.
+
+Why this earns its own card is the training payoff in the second box. Without the
+mask you would have to feed the model one prefix at a time to avoid leaking the
+next word, which is slow. With it, the model can process the entire sequence in a
+single pass and still be trained to predict every position, because each position
+only ever saw legitimate earlier context. The card lists the three consequences:
+it prevents leaking future tokens during training, the same masked model behaves
+identically at inference where the future genuinely does not exist yet, and it
+enables parallel training over all positions.
+
+This is the mask that makes GPT-style decoders trainable at scale. It is worth
+separating from the next card, the padding mask, which solves a different problem:
+that one hides filler tokens added to make batched sequences the same length,
+while this one hides the future.

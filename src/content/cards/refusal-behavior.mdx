@@ -1,0 +1,42 @@
+---
+seq: 301
+title: "Refusal Behavior"
+part: "X. Governing"
+partNumber: 10
+chapter: "21. Safety & Ethics"
+category: "Safety & Ethics"
+summary: "When the model declines to answer. The right outcome refuses unsafe requests and helps with safe ones. Failures come on both sides: harmful compliance and over-refusal. Tuning sits between safety and usefulness."
+image: "/cards/158_safety.jpg"
+status: "done"
+related:
+  - "jailbreaking-guardrails"
+  - "red-teaming"
+  - "constitutional-ai"
+---
+
+Aligned models are trained to refuse some requests. The card organizes outcomes in a
+two-by-two grid. Rows split safe versus unsafe requests. Columns split compliance
+versus refusal. Two cells are correct: refuse unsafe requests, comply on safe ones.
+Two cells are failures, highlighted in red. Unsafe plus complied ships a harmful
+response. Safe plus refused is over-refusal, annoying to users who needed a legitimate
+answer.
+
+Refusal is not one switch inside the model. The middle box lists three sources.
+System prompts enumerate off-limits topics and tone rules. RLHF rewards refusing
+harmful prompts and answering benign ones. Input and output filters around the model
+catch patterns the base model misses. Jailbreak attacks target the gap between these
+layers, which is why refusal behavior must be evaluated under adversarial prompts,
+not only clean examples.
+
+The tuning problem is bilateral. Under-refusal creates safety risk: the model helps
+with weapon instructions, private data extraction, or other policy violations.
+Over-refusal creates usefulness risk: the model declines medical information,
+creative writing, or coding tasks that are legitimate. Teams move the boundary with
+more refusal training data, clearer system prompts, and regression tests on both
+sides of the line.
+
+The card's footer captures the design stance. The goal is the diagonal: refuse
+unsafe, help safe. Both wrong quadrants carry cost, under-refuse harms people,
+over-refuse alienates users. Refusal behavior is therefore a measured property, not
+a vibe. Track false refusal rate on safe prompts and false compliance rate on unsafe
+prompts, and revisit the balance when either metric drifts after a new fine-tune.

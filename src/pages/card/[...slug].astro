@@ -1,0 +1,105 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const all = (await getCollection("cards")).sort((a, b) => a.data.seq - b.data.seq);
+  const done = all.filter((c) => c.data.status === "done");
+
+  return done.map((entry) => {
+    const i = done.findIndex((c) => c.id === entry.id);
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        prev: done[i - 1] ?? null,
+        next: done[i + 1] ?? null,
+        all,
+      },
+    };
+  });
+}
+
+const { entry, prev, next, all } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+// Resolve hand-picked related cards to real entries.
+const related = d.related
+  .map((slug) => all.find((c) => c.id === slug))
+  .filter((c) => c && c.data.status === "done");
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout title={`${d.title} - LLMs Visual Card`} description={d.summary} ogImage={d.image}>
+  <div class="wrap">
+    <div class="reading">
+    <nav class="crumbs">
+      <a href={withBase("/")}>Map</a> &nbsp;/&nbsp;
+      <span>{d.part.replace(/^[IVX]+\.\s*/, "")}</span> &nbsp;/&nbsp;
+      <span>{d.category}</span>
+    </nav>
+
+    <p class="eyebrow">{d.chapter.replace(/^\d+\.\s*/, "")}</p>
+    <h1>{d.title}</h1>
+
+    <figure class="card-figure">
+      <img src={withBase(d.image)} alt={d.summary} width="1344" height="1800" loading="eager" />
+    </figure>
+    <p class="figure-note">Card {d.seq} of LLMs Visual Card</p>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    {
+      related.length > 0 && (
+        <section class="related">
+          <h2>Related cards</h2>
+          <ul>
+            {related.map((c) => (
+              <li>
+                <a href={withBase(`/card/${c!.id}`)}>{c!.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="cta">
+      <h3>Keep exploring</h3>
+      <p>
+        Each card is part of a larger map of LLM concepts. Move to the next card,
+        follow a related concept, or return to the full curriculum view.
+      </p>
+      <a class="btn" href={withBase("/about")}>About the visual cards</a>
+      <a class="btn ghost" href={withBase("/")}>Browse the map</a>
+    </div>
+
+    <nav class="pager">
+      {
+        prev ? (
+          <a class="prev" href={withBase(`/card/${prev.id}`)}>
+            <div class="dir">Previous</div>
+            <div class="ttl">{prev.data.title}</div>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a class="next" href={withBase(`/card/${next.id}`)}>
+            <div class="dir">Next</div>
+            <div class="ttl">{next.data.title}</div>
+          </a>
+        )
+      }
+    </nav>
+    </div>
+  </div>
+</BaseLayout>

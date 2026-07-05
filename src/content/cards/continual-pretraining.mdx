@@ -1,0 +1,49 @@
+---
+seq: 116
+title: "Continual Pretraining"
+part: "IV. Adaptation & Alignment"
+partNumber: 4
+chapter: "9. Fine-Tuning"
+category: "Advanced Concepts"
+summary: "Continues a base model's pretraining on a new, focused corpus using the same self-supervised objective, adapting it to a domain without changing the recipe. Risks forgetting general skills if the data mix is wrong."
+image: "/cards/172_advanced.jpg"
+status: "done"
+related:
+  - "pretraining"
+  - "catastrophic-forgetting"
+  - "supervised-fine-tuning-sft"
+---
+
+Continual pretraining sits between ordinary fine-tuning and training from
+scratch. Instead of teaching the model to follow tasks, it keeps running the
+original pretraining objective, next-token prediction on raw text, but on a new
+corpus focused on one domain. The card draws it as a two-stage pipeline: a base
+model trained on web-scale text, plus a new domain corpus of legal or medical or
+code documents on the order of 1 to 50 billion tokens, produces a domain-adapted
+base that is better at the domain and, if done right, similar elsewhere.
+
+What separates this from the instruction and SFT cards is that nothing about the
+recipe changes. The card repeats the phrase same loss, focused data on both sides
+of the diagram to make the point. There are no instruction and response pairs and
+no masked loss; the model simply reads more text of a particular kind and
+predicts it token by token, exactly as in the original run. The output is still a
+base model, not an assistant. It has absorbed the vocabulary, phrasing, and
+patterns of the domain, and would typically go through instruction tuning
+afterward to become usable.
+
+The card's when-to-use list marks the situations where this is worth the cost:
+the domain has a large amount of unlabeled text, its vocabulary or jargon sits
+far from ordinary web text, and fine-tuning alone has not been enough. That last
+condition is the practical trigger. Light fine-tuning adjusts behavior but does
+not deeply reshape what the model knows, so when a domain is genuinely distant
+from the pretraining distribution, more pretraining on domain text can move the
+model in a way fine-tuning cannot.
+
+The risk is the same one the catastrophic forgetting card described, now applied
+to a heavier process. Continuing to train on a narrow corpus pulls the weights
+toward that domain and can erode general skills, and the card lists catastrophic
+forgetting and overspecialization as the two dangers. Its mitigation is also
+familiar: keep some general data in the mix to avoid forgetting, shown by the
+annotation on the domain-adapted output. The summary line ties it together, more
+pretraining, narrower data, same objective. This closes the fine-tuning chapter;
+the next part turns from supervised adaptation to alignment from preferences.

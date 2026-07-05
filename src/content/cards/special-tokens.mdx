@@ -1,0 +1,39 @@
+---
+seq: 6
+title: "Special Tokens"
+part: "I. Representing Language"
+partNumber: 1
+chapter: "1. Tokenization: Text into Tokens"
+category: "Tokenization"
+summary: "Reserved vocabulary entries that carry structure rather than content: sequence boundaries, padding, and chat role markers. They are never split or produced by accident."
+image: "/cards/31_tokenization.jpg"
+status: "done"
+related:
+  - "bpe-byte-pair-encoding"
+---
+
+Not every token stands for a piece of text. A handful are reserved to mark
+structure, and the model treats them differently from everything the tokenizer
+learned by merging. The card shows the usual set: a start-of-sequence marker, an
+end-of-sequence marker, a padding filler, and role markers like `<|im_start|>`.
+
+The important thing about these is that they are atomic. A normal word can be
+broken into subwords, but `<|im_start|>` is a single ID that is never split, and
+random sampling during generation will not produce it by chance. They sit in a
+reserved region of the vocabulary, set aside before the ordinary tokens.
+
+Their real job shows up in chat. The block in the middle of the card is a chat
+template: role markers wrap each turn, so the model can tell the system
+instruction apart from the user's message apart from its own reply. To the model
+this is not formatting, it is the signal that says "a new speaker starts here".
+The reason a chat model behaves so differently from a raw text model is largely
+that it was trained on text laid out with these markers.
+
+Two consequences worth carrying forward. First, the exact markers are
+model-specific: the ones a given tokenizer uses are not portable to another
+model, and getting the chat template wrong tends to degrade responses quietly
+rather than error out. Second, because these tokens mean "structure", letting
+untrusted user input contain the literal marker strings is a real risk. If a user
+can inject a role marker, they can pretend to be the system. That is one root of
+prompt injection, which later cards return to. Here the point is narrower: some
+tokens mean structure, not content, and the model leans on them.

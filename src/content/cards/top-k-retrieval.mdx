@@ -1,0 +1,45 @@
+---
+seq: 236
+title: "Top-K Retrieval"
+part: "VII. Knowledge & Tools"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "RAG"
+summary: "Retrieves only the K most similar chunks for a query and discards the rest. K trades off coverage against context-window cost. Typical values are 3 to 10 for chat applications."
+image: "/cards/89_rag.jpg"
+status: "done"
+related:
+  - "embedding-for-retrieval"
+  - "context-stuffing"
+  - "reranking"
+---
+
+Similarity search returns a ranked list of candidates. Top-K retrieval is the
+step that decides how many of those candidates actually enter the prompt. K is
+not a cosmetic setting. It directly controls how much evidence the model sees
+and how many tokens the context consumes.
+
+The card shows a ranked list of six chunks scored against a query about return
+policy. Chunk 42 scores highest at 0.97, followed by chunks 13 and 07. A dashed
+cutoff at K equals three highlights the top three rows and discards the rest.
+The lower chunks may still be somewhat related, but they are not similar enough
+to justify the token cost of inclusion. Keeping K tight focuses the model on
+the best matches.
+
+The line chart below plots K against tokens in context. As K grows, the token
+count rises roughly linearly because each additional chunk adds its full text to
+the prompt. Larger K improves the chance that the answer sits somewhere in the
+retrieved set, but it also eats the context window, increases latency, and can
+dilute the model's attention across marginally relevant passages.
+
+There is no single correct K. A narrow FAQ with short chunks may work well at
+K equals three. A research assistant pulling from long technical documents
+might need K equals ten or more, especially before reranking narrows the list.
+Some pipelines retrieve a larger K internally, rerank down to a smaller set, and
+only then stuff context into the prompt.
+
+The practical takeaway is to pick K small enough to fit your context budget and
+large enough to cover the answer in eval. Measure on real queries rather than
+defaulting to an arbitrary number. If the right chunk consistently appears at
+rank four or five, raise K or improve embeddings before adding generation-side
+fixes.

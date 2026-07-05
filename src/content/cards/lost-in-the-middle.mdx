@@ -1,0 +1,38 @@
+---
+seq: 205
+title: "Lost in the Middle"
+part: "VI. Talking to the Model"
+partNumber: 6
+chapter: "15. Context Management"
+category: "Context Management"
+summary: "In long prompts, models often recall facts at the start and end more reliably than facts buried in the middle. A large context window does not guarantee uniform attention across all positions."
+image: "/cards/148_context.jpg"
+status: "done"
+related:
+  - "context-window"
+  - "retrieval-augmented-context"
+  - "token-budget"
+---
+
+The card plots a U-shaped curve: position along the prompt on the horizontal axis,
+answer accuracy on the vertical. Performance is high for evidence placed near the
+beginning and near the end, and dips for material in the central band. The shape
+matches published needle-in-a-haystack findings across several long-context models.
+
+Attention is technically global, but training distributions and positional biases
+favor recency and salient anchors. Middle paragraphs look like bulk context, so
+specific facts there receive weaker effective signal. This interacts with RAG: dumping
+many chunks in arbitrary order can hide the one supporting sentence exactly where
+recall is worst.
+
+Mitigations are structural. Put critical instructions in system or the final user
+turn. Repeat key constraints briefly before the question. For retrieval, rerank and
+place the strongest chunk last among documents or adjacent to the query. Use
+compression that preserves cited spans rather than aggressive summarization that
+drops names and dates from the center of a long brief.
+
+When evaluating long-context features, test middle placement deliberately. A demo
+that only checks facts at the top or bottom overstates readiness. The card pairs
+with context window capacity: a million-token slot does not mean every token is
+equally usable. Design prompts and retrieval order as carefully as you choose model
+size.
