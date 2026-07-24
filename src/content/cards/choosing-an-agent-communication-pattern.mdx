@@ -1,0 +1,46 @@
+---
+seq: 276
+title: "Choosing an Agent Communication Pattern"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "Pick direct calls for short bounded work, handoffs when control changes, tracked tasks for long-running delegation, shared workspaces for artifact coordination, and events for fan-out. Real systems mix patterns."
+image: "/cards/347_agents.jpg"
+status: "done"
+related:
+  - "agent-communication-architecture"
+  - "direct-async-and-event-communication"
+  - "a2a-task-lifecycle"
+  - "delegation-and-handoffs"
+  - "event-bus-and-delivery-reliability"
+---
+
+The card shows a hand-sketched decision tree starting at a pill labeled what does
+the work need? Five branches lead to outcome boxes: direct call, handoff, tracked
+task, shared workspace, and events. Beside each branch is a criterion: short plus
+bounded, control changes, long-running, shared artifacts, and many listeners.
+Callouts mark tracked task with status plus artifacts and the whole tree with mix
+patterns by workflow. The bottom line reads crossing organizations adds discovery,
+auth, and explicit contracts.
+
+The tree is a selection guide, not a maturity ladder. Direct calls suit quick
+questions or tool-like helpers with stable inputs and outputs. Handoffs fit when
+the user should speak next to a different specialist and you can pass a scoped
+packet. Tracked tasks fit remote work that spans minutes or hours, may pause for
+input or auth, and returns artifacts with a visible lifecycle. Shared workspaces
+fit parallel editors working on the same draft or task board with explicit
+concurrency rules. Events fit when one fact should notify many downstream agents
+or services without naming each recipient upfront.
+
+Choosing A2A or any protocol does not remove coordination decisions. It adds
+discovery through Agent Cards, authentication requirements, and explicit message
+and task types at the boundaries. Architecture layers for coordination, state,
+protocol, and transport remain useful vocabulary even after you pick a pattern.
+Team topology surveys describe who exists; this card asks what the work needs.
+
+Start from duration, who owns the next user turn, whether artifacts are shared,
+and how many listeners react. Choose a contract for each boundary, then combine
+those contracts into the workflow. When agents cross organizations, budget
+extra work for capability discovery, credential exchange, and contract tests
+rather than assuming one pattern fits every hop.

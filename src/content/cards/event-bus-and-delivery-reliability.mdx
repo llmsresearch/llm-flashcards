@@ -1,0 +1,47 @@
+---
+seq: 274
+title: "Event Bus and Delivery Reliability"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "An event bus decouples publishers from subscribers. Delivery is often at least once, so handlers must be idempotent, tolerate duplicates, and use durable logs and dead-letter queues for poison messages."
+image: "/cards/345_agents.jpg"
+status: "done"
+related:
+  - "direct-async-and-event-communication"
+  - "shared-blackboard-and-concurrency"
+  - "error-handling"
+---
+
+The card sketches publish-subscribe flow without large panels. A publisher sends
+a hatched envelope labeled order paid along a red arrow to a central event
+broker. Three red arrows fan out to indexer, notifier, and analyst. Under the
+broker is a strip labeled event log with two event pills. To the lower right, a
+dead-letter queue box holds one failed event pill. Callouts point to the log for
+replay from durable history, to a subscriber for dedupe with event ID, and to the
+dead-letter queue for inspect poison messages. The bottom line reads at-least-once
+delivery requires idempotent handlers.
+
+An event bus lets producers emit facts without enumerating consumers. That loose
+coupling scales to many listeners, but broker semantics matter. Many systems
+guarantee at-least-once delivery: a message may arrive more than once if a worker
+crashes after handling but before acknowledgment. Handlers should deduplicate on a
+stable event identifier and be idempotent so repeated processing does not double
+charge or double index. A durable log retains history for replay after outages or
+when adding a new consumer that needs a backlog. When a message fails processing
+after bounded retries, often because of a bad payload or code bug, moving it to a
+dead-letter queue isolates poison traffic so operators can inspect without blocking
+the whole topic.
+
+This card covers broker delivery semantics, not the introductory contrast of
+events versus direct calls. It does not claim universal exactly-once delivery,
+global ordering across all subscribers, or automatic repair simply because a
+message reached a dead-letter queue. Those properties depend on the product and
+must be designed explicitly if needed.
+
+Apply these patterns when agent workflows fan out side effects to search indexes,
+notifications, analytics, or other agents. Assign unique event IDs, record
+processing checkpoints, make side effects safe to repeat, and alert on dead-letter
+growth. Treat event consumption like tool execution at a trust boundary: validate
+payloads before acting.

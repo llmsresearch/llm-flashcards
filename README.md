@@ -13,7 +13,7 @@ concept is easier to recall when you are answering technical questions.
 
 Public site: <https://llmsresearch.github.io/llm-flashcards/>
 
-This repository hosts the free open-source foundation: 180+ visual cards covering
+This repository hosts the free open-source foundation: 193+ visual cards covering
 the core mechanics of modern LLM systems. The sequence starts with text becoming
 tokens and moves through transformers, training, inference, retrieval, agents,
 safety, evaluation, APIs, and production tradeoffs.
@@ -49,7 +49,7 @@ architecture tradeoffs out loud.
 
 ## Free Foundation And Complete Collection
 
-The public site contains the free foundation: 180+ cards that cover the core LLM
+The public site contains the free foundation: 193+ cards that cover the core LLM
 concepts you should be able to discuss with confidence.
 
 The complete living collection on Gumroad contains 330+ cards and keeps growing

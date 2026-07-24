@@ -1,0 +1,44 @@
+---
+seq: 267
+title: "A2A Messages, Tasks, Parts, and Artifacts"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "A2A uses Messages for conversation and Tasks for stateful work. Messages and Artifacts are built from Parts carrying text, raw bytes or URLs, or structured data. Tasks track status and history."
+image: "/cards/338_agents.jpg"
+status: "done"
+related:
+  - "a2a-task-lifecycle"
+  - "direct-async-and-event-communication"
+  - "agent-discovery-and-capability-cards"
+---
+
+The card centers on a Task card with three rows: status, history, and artifacts.
+On the left, a Message card with role and parts feeds into the Task through a
+red arrow. On the right, a hatched Artifact document with parts exits the Task.
+Below, three pills labeled text, raw or url, and data sit under a bracket
+labeled Part content. Callouts mark history as conversation within the task and
+the Artifact as a deliverable, not a chat turn.
+
+Mechanically, a Message is a conversational unit: who spoke and what content
+they sent. Each Message contains one or more Parts, and each Part carries one
+payload type at a time, plain text, opaque bytes or a URL reference, or
+structured data. A Task is the stateful container for work that may span many
+messages. It records current status, may retain relevant message history, and
+holds Artifacts when outputs are ready. The protocol does not promise that task
+history is a complete transcript. Artifacts are task outputs, also composed of
+Parts, but they are not interchangeable with chat turns. A status update or a
+finished report belongs in different shapes.
+
+This data model sits below interaction timing choices such as direct wait versus
+async tracking. It also sits above transport details. Confusing Messages with
+Artifacts makes clients treat deliverables like casual chat, which breaks
+downstream automation. Treating one Part as simultaneously text and binary
+misreads the schema: pick one content form per Part.
+
+When integrating A2A, map user-visible chat to Messages, bind long work to a
+Task identifier, and surface finished files or structured results as Artifacts.
+Use available history as context, but do not depend on it as the only record of
+the conversation. Consume Artifacts when you need the actual output object.
+Validation and authorization still apply to every Part arriving from a peer.

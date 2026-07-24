@@ -1,0 +1,46 @@
+---
+seq: 273
+title: "Shared Blackboard and Concurrency"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "A shared blackboard coordinates agents through common tasks and artifacts. Concurrent writers need claims, version checks, and conflict rejection instead of silent overwrites."
+image: "/cards/344_agents.jpg"
+status: "done"
+related:
+  - "multi-agent-systems"
+  - "memory-in-agents"
+  - "event-bus-and-delivery-reliability"
+---
+
+The card centers on a shared workspace board with rows for task and a hatched
+draft v4. Three agents surround it: researcher, writer, and reviewer. Thin red
+arrows labeled write enter the board; teal arrows labeled read exit. On the draft
+row sits a badge claim writer. One red arrow labeled stale write bounces away
+with an X. Callouts mark claim before edit and compare version on write. The
+bottom line reads reject a write when the version has changed.
+
+A shared blackboard is a coordination pattern, not a single standard store in
+A2A or MCP. Agents publish tasks, notes, and draft artifacts to a common space
+others can read. That enables parallel work: a researcher can add sources while a
+writer drafts and a reviewer comments. The failure mode is concurrent writes.
+Two agents editing the same draft without coordination can silently lose content
+when the last write replaces earlier work. Production designs add claims or
+leases so only one writer holds an edit lock, version numbers so clients compare
+the expected version on write, and rejection when the version changed underneath
+them. Readers should
+treat entries as snapshots and re-read after notifications because state may have
+changed.
+
+This card focuses on multi-agent write concurrency. Single-agent memory tiers
+and high-level team topologies are covered elsewhere. Nothing here implies a
+built-in consistency model from a protocol; you choose storage, locking, and
+merge policy in application code.
+
+Use a shared workspace when several agents collaborate on the same evolving
+artifact and need visibility without routing every update through one orchestrator.
+Pair it with explicit claim rules for editable sections, optimistic concurrency
+on writes, and events or polling so readers detect changes. Keep authoritative
+state in a store you control rather than assuming LLM transcripts alone will stay
+consistent under parallel agents.

@@ -9,19 +9,27 @@ const PARTS: { n: number; name: string; note: string }[] = [
   { n: 4, name: "Adaptation & Alignment", note: "Turning a base model into an assistant." },
   { n: 5, name: "Running the Model", note: "Generating text at inference time." },
   { n: 6, name: "Talking to the Model", note: "Prompting and shaping the output." },
-  { n: 7, name: "Knowledge & Tools", note: "Retrieval, tool use, and agents." },
-  { n: 8, name: "Beyond Text", note: "Images, audio, and other modalities." },
-  { n: 9, name: "Measuring", note: "Evaluation and benchmarks." },
-  { n: 10, name: "Governing", note: "Failure modes, safety, and ethics." },
-  { n: 11, name: "Shipping", note: "APIs and running in production." },
+  { n: 7, name: "Retrieval & Grounding", note: "Search, retrieval, and grounded generation." },
+  { n: 8, name: "Agents", note: "Tools, coordination, and agent communication." },
+  { n: 9, name: "Beyond Text", note: "Images, audio, and other modalities." },
+  { n: 10, name: "Measuring", note: "Evaluation and benchmarks." },
+  { n: 11, name: "Governing", note: "Failure modes, safety, and ethics." },
+  { n: 12, name: "Shipping", note: "APIs and running in production." },
 ];
 
-const cards = (await getCollection("cards")).sort((a, b) => a.data.seq - b.data.seq);
+const cards = (await getCollection("cards"))
+  .filter((c) => c.data.status === "done")
+  .sort((a, b) => a.data.seq - b.data.seq);
 const byPart = new Map<number, typeof cards>();
+const chaptersByPart = new Map<number, Map<string, typeof cards>>();
 for (const c of cards) {
   const k = c.data.partNumber;
   if (!byPart.has(k)) byPart.set(k, []);
   byPart.get(k)!.push(c);
+  if (!chaptersByPart.has(k)) chaptersByPart.set(k, new Map());
+  const chapters = chaptersByPart.get(k)!;
+  if (!chapters.has(c.data.chapter)) chapters.set(c.data.chapter, []);
+  chapters.get(c.data.chapter)!.push(c);
 }
 
 const featured = cards.find((c) => c.data.status === "done")!;
@@ -46,42 +54,100 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
       </section>
 
     <div class="reader">
-      <!-- Left: contents (own scroll) -->
-      <nav class="toc" aria-label="Visual card contents">
-        {
-          PARTS.map((part) => {
-            const items = byPart.get(part.n) ?? [];
-            const active = items.length > 0;
-            return (
-              <section class={`toc-part ${active ? "" : "off"}`}>
-                <div class="toc-head">
-                  <span class="pn">{pad(part.n)}</span>
-                  <span class="pt">{part.name}</span>
-                </div>
-                {active ? (
-                  <ul>
-                    {items.map((c) => (
-                      <li>
-                        <a
-                          href={withBase(`/card/${c.id}`)}
-                          class:list={["entry", { current: c.id === featured.id }]}
-                          data-slug={c.id}
-                          data-title={c.data.title}
-                          data-img={withBase(c.data.image)}
-                          data-chapter={c.data.chapter.replace(/^\d+\.\s*/, "")}
-                        >
-                          {c.data.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p class="soon">In progress</p>
-                )}
-              </section>
-            );
-          })
-        }
+      <!-- Left: searchable, chapter-aware curriculum navigator -->
+      <button type="button" class="toc-mobile-toggle" id="toc-mobile-toggle" aria-expanded="false" aria-controls="toc">
+        <span>Browse the curriculum</span>
+        <span>{cards.length} cards</span>
+      </button>
+      <nav class="toc" id="toc" aria-label="Visual card contents">
+        <div class="toc-tools">
+          <label class="toc-search">
+            <span class="sr-only">Search cards</span>
+            <input id="toc-search" type="search" placeholder={`Search ${cards.length} cards`} autocomplete="off" />
+            <kbd>/</kbd>
+          </label>
+          <div class="now-reading" aria-live="polite">
+            <div class="now-topline">
+              <span>Now reading</span>
+              <span id="rd-progress">1 of {cards.length}</span>
+            </div>
+            <strong id="toc-current-title">{featured.data.title}</strong>
+            <span id="toc-current-chapter">{featured.data.chapter.replace(/^\d+\.\s*/, "")}</span>
+          </div>
+        </div>
+        <div class="toc-tree">
+          {
+            PARTS.map((part) => {
+              const items = byPart.get(part.n) ?? [];
+              const active = items.length > 0;
+              const chapters = chaptersByPart.get(part.n) ?? new Map();
+              const partOpen = part.n === featured.data.partNumber;
+              return (
+                <section
+                  class:list={["toc-part", { off: !active, open: partOpen }]}
+                  data-part={part.n}
+                >
+                  <button
+                    type="button"
+                    class="toc-head"
+                    aria-expanded={partOpen ? "true" : "false"}
+                    disabled={!active}
+                  >
+                    <span class="pn">{pad(part.n)}</span>
+                    <span class="pt-wrap">
+                      <span class="pt">{part.name}</span>
+                      <span class="part-note">{part.note}</span>
+                    </span>
+                    <span class="toc-count">{items.length}</span>
+                    <span class="toc-chevron" aria-hidden="true">›</span>
+                  </button>
+                  {active ? (
+                    <div class="part-body">
+                      {Array.from(chapters.entries()).map(([chapter, chapterCards]) => {
+                        const chapterOpen = chapter === featured.data.chapter;
+                        return (
+                          <section
+                            class:list={["toc-chapter", { open: chapterOpen }]}
+                            data-chapter={chapter}
+                          >
+                            <button
+                              type="button"
+                              class="chapter-head"
+                              aria-expanded={chapterOpen ? "true" : "false"}
+                            >
+                              <span>{chapter.replace(/^\d+\.\s*/, "")}</span>
+                              <span class="chapter-count">{chapterCards.length}</span>
+                              <span class="chapter-chevron" aria-hidden="true">›</span>
+                            </button>
+                            <ul>
+                              {chapterCards.map((c) => (
+                                <li>
+                                  <a
+                                    href={withBase(`/card/${c.id}`)}
+                                    class:list={["entry", { current: c.id === featured.id }]}
+                                    data-slug={c.id}
+                                    data-title={c.data.title}
+                                    data-img={withBase(c.data.image)}
+                                    data-part={part.name}
+                                    data-chapter={c.data.chapter.replace(/^\d+\.\s*/, "")}
+                                  >
+                                    {c.data.title}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </section>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p class="soon">In progress</p>
+                  )}
+                </section>
+              );
+            })
+          }
+        </div>
       </nav>
 
       <!-- Middle: the card, fixed in view -->
@@ -116,18 +182,53 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
   </div>
 
   <script>
+    const toc = document.getElementById("toc");
+    const tocSearch = document.getElementById("toc-search") as HTMLInputElement | null;
+    const mobileToggle = document.getElementById("toc-mobile-toggle") as HTMLButtonElement | null;
     const paneText = document.getElementById("pane-text");
     const rdChapter = document.getElementById("rd-chapter");
     const rdTitle = document.getElementById("rd-title");
     const rdImg = document.getElementById("rd-img") as HTMLImageElement | null;
     const rdBody = document.getElementById("rd-body");
+    const rdProgress = document.getElementById("rd-progress");
+    const tocCurrentTitle = document.getElementById("toc-current-title");
+    const tocCurrentChapter = document.getElementById("toc-current-chapter");
     const prevBtn = document.getElementById("rd-prev") as HTMLButtonElement | null;
     const nextBtn = document.getElementById("rd-next") as HTMLButtonElement | null;
     const prevTitle = document.getElementById("rd-prev-title");
     const nextTitle = document.getElementById("rd-next-title");
     const entries = Array.from(document.querySelectorAll<HTMLAnchorElement>(".entry"));
+    const partSections = Array.from(document.querySelectorAll<HTMLElement>(".toc-part:not(.off)"));
+    const chapterSections = Array.from(document.querySelectorAll<HTMLElement>(".toc-chapter"));
     const cache = new Map<string, string>();
     let index = Math.max(0, entries.findIndex((e) => e.classList.contains("current")));
+
+    function setExpanded(section: HTMLElement, open: boolean, selector: string) {
+      section.classList.toggle("open", open);
+      section.querySelector<HTMLButtonElement>(selector)?.setAttribute("aria-expanded", String(open));
+    }
+
+    function openPart(target: HTMLElement) {
+      partSections.forEach((section) => setExpanded(section, section === target, ".toc-head"));
+    }
+
+    function openChapter(target: HTMLElement) {
+      const part = target.closest<HTMLElement>(".toc-part");
+      if (part) openPart(part);
+      part?.querySelectorAll<HTMLElement>(".toc-chapter").forEach((section) => {
+        setExpanded(section, section === target, ".chapter-head");
+      });
+    }
+
+    function revealEntry(entry: HTMLAnchorElement, scroll = true) {
+      if (tocSearch?.value) {
+        tocSearch.value = "";
+        applySearch();
+      }
+      const chapter = entry.closest<HTMLElement>(".toc-chapter");
+      if (chapter) openChapter(chapter);
+      if (scroll) entry.scrollIntoView({ block: "nearest" });
+    }
 
     function setCurrent(slug: string) {
       entries.forEach((e) => e.classList.toggle("current", e.dataset.slug === slug));
@@ -142,6 +243,40 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
       if (nextTitle && next) nextTitle.textContent = next.dataset.title || "";
     }
 
+    function updateOrientation(entry: HTMLAnchorElement) {
+      const title = entry.dataset.title || "";
+      const chapter = entry.dataset.chapter || "";
+      if (rdProgress) rdProgress.textContent = `${index + 1} of ${entries.length}`;
+      if (tocCurrentTitle) tocCurrentTitle.textContent = title;
+      if (tocCurrentChapter) tocCurrentChapter.textContent = chapter;
+    }
+
+    function applySearch() {
+      const query = tocSearch?.value.trim().toLocaleLowerCase() || "";
+      toc?.classList.toggle("searching", Boolean(query));
+      entries.forEach((entry) => {
+        const haystack =
+          `${entry.dataset.title || ""} ${entry.dataset.chapter || ""} ${entry.dataset.part || ""}`.toLocaleLowerCase();
+        const match = !query || haystack.includes(query);
+        const item = entry.closest<HTMLElement>("li");
+        if (item) item.hidden = !match;
+      });
+      chapterSections.forEach((section) => {
+        const hasMatch = Array.from(section.querySelectorAll<HTMLElement>("li")).some((item) => !item.hidden);
+        section.hidden = Boolean(query) && !hasMatch;
+      });
+      partSections.forEach((section) => {
+        const hasMatch = Array.from(section.querySelectorAll<HTMLElement>(".toc-chapter")).some(
+          (chapter) => !chapter.hidden,
+        );
+        section.hidden = Boolean(query) && !hasMatch;
+      });
+      if (!query) {
+        const current = entries[index];
+        if (current) revealEntry(current, false);
+      }
+    }
+
     async function load(a: HTMLAnchorElement, push: boolean) {
       const href = a.getAttribute("href")!;
       const slug = a.dataset.slug!;
@@ -154,7 +289,11 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
       }
       setCurrent(slug);
       updatePager();
+      updateOrientation(a);
+      revealEntry(a);
       if (paneText) paneText.scrollTop = 0;
+      toc?.classList.remove("mobile-open");
+      mobileToggle?.setAttribute("aria-expanded", "false");
 
       if (rdBody) {
         try {
@@ -173,6 +312,23 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
       if (push) history.pushState({ slug }, "", href);
     }
 
+    partSections.forEach((section) => {
+      section.querySelector<HTMLButtonElement>(".toc-head")?.addEventListener("click", () => {
+        const opening = !section.classList.contains("open");
+        partSections.forEach((part) => setExpanded(part, false, ".toc-head"));
+        if (opening) setExpanded(section, true, ".toc-head");
+      });
+    });
+
+    chapterSections.forEach((section) => {
+      section.querySelector<HTMLButtonElement>(".chapter-head")?.addEventListener("click", () => {
+        const opening = !section.classList.contains("open");
+        const siblings = section.parentElement?.querySelectorAll<HTMLElement>(".toc-chapter") ?? [];
+        siblings.forEach((chapter) => setExpanded(chapter, false, ".chapter-head"));
+        if (opening) setExpanded(section, true, ".chapter-head");
+      });
+    });
+
     entries.forEach((a) => {
       a.addEventListener("click", (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -183,6 +339,28 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
 
     prevBtn?.addEventListener("click", () => entries[index - 1] && load(entries[index - 1], true));
     nextBtn?.addEventListener("click", () => entries[index + 1] && load(entries[index + 1], true));
+    tocSearch?.addEventListener("input", applySearch);
+    mobileToggle?.addEventListener("click", () => {
+      const open = !toc?.classList.contains("mobile-open");
+      toc?.classList.toggle("mobile-open", open);
+      mobileToggle.setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "/" &&
+        document.activeElement !== tocSearch &&
+        !(document.activeElement instanceof HTMLInputElement) &&
+        !(document.activeElement instanceof HTMLTextAreaElement)
+      ) {
+        event.preventDefault();
+        tocSearch?.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === tocSearch) {
+        if (tocSearch) tocSearch.value = "";
+        applySearch();
+        tocSearch?.blur();
+      }
+    });
 
     window.addEventListener("popstate", () => {
       const match = entries.find((a) => a.getAttribute("href") === location.pathname);
@@ -190,6 +368,10 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
     });
 
     updatePager();
+    if (entries[index]) {
+      updateOrientation(entries[index]);
+      revealEntry(entries[index], false);
+    }
   </script>
 
   <style>
@@ -213,56 +395,240 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
       flex: 1;
       min-height: 0;
       display: grid;
-      grid-template-columns: 300px minmax(340px, 540px) minmax(360px, 1fr);
-      gap: 48px;
+      grid-template-columns: 320px minmax(340px, 540px) minmax(360px, 1fr);
+      gap: 42px;
       padding-bottom: 20px;
     }
 
     /* Contents (left) */
+    .toc-mobile-toggle {
+      display: none;
+    }
     .toc {
       min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      padding-right: 16px;
+    }
+    .toc-tools {
+      flex: none;
+      padding-bottom: 12px;
+    }
+    .toc-search {
+      position: relative;
+      display: block;
+    }
+    .toc-search input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 0 38px 0 12px;
+      background: var(--card-bg);
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+    .toc-search input:focus {
+      border-color: var(--teal);
+    }
+    .toc-search kbd {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      min-width: 21px;
+      padding: 1px 5px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--ink-faint);
+      background: var(--paper);
+      font: 12px/18px ui-monospace, "SF Mono", Menlo, monospace;
+      text-align: center;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .now-reading {
+      margin-top: 9px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--teal-wash);
+      display: grid;
+      gap: 2px;
+    }
+    .now-topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--teal-dark);
+      font-size: 10.5px;
+      line-height: 1.3;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .now-reading strong {
+      font-size: 13.5px;
+      line-height: 1.35;
+    }
+    .now-reading > span {
+      color: var(--ink-soft);
+      font-size: 11.5px;
+      line-height: 1.35;
+    }
+    .toc-tree {
+      min-height: 0;
       overflow-y: auto;
-      padding-right: 10px;
+      scrollbar-gutter: stable;
+      padding-right: 4px;
     }
     .toc-part {
-      padding: 12px 0;
       border-top: 1px solid var(--line);
     }
     .toc-part:first-child {
       border-top: none;
-      padding-top: 0;
     }
     .toc-head {
+      width: 100%;
+      border: 0;
+      background: transparent;
       display: flex;
-      gap: 10px;
-      align-items: baseline;
+      gap: 9px;
+      align-items: center;
+      padding: 11px 4px 11px 0;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+    .toc-head:hover .pt {
+      color: var(--teal-dark);
+    }
+    .toc-head:disabled {
+      cursor: default;
+    }
+    .pt-wrap {
+      min-width: 0;
+      flex: 1;
+      display: grid;
+      gap: 1px;
     }
     .pn {
       font-variant-numeric: tabular-nums;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 11.5px;
       color: var(--teal);
     }
     .pt {
-      font-size: 1rem;
+      font-size: 14px;
+      line-height: 1.3;
       font-weight: 650;
       letter-spacing: -0.01em;
+    }
+    .part-note {
+      display: none;
+      color: var(--ink-faint);
+      font-size: 10.5px;
+      line-height: 1.35;
+    }
+    .toc-part.open .part-note {
+      display: block;
     }
     .toc-part.off .pt {
       color: var(--ink-faint);
     }
-    .toc-part ul {
+    .toc-count,
+    .chapter-count {
+      color: var(--ink-faint);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+    .toc-chevron,
+    .chapter-chevron {
+      color: var(--ink-faint);
+      font-size: 18px;
+      line-height: 1;
+      transform: rotate(0);
+      transition: transform 0.15s ease;
+    }
+    .toc-part.open > .toc-head .toc-chevron,
+    .toc-chapter.open > .chapter-head .chapter-chevron {
+      transform: rotate(90deg);
+    }
+    .part-body {
+      display: none;
+      padding: 0 0 8px 20px;
+    }
+    .toc-part.open > .part-body {
+      display: block;
+    }
+    .toc-chapter {
+      margin: 1px 0;
+    }
+    .chapter-head {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--ink-soft);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 4px 7px 10px;
+      border-radius: 7px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      font-size: 11.5px;
+      line-height: 1.3;
+      font-weight: 700;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .chapter-head:hover {
+      background: var(--teal-wash);
+      color: var(--teal-dark);
+    }
+    .toc-chapter ul {
+      display: none;
       list-style: none;
-      margin: 6px 0 0;
-      padding: 0 0 0 32px;
+      margin: 2px 0 5px;
+      padding: 0;
+    }
+    .toc-chapter.open > ul {
+      display: block;
+    }
+    .toc.searching .part-body,
+    .toc.searching .toc-chapter > ul {
+      display: block;
+    }
+    .toc.searching .part-note,
+    .toc.searching .toc-chevron,
+    .toc.searching .chapter-chevron {
+      display: none;
+    }
+    .toc [hidden] {
+      display: none !important;
     }
     .entry {
       display: block;
-      padding: 6px 10px;
+      padding: 5px 8px 5px 12px;
       margin: 1px 0;
-      border-radius: 8px;
+      border-radius: 7px;
       color: var(--ink-soft);
-      font-size: 15px;
+      font-size: 13.5px;
+      line-height: 1.35;
       border-left: 2px solid transparent;
     }
     .entry:hover {
@@ -272,12 +638,10 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
     }
     .entry.current {
       color: var(--teal-dark);
-      background: var(--teal-wash);
-      border-left-color: var(--teal);
       font-weight: 600;
     }
     .soon {
-      margin: 4px 0 0 32px;
+      margin: 0 0 10px 30px;
       font-size: 11.5px;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -382,7 +746,38 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
         grid-template-columns: 1fr;
         gap: 28px;
       }
-      .toc,
+      .toc-mobile-toggle {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: 10px;
+        background: var(--card-bg);
+        color: var(--ink);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      .toc-mobile-toggle span:last-child {
+        color: var(--ink-faint);
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .toc {
+        display: none;
+        max-height: min(72vh, 720px);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--paper);
+      }
+      .toc.mobile-open {
+        display: flex;
+      }
       .pane-text {
         overflow: visible;
         min-height: auto;

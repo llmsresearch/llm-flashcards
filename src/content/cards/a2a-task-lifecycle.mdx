@@ -1,0 +1,46 @@
+---
+seq: 268
+title: "A2A Task Lifecycle"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "An A2A Task moves from submitted to working, then reaches a terminal state or pauses in input required or auth required until the client responds. Terminal tasks do not accept more messages."
+image: "/cards/339_agents.jpg"
+status: "done"
+related:
+  - "a2a-messages-tasks-parts-and-artifacts"
+  - "a2a-result-delivery"
+  - "stopping-conditions"
+---
+
+The card shows a state flow in small pills connected by red arrows. Work begins
+at submitted and moves to working. From working, a branch right reaches a
+terminal cluster: completed, failed, canceled, and rejected, grouped under a
+teal bracket labeled terminal. Completed is hatched. From working, a downward
+branch reaches input required and auth required, grouped under can resume, with
+return arrows back to working. Callouts note that input required means the
+client sends more information and that auth required means credentials resolve
+out of band. The bottom line states that terminal tasks do not accept more
+messages.
+
+These display labels correspond to reader-friendly forms of the current A2A
+TASK_STATE enum. Submitted means the task exists but execution has not started.
+Working means the remote agent is actively processing. Terminal states close the
+task: completed with a result, failed with an error, canceled by client action,
+or rejected because the server refused the work. Input required and auth required
+are interrupted states, not failures. The client can supply missing fields or
+complete authentication, after which work may resume at working. Once terminal,
+the task cannot restart; new work needs a new task.
+
+This external state machine differs from stopping conditions inside one agent
+loop. A local loop may halt on step budget or repeated actions while an A2A Task
+may still be working on the server. Conversely, a client loop may keep running
+while waiting on input required from a remote peer. Clients must respect terminal
+semantics and stop sending messages to closed tasks.
+
+Design clients to poll, stream, or receive push updates that reflect these
+states, and to branch UI on interrupted states separately from failures. Treat
+auth required as a signal to run an out-of-band credential flow, not as a generic
+error. Log terminal reasons for operators and map them to user-visible outcomes
+without implying a dead task can be revived.

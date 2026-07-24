@@ -1,0 +1,48 @@
+---
+seq: 264
+title: "Agent Communication Architecture"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "Agent communication splits into four separable concerns: coordination decides who acts next, state records tasks and progress, protocol defines messages and operations, and transport moves bytes between processes."
+image: "/cards/335_agents.jpg"
+status: "done"
+related:
+  - "multi-agent-systems"
+  - "agent-loop"
+  - "choosing-an-agent-communication-pattern"
+---
+
+The card stacks four narrow bands from top to bottom: coordination, state,
+protocol, and transport. Coordination shows two agent nodes with a delegation
+arrow. State holds a small task card labeled task plus status. Protocol lists
+messages and operations. Transport shows one connection labeled HTTP or gRPC. A
+teal bracket on the left spans all four bands with the label separate concerns.
+Callouts point to protocol for what the messages mean and to transport for how
+bytes move. A line below reads that patterns can share a transport without
+sharing semantics.
+
+These four labels are a vocabulary for comparing designs, not a claim that A2A
+or any other spec names them as normative layers. Coordination is the policy
+layer: who delegates to whom, when to fan out, when to merge results. State is
+whatever durable record tracks work in flight, task identifiers, status fields,
+artifact references, or conversation history scoped to a job. Protocol is the
+contract for payloads and operations, independent of whether you call them
+messages, tasks, or tool results. Transport is the wire mechanism, HTTP, gRPC,
+WebSockets, or a message broker, with no requirement that one transport maps to
+one protocol.
+
+Keeping the layers distinct makes tradeoffs visible. Two teams can reuse the
+same HTTP stack while assigning different meanings to their message shapes.
+Changing transport may still require adapters, but a stable protocol contract
+limits how much coordination logic must change. Mixing every concern in one
+module makes failures harder to locate. Network retries and turn ownership, for
+example, solve different problems. This card complements multi-agent topology
+surveys; it does not replace MCP server discovery or prescribe a single stack.
+
+Use the stack when documenting or reviewing a system. Ask whether coordination
+policy is explicit, whether state survives process restarts, whether protocol
+types are versioned, and whether transport retries could duplicate side effects.
+Real products often collapse layers in code but still benefit from naming them
+when debugging cross-agent failures.

@@ -1,0 +1,45 @@
+---
+seq: 271
+title: "Agents as Tools"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "A specialist agent can be wrapped as a bounded tool while the manager keeps the user-facing loop, or delegated as a peer that owns a stateful task and returns artifacts over its own lifecycle."
+image: "/cards/342_agents.jpg"
+status: "done"
+related:
+  - "tool-use-function-calling"
+  - "delegation-and-handoffs"
+  - "multi-agent-systems"
+---
+
+The card shows a manager at the top with two paths below. On the left, a red
+arrow leads to a function-shaped specialist tool box with a tiny loop symbol
+inside. A return arrow carries structured output, and a note below reads manager
+owns the loop. On the right, a red arrow leads to a peer agent with a task card
+under it. The return arrow carries a hatched artifact document, and a note below
+reads peer owns the task. Between the paths is a teal note: same helper,
+different contract. The bottom line reads use the bounded tool contract when it
+is enough.
+
+Wrapping an agent as a tool means the manager still runs the outer loop that
+faces the user. It calls the specialist with a fixed input schema, waits for a
+structured result, and decides what to do next. The inner agent may run its own
+short loop, but the caller treats it like any other function: one request, one
+response shape, no external task handle. Peer delegation sends work to another
+agent that owns an A2A-style task. That peer may ask for input, pause for auth,
+stream progress, and return artifacts when done. The manager tracks outcomes but
+does not necessarily control every turn inside the remote work.
+
+This is an orchestration choice, not a new tool-calling syntax. Ordinary function
+schemas and validation still apply to the bounded path. The tradeoff is control
+versus flexibility. A tool wrapper is easier to reason about, test, and cap for
+cost because the contract is narrow. Peer delegation fits adaptive jobs where
+the specialist must negotiate clarifications or produce large deliverables over
+time, at the price of more moving parts.
+
+Use the tool wrapper when inputs and outputs fit a stable schema and the manager
+should retain conversational control. Use peer delegation when the remote agent
+must own a long-running task lifecycle. Many systems combine both patterns in one
+workflow.

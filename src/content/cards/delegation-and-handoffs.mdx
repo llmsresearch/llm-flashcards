@@ -1,0 +1,45 @@
+---
+seq: 272
+title: "Delegation and Handoffs"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "Delegation sends work to another agent with a scoped packet of goal, facts, and constraints. A handoff also transfers control of the next user-facing turn. Context minimization limits leakage and token growth."
+image: "/cards/343_agents.jpg"
+status: "done"
+related:
+  - "multi-agent-systems"
+  - "agents-as-tools"
+  - "choosing-an-agent-communication-pattern"
+---
+
+The card draws a left-to-right transfer. An orchestrator on the left sends a red
+arrow through a hatched handoff packet in the center to a specialist on the
+right. Inside the packet are three rows: goal, facts, and constraints. Above the
+arrow is a teal label transfer control. Behind the orchestrator sits a faded
+stack labeled full history, with a charcoal X blocking it from the arrow and a
+callout scope context. Below the specialist is plain text next turn owner. The
+bottom line reads delegate the task; hand off control only when needed.
+
+Delegation assigns work while the orchestrator may still own the conversation.
+It might call a specialist, receive a result, summarize for the user, and continue.
+A handoff goes further by making the specialist the next turn owner: the user
+talks to that agent directly on the following step. Both patterns should pass a
+scoped packet, not a dump of internal logs. Include the objective, facts the
+specialist needs, and constraints such as tone, tools, or deadlines. Omit
+internal reasoning traces, failed attempts, and irrelevant history. Context
+minimization reduces token cost, stale instructions, and accidental leakage of
+secrets from one role to another.
+
+This differs from orchestrator-worker setups where a lead agent stays in control
+while workers return results upstream. It also differs from wrapping a specialist
+as a bounded tool with a fixed schema. Handoffs change who speaks next; delegation
+alone may not. The packet is the contract either way.
+
+Use delegation when the orchestrator must synthesize multiple specialists or
+guard the user experience. Use a handoff when the user should interact directly
+with the domain expert, such as moving from triage to billing support. Design
+packets as explicit structured objects you can log and review, and treat handoffs
+as a deliberate product choice because they are harder to unwind than a single
+tool result.

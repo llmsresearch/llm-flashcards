@@ -1,0 +1,45 @@
+---
+seq: 270
+title: "Agent Skills vs A2A AgentSkill"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "Agent Skills are local folders built around SKILL.md with progressive disclosure. An A2A AgentSkill is a remote capability entry on an Agent Card, not the contents of a local Skill folder."
+image: "/cards/341_agents.jpg"
+status: "done"
+related:
+  - "tool-use-function-calling"
+  - "agent-discovery-and-capability-cards"
+  - "agents-as-tools"
+---
+
+The card shows two objects separated by a not-equal sign. On the left, a folder
+labeled Agent Skill contains a hatched SKILL.md row and a resources row. Below
+are three numbered pills linked by arrows: discover, activate, and load files,
+with callouts for name and description first and instructions when relevant. On
+the right, an Agent Card document contains one hatched row labeled AgentSkill,
+with a callout for remote capability listing. The bottom line reads local
+procedure files are not sent over A2A.
+
+Agent Skills package instructions and supporting files on disk for a host agent.
+The intended flow is progressive disclosure. At discover, the agent reads only
+metadata such as name and description to decide relevance. At activate, it loads
+instructions when the skill applies. At load files, it opens bundled resources
+only as needed. That keeps context small compared with dumping every skill into
+the prompt up front. Skills are a local packaging pattern for procedures; they
+are not a network protocol.
+
+An A2A AgentSkill is a different object with a similar name. It is an entry on
+a remote Agent Card that advertises an ability the server offers to clients. It
+describes what the remote agent claims it can do, not the text inside a local
+SKILL.md folder. Nothing in the Skill directory is automatically transmitted
+over A2A when a client connects. Tool retrieval cards cover selecting relevant
+tool definitions from a large catalog; this card resolves the naming collision
+between local Skills and remote AgentSkill listings.
+
+Use Agent Skills when you author reusable playbooks for an agent you control.
+Use AgentSkill entries when you publish capabilities to external clients. Do not
+assume a remote AgentSkill implies the client can read your private skill files,
+and do not treat a local Skill folder as a substitute for an Agent Card entry
+when crossing process boundaries.

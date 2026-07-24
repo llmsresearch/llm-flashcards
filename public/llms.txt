@@ -6,7 +6,7 @@ Site: https://llmsresearch.github.io/llm-flashcards/
 Repository: https://github.com/llmsresearch/llm-flashcards
 Complete collection: https://llmsresearch.com/flashcards
 
-The public site contains 180+ free visual cards covering tokenization, embeddings, transformers, attention, training, fine-tuning, alignment, inference, decoding, quantization, prompt engineering, RAG, vector search, agents, evaluation, safety, APIs, and deployment.
+The public site contains 193+ free visual cards covering tokenization, embeddings, transformers, attention, training, fine-tuning, alignment, inference, decoding, quantization, prompt engineering, RAG, vector search, agents, evaluation, safety, APIs, and deployment.
 
 Each card explains one LLM concept with a visual diagram and a short practical explanation. The resource is useful for revising LLM architecture, RAG systems, AI agents, inference tradeoffs, and production deployment before AI engineering or ML technical interviews.
 

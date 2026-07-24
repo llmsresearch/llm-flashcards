@@ -1,0 +1,47 @@
+---
+seq: 275
+title: "Agent Identity, Security, and Observability"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "At every agent boundary, authenticate the caller, authorize the action, validate payloads, and treat peer output as untrusted. Propagate correlation IDs for traces and audit logs; observability explains behavior but does not grant permission."
+image: "/cards/346_agents.jpg"
+status: "done"
+related:
+  - "prompt-injection"
+  - "agent-discovery-and-capability-cards"
+  - "error-handling"
+---
+
+The card draws a horizontal request path from calling agent to receiving agent.
+A red arrow labeled request passes through four gate markers: identity,
+authorization, validation, and audit. Authorization alone is hatched. Above the
+path, a dashed teal correlation ID line links caller and receiver. Below sit
+trace span and audit log boxes connected to that line. Callouts mark validation
+as treat peer output as untrusted and audit log as record sensitive actions. The
+bottom line reads observability explains behavior; it does not grant permission.
+
+Cross-agent traffic needs the same discipline as external API calls. Identity
+establishes which agent or service principal is speaking. Authorization checks
+whether that principal may invoke the operation on the target resource. Validation
+inspects schema, size limits, and content policy on incoming Messages, Parts,
+Artifacts, and tool results. Peer output is untrusted input: another agent can
+be compromised, misconfigured, or hallucinating structured fields. Parsing alone
+is not safety. Propagate correlation or task identifiers so distributed traces
+and audit logs line up across hops. Traces help debug latency and failure;
+audit logs record sensitive actions for later review.
+
+This complements human approval gates and sandboxing cards rather than replacing
+them. TLS protects a connection. A task ID links records for the same work. A
+verified Agent Card signature can show that the card was not altered. None of
+these proves that an agent's claims are truthful or safe to execute blindly.
+Observability makes incidents diagnosable; it does not substitute for
+deny-by-default permissions on tools and data.
+
+Implement gates in infrastructure the model cannot bypass. Authenticate at connect
+using schemes advertised on the Agent Card, authorize per operation, validate
+before side effects, and log decisions with correlation IDs shared across services.
+Monitor anomalous cross-agent traffic the same way you monitor prompt injection
+in retrieved content, because delegated work can carry hostile text inside
+apparently valid envelopes.

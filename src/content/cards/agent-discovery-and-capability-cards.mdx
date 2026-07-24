@@ -1,0 +1,43 @@
+---
+seq: 266
+title: "Agent Discovery and Capability Cards"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "A2A clients discover remote agents through an Agent Card, commonly at a well-known URL. The card lists interfaces, capabilities, skills, and security requirements without exposing private prompts, tools, or memory."
+image: "/cards/337_agents.jpg"
+status: "done"
+related:
+  - "agent-communication-architecture"
+  - "a2a-messages-tasks-parts-and-artifacts"
+  - "agent-identity-security-and-observability"
+---
+
+The card draws a left-to-right discovery flow. A client agent on the left
+follows a teal discover arrow to a central Agent Card document. Below the card
+is the path /.well-known/agent-card.json in monospace text. Inside the card are
+rows for interfaces, capabilities, skills, and security. A red connect arrow
+runs from the client to a remote agent on the right. Callouts note choosing a
+supported binding at interfaces and advertised abilities at skills. The bottom
+line reads discover what an agent offers before sending work.
+
+In the current A2A model, the Agent Card is the public face of a remote agent.
+Field names in the spec include supportedInterfaces, capabilities with optional
+feature flags, skills, securitySchemes, and securityRequirements. The card tells
+a client which bindings are available, which optional features such as streaming
+or push the server advertises, which named skills it exposes, and which
+authentication schemes apply. It describes how to contact the agent, not the
+contents of its system prompt, private tools, or internal memory.
+
+This path is specific to remote agent discovery over A2A. MCP server discovery
+inside a host is a different mechanism and a different card. Discovery also does
+not replace authorization at request time. Reading a card proves what the server
+claims to support, not that every claim is safe or truthful. Clients still
+validate payloads and enforce policy after connect.
+
+Use Agent Cards when agents may live in other organizations or processes and
+the client must negotiate interfaces before sending tasks. Fetch the well-known
+document, pick a supported interface, satisfy advertised security requirements,
+then open work using the protocol types defined elsewhere. Treat the card as a
+contract surface, not as executable logic.

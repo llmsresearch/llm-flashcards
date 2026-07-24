@@ -1,0 +1,47 @@
+---
+seq: 265
+title: "Direct, Async, and Event Communication"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "Direct requests wait on one peer, asynchronous tasks let a client track work over time, and events notify many subscribers without calling each one. Workflows often combine all three."
+image: "/cards/336_agents.jpg"
+status: "done"
+related:
+  - "agent-communication-architecture"
+  - "a2a-result-delivery"
+  - "event-bus-and-delivery-reliability"
+---
+
+The card places three small sketches side by side. On the left, direct
+communication shows agent A sending a request to agent B and waiting for a
+result, labeled wait for result, with a callout for tight coupling. In the
+middle, async task shows agent A sending a hatched task card while a separate
+arrow returns status later, labeled track over time, with independent lifetime.
+On the right, events show a publisher sending to a topic while two subscribers
+receive fan-out, labeled notify many, with loose coupling. A line below reads
+choose by response time, work duration, and number of listeners.
+
+Direct calls fit when the caller needs an answer before it can continue and
+when the work fits one round trip. The caller blocks on the peer, which keeps
+the contract simple but binds lifetimes together. Asynchronous tasks fit when
+work outlasts a single HTTP request or when the client should keep doing other
+things while a remote agent progresses. The client holds a task identifier and
+checks status or receives callbacks rather than holding a connection open.
+Events fit when one state change should wake many consumers without the
+publisher knowing their names, such as notifying an indexer, a notifier, and an
+analyst that an order was paid.
+
+These are interaction styles at a high level, not a catalog of A2A RPC method
+names or broker internals. Delivery retries, deduplication, and poison-message
+handling belong on a separate card. Architecture layers for coordination,
+state, protocol, and transport are also separate. The comparison here is timing
+and coupling: how long the caller waits, how independent the work lifetime is,
+and how many listeners must react.
+
+Choose direct calls for short bounded questions. Choose async tasks when work
+is long-running or may need input mid-flight. Choose events when many agents or
+services should react to the same fact. One workflow may open with a direct
+planning call, delegate an async task to a specialist, and publish an event when
+the artifact lands so downstream jobs can start without tight coupling.

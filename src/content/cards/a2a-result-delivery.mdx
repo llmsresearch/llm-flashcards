@@ -1,0 +1,46 @@
+---
+seq: 269
+title: "A2A Result Delivery"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "19. Multi-Agent Systems & A2A"
+category: "Agents & Tools"
+summary: "A2A can return results on the original request, expose task state for polling, stream updates over SSE, or push updates to a webhook. Choose from task duration, connection lifetime, and how quickly updates are needed."
+image: "/cards/340_agents.jpg"
+status: "done"
+related:
+  - "a2a-task-lifecycle"
+  - "agent-discovery-and-capability-cards"
+  - "direct-async-and-event-communication"
+---
+
+The card places a client agent on the left and a remote agent on the right with
+four separate paths between them. From top to bottom: a request-and-return arrow
+labeled sync wait, a circular arrow labeled poll GetTask, a wavy teal line
+labeled SSE stream, and a dashed teal arrow into a webhook push endpoint. Under
+the remote agent are status pills working then completed. Callouts mark sync wait
+as one connection stays open and webhook push as updates arrive after disconnect.
+A choice line at the bottom reads short task wait, long task poll stream or push.
+
+A2A supports more than one way to learn that work finished or progressed.
+Synchronous wait keeps the original connection open until the server reaches a
+terminal or interrupted state. An interrupted response may ask for input or
+authentication instead of returning a final result. Polling lets the client
+disconnect and call GetTask later to read state and artifacts, which suits long
+runs and mobile clients. Server-sent events stream incremental updates on a
+long-lived HTTP response, which helps UIs that want partial progress without
+repeated polls. Webhook push delivers updates to a client-provided endpoint
+after disconnect, which fits backend orchestrators that cannot hold a browser
+connection open.
+
+Streaming and push require the server to advertise matching capabilities on its
+Agent Card. Not every deployment implements every mode. Webhook delivery is not
+the same mechanism as SSE even though both can carry task updates. This card
+focuses on result delivery for A2A work, not the high-level comparison of direct,
+async, and event interaction styles covered elsewhere.
+
+Pick sync wait when tasks finish quickly and the client can block. Pick polling
+when connections are fragile or work lasts minutes to hours. Pick SSE when the
+client is online and needs frequent progress events. Pick webhooks when a server
+orchestrator should react after the caller has moved on. Match mode to duration,
+connection lifetime, and latency needs rather than enabling every option by default.
