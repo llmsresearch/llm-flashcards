@@ -37,6 +37,19 @@ jobs:
       - name: Build with Astro
         run: npm run build
 
+      - name: Publish and verify main-domain content
+        run: node scripts/sync-main-site.mjs
+        env:
+          MIGRATE_CARDS_TO_MAIN: ${{ vars.MIGRATE_CARDS_TO_MAIN }}
+          MAIN_SITE_DEPLOY_HOOK: ${{ secrets.MAIN_SITE_DEPLOY_HOOK }}
+          GITHUB_TOKEN: ${{ github.token }}
+
+      # Enable only after every destination on llmsresearch.com is live.
+      - name: Prepare optional main-domain redirects
+        run: node scripts/migrate-to-main.mjs
+        env:
+          MIGRATE_CARDS_TO_MAIN: ${{ vars.MIGRATE_CARDS_TO_MAIN }}
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
