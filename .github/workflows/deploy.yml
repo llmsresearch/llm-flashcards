@@ -42,6 +42,7 @@ jobs:
         env:
           MIGRATE_CARDS_TO_MAIN: ${{ vars.MIGRATE_CARDS_TO_MAIN }}
           MAIN_SITE_DEPLOY_HOOK: ${{ secrets.MAIN_SITE_DEPLOY_HOOK }}
+          USE_DIRECT_CARD_WEBHOOK: ${{ vars.USE_DIRECT_CARD_WEBHOOK }}
           GITHUB_TOKEN: ${{ github.token }}
 
       # Enable only after every destination on llmsresearch.com is live.

@@ -11,11 +11,11 @@ const hookUrl = new URL(hook);
 if (hookUrl.origin !== 'https://api.vercel.com' || !hookUrl.pathname.startsWith('/v1/integrations/deploy/')) {
   throw new Error('Unexpected deployment hook host or path');
 }
-try {
+if (process.env.USE_DIRECT_CARD_WEBHOOK !== 'true') try {
   const response = await fetch(hook, { method: 'POST', signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error('Hook rejected');
 } catch { throw new Error('Could not trigger the main website build. Hook URL redacted.'); }
-console.log('Website rebuild requested. Waiting for the public card revision to be live.');
+console.log('Waiting for the public card revision to be live (direct webhook or deploy hook).');
 for (let attempt = 0; attempt < 48; attempt++) {
   try {
     const response = await fetch(`https://llmsresearch.com/cards/content-version.json?revision=${revision}&attempt=${attempt}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
