@@ -1,0 +1,32 @@
+---
+seq: 245
+title: "Recall@k, MRR and nDCG"
+seoTitle: "RAG Retrieval Metrics: Recall@k, MRR and nDCG"
+part: "VII. Retrieval & Grounding"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "Retrieval & Evaluation"
+summary: "Compare retrieval metrics with a worked ranking: Recall@k measures coverage, MRR rewards the first relevant result, and nDCG uses relevance grades."
+image: "/cards/360_retrieval-metrics.jpg"
+status: "done"
+related: ["top-k-retrieval", "reranking", "hybrid-search"]
+---
+
+Recall@k, reciprocal rank and nDCG measure different properties of a search result list. A ranking can retrieve useful documents yet place the best ones too low, so one metric rarely explains every failure.
+
+## Work through one ranking
+
+The first five documents in the example have relevance grades 0, 2, 0, 1 and 0. Another relevant document, graded 1, is outside the first five. Treating every positive grade as relevant, Recall@5 is therefore 2/3: two of the three relevant documents were retrieved.
+
+The first relevant result is at rank two, so reciprocal rank is 1/2. MRR is the mean of reciprocal rank over multiple queries. One query's value is reciprocal rank, not a separate average.
+
+## nDCG also uses relevance strength
+
+Using gain `2^grade - 1` and discount `log2(rank + 1)`, DCG@5 is about 2.323. The ideal ranking places grades 2, 1 and 1 first, giving about 4.131. Their ratio is nDCG@5, about 0.562.
+
+State the relevance labels, cutoff and gain convention when reporting results. Recall needs a defined set of relevant documents; incomplete judgments can hide missing results. These metrics score retrieval, not whether the final generated answer is correct.
+
+## Sources
+
+- [Sentence Transformers retrieval evaluators](https://www.sbert.net/docs/package_reference/sentence_transformer/evaluation.html)
+- [Microsoft: nDCG and retrieval-quality evaluation](https://learn.microsoft.com/en-us/azure/databricks/vector-search/retrieval-quality-eval)

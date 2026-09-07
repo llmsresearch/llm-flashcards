@@ -1,0 +1,32 @@
+---
+seq: 258
+title: "Filtered Vector Search"
+seoTitle: "Filtered vector search: Explained Visually"
+part: "VII. Retrieval & Grounding"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "Retrieval & Rag"
+summary: "Compare filtering after global vector search with searching within eligible documents, using a worked top-three example and approximate-search caveats."
+image: "/cards/371_filtered-vector-search.jpg"
+status: "done"
+related: ["ann-search-hnsw", "top-k-retrieval", "permission-aware-rag"]
+---
+
+Filtered vector search combines similarity ranking with a condition such as document type, tenant or language. Where the filter is applied can change which results remain available.
+
+## Why filtering a short list can lose results
+
+Suppose the global nearest-neighbor order is A, B, C, D, E. A and B are blog posts; C, D and E are manuals. If the system retrieves the global top three and then keeps manuals, only C survives. Searching for the top three among eligible manuals instead returns C, D and E in this exact toy ranking.
+
+The difference is the candidate set. Post-filtering cannot recover D and E after the earlier cutoff has already removed them. Retrieving more candidates can help, but an adequate candidate count depends on filter selectivity and the data.
+
+## Approximate indexes add another variable
+
+Real approximate nearest-neighbor systems implement filtering in different ways. A filter during traversal, a filtered candidate set and a filter after retrieval are not interchangeable algorithms. Measure recall and latency with realistic filters, including restrictive ones.
+
+For access control, enforce eligibility in trusted application or retrieval logic before any text reaches the model. A ranking strategy is not by itself proof that permissions are enforced.
+
+## Sources
+
+- [Microsoft: Vector query filters](https://learn.microsoft.com/en-us/azure/search/vector-search-filters)
+- [Qdrant vector search filtering](https://qdrant.tech/articles/vector-search-filtering/)

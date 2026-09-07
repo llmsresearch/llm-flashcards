@@ -1,0 +1,36 @@
+---
+seq: 325
+title: "pass@k vs pass^k"
+seoTitle: "Repeated success: pass@k versus pass^k: Explained Visually"
+part: "X. Measuring"
+partNumber: 10
+chapter: "22. Evaluation & Benchmarks"
+category: "Evaluation"
+summary: "Distinguish finding at least one successful attempt from succeeding on every attempt, with a worked pass@3 and pass^3 probability example."
+image: "/cards/372_repeated-success.jpg"
+status: "done"
+related: ["humaneval-and-gsm8k", "self-consistency", "human-evaluation"]
+---
+
+pass@k and pass^k ask different questions about repeated attempts. pass@k asks whether at least one of k attempts succeeds. pass^k asks whether all k attempts succeed. The first measures a chance to find a solution; the second measures repeatability.
+
+## One task, three independent attempts
+
+For an illustrative task where every independent attempt has success probability 0.8:
+
+```text
+pass@3 = 1 - (1 - 0.8)^3 = 0.992
+pass^3 = 0.8^3 = 0.512
+```
+
+At least one success is very likely, while getting three successes is much less likely. The attempts are fresh runs of the same task, not three steps within one agent run.
+
+## Report the experiment, not just the label
+
+The formulas above assume independent attempts and a fixed success probability for this one task. Measured benchmarks may estimate their metrics from finite samples. Task difficulty also varies, so compute the appropriate per-task quantity before aggregating; raising one pooled success rate to a power can give a different answer.
+
+For pass@k to describe a useful workflow, the system also needs a way to identify a successful candidate. Producing one correct answer somewhere among several attempts does not mean the user can reliably select it.
+
+## Sources
+
+- [Yao et al., tau-bench, 2024](https://arxiv.org/html/2406.12045v1)

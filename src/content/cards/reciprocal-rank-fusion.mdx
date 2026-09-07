@@ -1,0 +1,29 @@
+---
+seq: 243
+title: "Reciprocal Rank Fusion (RRF)"
+seoTitle: "Reciprocal Rank Fusion: How RRF Combines Search Results"
+part: "VII. Retrieval & Grounding"
+partNumber: 7
+chapter: "16. Semantic Search & Retrieval"
+category: "Retrieval & Rag"
+summary: "See how Reciprocal Rank Fusion combines keyword and vector search rankings, with a worked example that avoids comparing incompatible scores."
+image: "/cards/349_reciprocal-rank-fusion.jpg"
+status: "done"
+related: ["hybrid-search", "reranking", "top-k-retrieval"]
+---
+
+Reciprocal Rank Fusion combines ranked search results without comparing their raw scores. A keyword retriever and a vector retriever can use unrelated score scales. RRF uses each document's position in each list instead.
+
+## Calculate one contribution per list
+
+A document at rank `r` contributes `1 / (c + r)`. Ranks start at one. Add its contributions across the lists; a document absent from a list contributes zero.
+
+In the card, keyword search returns A, B, C. Vector search returns B, D, A. With `c = 60`, B receives `1/62 + 1/61`, about 0.03252. A receives `1/61 + 1/63`, about 0.03227. B therefore finishes slightly ahead of A. D and C each receive only one contribution.
+
+## What RRF does not measure
+
+RRF rewards strong positions across retrievers. It does not inspect document text or establish whether a passage answers the question. The rank constant and the number of candidates retained affect the result. Evaluate the fused list against labeled queries, and consider a separate reranker when the final ordering needs a closer relevance judgment.
+
+## Sources
+
+- [Elasticsearch RRF reference](https://www.elastic.co/docs/reference/elasticsearch/rest-apis/reciprocal-rank-fusion)

@@ -1,0 +1,32 @@
+---
+seq: 170
+title: "FP8 vs INT8"
+seoTitle: "FP8 vs INT8: Range, Precision and Scaling Explained"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization"
+summary: "Compare FP8 floating-point formats with INT8 integer quantization: bit allocation, value spacing, scaling and accumulation precision."
+image: "/cards/359_fp8-vs-int8.jpg"
+status: "done"
+related: ["fp32-vs-fp16-vs-bf16-vs-int8-vs-int4", "mixed-precision", "post-training-quantization-ptq"]
+---
+
+FP8 and INT8 both use eight bits per stored value, but they represent numbers differently. FP8 divides bits among sign, exponent and fraction. INT8 stores an integer that a quantization rule maps back to an approximate real value.
+
+## Floating-point spacing versus integer spacing
+
+The FP8 formats shown are E4M3, with four exponent bits and three fraction bits, and E5M2, with five exponent bits and two fraction bits. Both also have one sign bit. More exponent bits support a wider range; more fraction bits provide finer precision within that range.
+
+An affine INT8 mapping uses a scale and a zero point. At a fixed scale, adjacent integers represent evenly spaced real values. FP8 spacing changes with magnitude because of its exponent.
+
+## Eight-bit storage is not the whole computation
+
+
+Scaling strategy, rounding, saturation and hardware support all matter. Matrix multiplication may store inputs at eight bits while accumulating results at a higher precision. Neither format guarantees better accuracy or speed for every workload.
+
+Keep the representation, scaling granularity and accumulator precision separate when comparing implementations. Saying only that a model is "8-bit" leaves several consequential choices unspecified.
+
+## Sources
+
+- [Transformer Engine 2.18: FP8 and FP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)

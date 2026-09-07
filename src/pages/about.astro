@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+const freeCount = (await getCollection("cards")).filter((c) => c.data.status === "done").length;
 
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -41,7 +43,7 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
           recall than text blocks when you are answering questions under pressure.
         </p>
 
-        <h2>The Open Source Foundation: 193+ cards</h2>
+        <h2>The free visual library: {freeCount} cards</h2>
         <p>
           This site hosts the core foundational cards completely for free. It
           provides a solid practical understanding of the system so you can discuss

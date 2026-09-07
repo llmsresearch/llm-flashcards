@@ -1,0 +1,36 @@
+---
+seq: 157
+title: "LLM GPU Memory Budget"
+seoTitle: "LLM GPU Memory: Weights, KV Cache and Runtime Overhead"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Calculate LLM inference memory from model weights, KV cache and runtime overhead, with a worked 8B-model example on a 24 GiB GPU."
+image: "/cards/348_gpu-memory-budget.jpg"
+status: "done"
+related: ["kv-cache-inference", "grouped-query-attention", "fp32-vs-fp16-vs-bf16-vs-int8-vs-int4"]
+---
+
+An LLM's weight size is only one part of its GPU memory requirement. Inference also needs the key and value cache for active sequences, plus runtime buffers and temporary allocations. A model whose weights fit can still run out of memory when requests arrive.
+
+## A worked 24 GiB example
+
+Eight billion BF16 parameters take about 14.9 GiB at two bytes per parameter. For a standard full-attention decoder, estimate the KV cache as:
+
+```text
+2 × layers × KV heads × head dimension × bytes per value
+  × cached tokens per request × concurrent requests
+```
+
+The leading two counts keys and values. With 32 layers, eight KV heads, a head dimension of 128, two-byte cache values, 8,192 tokens per request and four concurrent requests, the cache takes 4 GiB. Add an illustrative 2 GiB for runtime overhead: the total is about 20.9 GiB, leaving 3.1 GiB on a 24 GiB GPU.
+
+## Concurrency changes the answer
+
+At eight concurrent requests, the same cache becomes 8 GiB. The total rises to about 24.9 GiB, exceeding the device capacity. Shorter contexts, fewer simultaneous requests or a smaller cache representation can change that calculation.
+
+This is a capacity estimate, not a promise that a particular model will fit. Serving engines reserve memory differently, and architectures with sliding windows, compressed caches or shared prefixes need a different cache calculation. Measure peak memory with the intended workload.
+
+## Sources
+
+- [NVIDIA NIM memory troubleshooting](https://docs.nvidia.com/nim/large-language-models/latest/troubleshooting/memory.html)

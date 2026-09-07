@@ -1,0 +1,29 @@
+---
+seq: 287
+title: "Programmatic Tool Calling"
+seoTitle: "Programmatic Tool Calling: Run Tool Loops Outside LLM Context"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "18. Agent Foundations"
+category: "Agents & Tools"
+summary: "See how programmatic tool calling runs loops and filters over tool results in an execution environment, returning a compact result to the model."
+image: "/cards/353_programmatic-tool-calling.jpg"
+status: "done"
+related: ["tool-use-function-calling", "code-execution-agents", "agents-as-tools"]
+---
+
+Programmatic tool calling lets model-written code coordinate tool calls inside an execution environment. The code can loop over records, combine results and filter them before returning a summary to the model.
+
+## Keep intermediate records in the execution environment
+
+In a conventional loop, each tool result enters the conversation and the model chooses the next action. With programmatic coordination, several calls and intermediate calculations can happen within one code execution. The model receives the selected output instead of every raw record.
+
+The card shows tool records being reduced to two counts, A: 4 and C: 1. That small result is enough for the next response; the raw records stay in the execution environment. This can reduce context usage when most returned data is only needed for filtering or aggregation.
+
+## Execution still needs boundaries
+
+The runtime determines which tools are callable and enforces their permissions. Generated code is not a reason to grant broader access. Timeouts, partial failures and unintended side effects still need handling, especially when a loop calls a tool many times. Return enough evidence to explain the result without dumping all intermediate data into context.
+
+## Sources
+
+- [Anthropic advanced tool use](https://www.anthropic.com/engineering/advanced-tool-use)

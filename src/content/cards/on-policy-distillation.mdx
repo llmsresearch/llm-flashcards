@@ -1,0 +1,32 @@
+---
+seq: 181
+title: "On-Policy Distillation"
+seoTitle: "On-Policy Distillation: Learning from Student-Generated Sequences"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Training & Distillation"
+summary: "Understand how on-policy distillation trains a student on its own generated prefixes while a teacher supplies feedback on those same states."
+image: "/cards/352_on-policy-distillation.jpg"
+status: "done"
+related: ["knowledge-distillation", "supervised-fine-tuning-sft", "kl-penalty"]
+---
+
+On-policy distillation trains a student using sequences the current student generates. The teacher provides feedback on those sequences, including prefixes the student would encounter when producing answers on its own.
+
+## Why the generated prefix matters
+
+With a fixed teacher dataset, the student mostly trains on the teacher's continuations. At inference time, one different student token can lead to a prefix that was never in that dataset. The next prediction must then be made from a different state.
+
+In the card's loop, the student samples a continuation. The teacher evaluates the same prefix, and a distillation loss encourages the student to match the teacher's guidance there. Training updates the student, then later rollouts reflect its changed behavior. The teacher remains fixed in this example.
+
+## The tradeoff
+
+The training data follows the student's current behavior, but teacher evaluation and fresh generation add cost. Implementations differ in their divergence objective, feedback representation and mixture of on-policy and fixed data.
+
+Do not confuse this with ordinary supervised training on saved teacher answers. The defining feature here is who generated the states being trained on: the current student.
+
+## Sources
+
+- [On-Policy Distillation, ICLR 2024](https://arxiv.org/abs/2306.13649)
+- [verl on-policy distillation implementation](https://github.com/verl-project/verl/blob/main/docs/algo/opd.md)

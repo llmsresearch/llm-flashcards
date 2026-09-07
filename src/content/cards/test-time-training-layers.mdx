@@ -1,0 +1,31 @@
+---
+seq: 62
+title: "Test-Time Training Layers"
+seoTitle: "Test-time training layers: Explained Visually"
+part: "II. The Transformer"
+partNumber: 2
+chapter: "5. Beyond the Standard Transformer"
+category: "Architecture & Memory"
+summary: "Explore the TTT-layer architecture from Sun et al.: fast weights updated from the current sequence, distinct from fixed outer model parameters."
+image: "/cards/370_test-time-training-layers.jpg"
+status: "done"
+related: ["in-context-learning", "test-time-compute", "memory-in-agents"]
+---
+
+Test-time training layers use a small learning process as the layer's sequence memory. This card covers the architecture introduced by Sun and colleagues in 2024, not every method that adapts a model at inference time.
+
+## A learned state that changes within the sequence
+
+The layer holds fast weights, written as W in the card. Each observed token produces views used in a local reconstruction objective. A gradient update changes W, and a query reads from the updated state. Later tokens therefore encounter a state shaped by earlier tokens.
+
+The outer model parameters define the views and learning mechanism. They are learned during training and remain fixed in the illustrated inference pass. The changing fast state is separate from those outer parameters and resets for an independent sequence.
+
+## What the state remembers
+
+The fast weights compress information from the processed sequence into a learned representation. They are not a lossless record of every past token and are not an ordinary KV cache containing all earlier key and value vectors.
+
+This makes the term "training" precise: an update occurs inside the layer while processing the sequence. It does not mean that every request permanently fine-tunes the full deployed model.
+
+## Sources
+
+- [Sun et al., Learning to Learn at Test Time, 2024](https://arxiv.org/html/2407.04620v1)

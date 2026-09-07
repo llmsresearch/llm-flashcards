@@ -1,0 +1,31 @@
+---
+seq: 285
+title: "Agent Harnesses Across Sessions"
+seoTitle: "Agent Harnesses: How AI Agents Resume Long-Running Work"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "18. Agent Foundations"
+category: "Agents & Tools"
+summary: "See how an agent harness carries progress across fresh sessions through durable task state, artifacts, tests and verification of the current workspace."
+image: "/cards/362_agents-across-sessions.jpg"
+status: "done"
+related: ["memory-in-agents", "planning-task-decomposition", "agent-loop"]
+---
+
+An agent harness is the surrounding software that manages an agent's work. For a task spanning multiple sessions, it needs to preserve usable state after the model's immediate conversation context ends.
+
+## Resume from artifacts and verified state
+
+The card separates the working session from durable artifacts: a task list, progress notes, code changes and test results. A fresh session reads those artifacts, checks the current workspace, selects unfinished work and records what changed.
+
+That first verification matters. A note saying "tests pass" describes an earlier observation. Files may have changed, a previous run may have stopped midway, or a dependency may now be unavailable. A short progress record helps the next session locate the work; it does not replace checking the work itself.
+
+## Keep the next action concrete
+
+Useful handoff state names completed changes, unresolved failures and the next verifiable step. Saving every past conversation turn is less useful if the agent still cannot tell which task is unfinished or whether the application runs.
+
+This is distinct from long-term user memory. The purpose is to continue a specific piece of work across fresh contexts while maintaining a record that the next session can test.
+
+## Sources
+
+- [Anthropic long-running agent harnesses](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)

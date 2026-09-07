@@ -1,0 +1,36 @@
+---
+seq: 167
+title: "Compute-Bound vs Memory-Bound Inference"
+seoTitle: "LLM Inference Bottlenecks: Compute vs Memory Bandwidth"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Decoding"
+summary: "Use arithmetic intensity to distinguish compute and memory bottlenecks in LLM inference, with a simple roofline calculation."
+image: "/cards/358_compute-or-memory.jpg"
+status: "done"
+related: ["latency-ttft-vs-tps", "flops-estimation", "kv-cache-inference"]
+---
+
+Compute-bound inference is limited mainly by arithmetic throughput. Memory-bound inference is limited mainly by moving data from memory. Arithmetic intensity, measured as operations per byte moved, helps identify which limit a workload is approaching.
+
+## Read the roofline bound
+
+For a simplified device with 200 TFLOP/s of compute and 2 TB/s of memory bandwidth, the throughput bound is the smaller of:
+
+```text
+200 TFLOP/s
+2 TB/s × arithmetic intensity
+```
+
+At 20 FLOP per byte, bandwidth limits the bound to 40 TFLOP/s. At 200 FLOP per byte, the bandwidth term is 400 TFLOP/s, so compute limits it to 200 TFLOP/s. The example uses decimal units and illustrative hardware figures.
+
+## Why batching can change the bottleneck
+
+Reusing loaded weights across more tokens can raise arithmetic intensity. This helps explain why prompt processing and single-request token generation can behave differently on the same accelerator. Context length, batch size and kernel choice affect the balance.
+
+The roofline is an upper bound, not a latency prediction. Communication, scheduling, cache behavior and imperfect kernel utilization can keep real throughput below both limits. Measure the actual stage before choosing an optimization.
+
+## Sources
+
+- [How to Scale Your Model: inference](https://jax-ml.github.io/scaling-book/inference/)

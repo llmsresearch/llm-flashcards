@@ -34,7 +34,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
 const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout title={`${d.title} - LLMs Visual Card`} description={d.summary} ogImage={d.image}>
+<BaseLayout title={d.seoTitle ?? `${d.title} - LLMs Visual Card`} description={d.summary} ogImage={d.image}>
   <div class="wrap">
     <div class="reading">
     <nav class="crumbs">

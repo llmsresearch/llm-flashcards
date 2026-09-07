@@ -1,0 +1,29 @@
+---
+seq: 171
+title: "FP4 Block Scaling"
+seoTitle: "FP4 block scaling: Explained Visually"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "12. Quantization & Efficiency"
+category: "Quantization"
+summary: "Calculate how OCP MXFP4 shares an exponent scale across 32 FP4 values, and why scale storage raises the effective cost above four bits per value."
+image: "/cards/368_fp4-block-scaling.jpg"
+status: "done"
+related: ["fp8-vs-int8", "what-is-quantization", "post-training-quantization-ptq"]
+---
+
+Block scaling stores several low-precision values together with a shared scale. The card uses the OCP MXFP4 format specifically: a block of 32 E2M1 FP4 values and one E8M0 scale. Other formats called FP4 can use different layouts.
+
+## The shared scale changes the represented values
+
+Four example stored values are 0.5, 1, 2 and 3. With a scale of 2, they represent 1, 2, 4 and 6. With a scale of 16, the same stored values represent 8, 16, 32 and 48. Each value still has a coarse four-bit representation; the scale changes the block's magnitude range.
+
+## Count the scale bits too
+
+Thirty-two four-bit values require 128 bits. Add the eight-bit scale and the block requires 136 bits, or 4.25 bits per value before padding and other storage overhead.
+
+A shared scale is a compromise. Values with very different magnitudes can compete for the block's limited precision. Block size, rounding, scaling rules and the surrounding computation influence accuracy. Four-bit storage alone says neither how much the complete model occupies nor which precision is used to accumulate products.
+
+## Sources
+
+- [OCP Microscaling Formats v1.0, September 2023](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf)

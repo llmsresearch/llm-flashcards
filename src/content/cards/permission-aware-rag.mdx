@@ -1,0 +1,31 @@
+---
+seq: 257
+title: "Permission-Aware RAG"
+seoTitle: "Permission-Aware RAG: Keep Private Documents Out of Answers"
+part: "VII. Retrieval & Grounding"
+partNumber: 7
+chapter: "17. Retrieval-Augmented Generation"
+category: "Retrieval & Rag"
+summary: "Follow document permissions from retrieval into model context so a RAG answer uses only passages the requesting user is allowed to read."
+image: "/cards/350_permission-aware-rag.jpg"
+status: "done"
+related: ["what-is-rag", "prompt-injection", "agent-identity-security-and-observability"]
+---
+
+Permission-aware RAG restricts retrieval to documents the requesting user may read. Relevance alone is not enough: a salary document can be an excellent semantic match and still be unavailable to an engineering employee.
+
+## Apply access rules before context assembly
+
+The application authenticates the caller and obtains their trusted identity and group memberships. Retrieval then applies the corresponding document permissions before any passages enter the model's context. Asking the model to ignore unauthorized text after receiving it leaves the sensitive text exposed.
+
+The example separates Mia's engineering access from Lee's HR access. Both may retrieve the general budget document. Only Lee may retrieve the salary document. The same question can therefore produce different permitted evidence for the two people.
+
+## Carry permissions through the whole path
+
+Chunks need the access rules of their source documents, and permission changes must reach the retrieval system. A response cache also needs an access boundary: reusing another user's answer can leak content even when the current retrieval is correctly filtered.
+
+Use trusted application logic for these checks. A user-supplied group name or a model-generated filter is not evidence of permission. The model should receive only the evidence the caller is entitled to use.
+
+## Sources
+
+- [Microsoft document-level access control](https://learn.microsoft.com/en-us/azure/search/search-document-level-access-overview)

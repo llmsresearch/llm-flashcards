@@ -1,0 +1,31 @@
+---
+seq: 342
+title: "Answer or Abstain: Risk and Coverage"
+seoTitle: "Answer or abstain: risk and coverage: Explained Visually"
+part: "XI. Governing"
+partNumber: 11
+chapter: "23. Safety & Ethics"
+category: "Evaluation & Uncertainty"
+summary: "Measure selective answering with coverage and error risk, and see why fewer wrong answers can come at the cost of leaving more questions unanswered."
+image: "/cards/373_answer-or-abstain.jpg"
+status: "done"
+related: ["hallucination", "factual-grounding", "human-evaluation"]
+---
+
+An answering system can decline questions when its evidence is insufficient. Selective answering measures both how often the system answers and how often those answers are wrong.
+
+## Use two denominators
+
+Coverage is answered questions divided by all questions. Error risk is incorrect answers divided by answered questions. Abstentions are not counted as correct answers.
+
+In the card, answering all 100 questions produces 10 wrong answers: coverage is 100% and risk is 10%. A selective policy answers 60 questions and gets three wrong: coverage is 60% and risk is 5%. It makes fewer errors among its answers but leaves 40 questions unanswered.
+
+## Choose a threshold with held-out data
+
+Varying an abstention threshold gives a risk-coverage curve. Evaluate the threshold on held-out questions that resemble the intended use. A model's confident wording is not enough to establish that its answer is reliable.
+
+The acceptable balance depends on the cost of an incorrect answer and the cost of declining one. Distribution shifts can change the curve after deployment. Monitor both quantities so that an apparent accuracy improvement does not hide a system that has stopped answering useful questions.
+
+## Sources
+
+- [Kamath et al., Selective Question Answering under Domain Shift, ACL 2020](https://aclanthology.org/2020.acl-main.503/)

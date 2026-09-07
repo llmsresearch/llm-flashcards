@@ -1,0 +1,32 @@
+---
+seq: 72
+title: "Muon Optimizer"
+seoTitle: "Muon update orthogonalization: Explained Visually"
+part: "III. Training the Model"
+partNumber: 3
+chapter: "6. Learning Fundamentals"
+category: "Training & Optimization"
+summary: "Understand Muon through a matrix example: orthogonalizing a momentum update, approximate Newton-Schulz iterations, and which parameters need other updates."
+image: "/cards/369_muon-updates.jpg"
+status: "done"
+related: ["adam-optimizer", "learning-rate-schedule", "gradient-clipping"]
+---
+
+Muon transforms a matrix-shaped momentum update before applying it to the model. Its defining operation approximately orthogonalizes that update, changing how its singular directions are scaled.
+
+## Transform the update matrix
+
+For an idealized singular value decomposition `M = U S V^T`, the corresponding orthogonalized update is `U V^T`. The card's diagonal example starts with singular values 4 and 1. The ideal operation replaces both nonzero singular values with 1, so the larger direction no longer dominates in the same way.
+
+The operation applies to the update. It does not require the model's weight matrix itself to become orthogonal. That distinction prevents a common misunderstanding of what the optimizer constrains.
+
+## Approximation and parameter groups
+
+Practical Muon implementations use a small number of Newton-Schulz-style iterations instead of computing an exact SVD on every step. Finite iterations are an approximation, and practical recipes also include scaling and other optimizer choices.
+
+Muon is commonly applied to hidden-layer weight matrices. Biases, embeddings and other parameter groups may use a different optimizer such as AdamW. Compare the complete training recipe, rather than assuming one orthogonalization step defines every parameter update or guarantees a better result.
+
+## Sources
+
+- [Keller Jordan: Muon design and Newton-Schulz iteration](https://kellerjordan.github.io/posts/muon/)
+- [PyTorch Muon reference](https://docs.pytorch.org/docs/main/generated/torch.optim.Muon.html)

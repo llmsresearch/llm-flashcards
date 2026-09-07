@@ -8,6 +8,7 @@ const cards = defineCollection({
   schema: z.object({
     seq: z.number(),
     title: z.string(),
+    seoTitle: z.string().optional(),
     part: z.string(),
     partNumber: z.number(),
     chapter: z.string(),

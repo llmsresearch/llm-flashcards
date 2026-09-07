@@ -1,0 +1,31 @@
+---
+seq: 165
+title: "Semantic Cache vs Prefix Cache"
+seoTitle: "Semantic Caching vs Prompt Caching: What Gets Reused?"
+part: "V. Running the Model"
+partNumber: 5
+chapter: "11. Inference & Decoding"
+category: "Inference & Caching"
+summary: "Compare semantic response caching with exact-prefix KV caching: what each reuses, when it saves work, and when a cached answer must be rejected."
+image: "/cards/361_semantic-vs-prefix-cache.jpg"
+status: "done"
+related: ["kv-cache", "context-window", "retrieval-augmented-context"]
+---
+
+Prefix caching reuses model computation for an exact shared token prefix. Semantic response caching reuses a saved answer for a sufficiently similar request. The two mechanisms save different work.
+
+## Prefix caching still generates an answer
+
+Two requests can begin with the same instructions and document text but end with different questions. A prefix cache reuses the saved key and value states for the shared beginning, then processes the different endings and generates each answer. Similar wording alone does not establish an exact token-prefix match.
+
+## Semantic caching can reuse the response
+
+A semantic cache searches for a similar previous question. On a valid hit, it returns the saved answer and can skip retrieval and generation. On a miss, the application runs the usual answer path.
+
+Similarity is only one validity check. The card's refund-policy example rejects an answer based on policy v1 when the request needs policy v2, even though the questions sound identical. Tenant, permissions, source version and freshness can all change whether reuse is allowed.
+
+Choose the cache according to the work being reused. Reusing a prefix does not mean reusing its final answer, and a semantically close question does not prove that an old answer remains appropriate.
+
+## Sources
+
+- [Redis semantic cache](https://redis.io/docs/latest/develop/use-cases/semantic-cache/)

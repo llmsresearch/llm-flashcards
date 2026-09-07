@@ -1,0 +1,31 @@
+---
+seq: 276
+title: "MCP Authorization"
+seoTitle: "MCP Authorization: OAuth, Scopes and Resource-Bound Tokens"
+part: "VIII. Agents"
+partNumber: 8
+chapter: "18. Agent Foundations"
+category: "Agents & Security"
+summary: "Follow authorization for protected HTTP MCP servers: resource discovery, an access token for the server, and permission checks before tool execution."
+image: "/cards/363_mcp-authorization.jpg"
+status: "done"
+related: ["agent-identity-security-and-observability", "tool-use-function-calling", "prompt-injection"]
+---
+
+For a protected HTTP MCP server, the client obtains an access token intended for that server. The server validates it and checks whether it permits the requested operation. This card follows the MCP specification dated 2025-11-25.
+
+## Discover, authorize, call, enforce
+
+The client reads protected-resource metadata to find the authorization server. In the illustrated user authorization flow, it uses an authorization code flow with PKCE and receives a resource-specific access token.
+
+The client then calls the MCP server with that token. Before executing a tool, the server checks token validity, audience, expiration and required permissions. A token being valid does not mean every operation is allowed.
+
+## Keep resource boundaries intact
+
+The client's token must not simply be forwarded to a downstream API. That API needs a separate token intended for its own resource. The diagram is a conceptual exchange, not a complete wire-level protocol trace.
+
+Local stdio servers use a different credential path. Do not apply this HTTP flow to every MCP transport or treat the dated example as a replacement for the specification.
+
+## Sources
+
+- [MCP authorization, version 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)

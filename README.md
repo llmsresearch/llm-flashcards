@@ -11,9 +11,9 @@ refresh core large language model concepts without rereading long docs or
 tutorials. Each card explains one idea with a diagram and a short note, so the
 concept is easier to recall when you are answering technical questions.
 
-Public site: <https://llmsresearch.github.io/llm-flashcards/>
+Public site: <https://llmsresearch.com/cards>
 
-This repository hosts the free open-source foundation: 193+ visual cards covering
+This repository hosts the free visual library: 211 visual cards covering
 the core mechanics of modern LLM systems. The sequence starts with text becoming
 tokens and moves through transformers, training, inference, retrieval, agents,
 safety, evaluation, APIs, and production tradeoffs.
@@ -49,7 +49,7 @@ architecture tradeoffs out loud.
 
 ## Free Foundation And Complete Collection
 
-The public site contains the free foundation: 193+ cards that cover the core LLM
+The public site contains the free foundation: 211 cards that cover the core LLM
 concepts you should be able to discuss with confidence.
 
 The complete living collection on Gumroad contains 330+ cards and keeps growing
@@ -58,6 +58,9 @@ includes lifetime updates, so it can stay useful as an interview and reference
 tool over time.
 
 Complete collection: <https://llmsresearch.com/flashcards>
+
+The root `llm-flashcards.apkg` is a separate 30-card sample. It is not the
+complete public web library or the paid deck.
 
 ## What Is Inside
 
@@ -103,8 +106,10 @@ npm run preview
 
 ## Deploy
 
-The site is configured for GitHub Pages at
-`https://llmsresearch.github.io/llm-flashcards/`.
+The canonical reader is `https://llmsresearch.com/cards`. This public repository
+supplies its content through the main website's existing webhook and build
+workflow. GitHub Pages preserves old URLs with page-specific redirects when
+the migration is enabled.
 
 Pushes to `main` run `.github/workflows/deploy.yml`, which installs dependencies,
 builds the Astro site, and publishes `dist/` with GitHub Pages. In the repository
