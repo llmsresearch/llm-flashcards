@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import collection from "../../collection.json";
 import { getCollection } from "astro:content";
 const freeCount = (await getCollection("cards")).filter((c) => c.data.status === "done").length;
 
@@ -50,14 +51,14 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
           AI architecture with confidence.
         </p>
 
-        <h2>The Complete Living Collection: 330+ cards and growing</h2>
+        <h2>The Complete Living Collection: {collection.paidCards} cards and growing</h2>
         <p>
           The AI industry moves quickly. A static interview guide becomes outdated
           the moment new research drops. That is why I keep this project alive.
         </p>
 
         <p>
-          The expanded collection on Gumroad currently holds over 330 visual cards.
+          The expanded collection on Gumroad contains {collection.paidCards} visual cards.
           I continuously add new cards as new agentic workflows and LLM breakthroughs
           emerge. When you get the complete collection, you get all future updates
           for free. It functions as your permanent, up-to-date visual reference to
@@ -68,7 +69,7 @@ const withBase = (path: string) => `${base}${path.replace(/^\//, "")}`;
       <aside class="about-side" aria-label="Complete visual cards collection">
         <figure class="about-cover">
           <img
-            src={withBase("/covers/cover_01_intro_332.jpg")}
+            src={withBase("/covers/cover_01_intro_376.jpg")}
             alt="LLM Flashcards cover showing example visual cards for transformers, query-key-value, and RAG."
             width="1024"
             height="576"

@@ -52,7 +52,7 @@ architecture tradeoffs out loud.
 The public site contains the free foundation: 211 cards that cover the core LLM
 concepts you should be able to discuss with confidence.
 
-The complete living collection on Gumroad contains 330+ cards and keeps growing
+The complete living collection on Gumroad contains 376 cards and keeps growing
 as new agentic workflows, model patterns, and LLM research become relevant. It
 includes lifetime updates, so it can stay useful as an interview and reference
 tool over time.

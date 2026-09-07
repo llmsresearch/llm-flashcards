@@ -1,0 +1,56 @@
+{
+  "release": "2026-09-07",
+  "paidCards": 376,
+  "publicCards": 211,
+  "sampleAnkiCards": 30,
+  "sections": [
+    {
+      "name": "Representing Language",
+      "cards": 16
+    },
+    {
+      "name": "The Transformer",
+      "cards": 47
+    },
+    {
+      "name": "Training the Model",
+      "cards": 44
+    },
+    {
+      "name": "Adaptation & Alignment",
+      "cards": 37
+    },
+    {
+      "name": "Running the Model",
+      "cards": 37
+    },
+    {
+      "name": "Talking to the Model",
+      "cards": 46
+    },
+    {
+      "name": "Retrieval & Grounding",
+      "cards": 43
+    },
+    {
+      "name": "Agents",
+      "cards": 40
+    },
+    {
+      "name": "Beyond Text",
+      "cards": 10
+    },
+    {
+      "name": "Measuring",
+      "cards": 18
+    },
+    {
+      "name": "Governing",
+      "cards": 25
+    },
+    {
+      "name": "Shipping",
+      "cards": 13
+    }
+  ]
+}
