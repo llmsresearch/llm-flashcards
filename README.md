@@ -1,66 +1,55 @@
-# LLMs Visual Card
+# 211 free LLM flashcards
 
-Preparing for an AI engineering interview often means revising a lot of LLM
-concepts quickly: tokenization, attention, transformers, training, alignment,
-RAG, agents, evaluation, and deployment. You may already know pieces of the
-system, but connecting them under interview pressure is harder than recognizing
-them in isolation.
+One concept per card, with a diagram and an explanation. Use them to prepare for
+an interview, revisit something you learned, or understand a system you are building.
 
-LLMs Visual Card is built for that revision loop. It gives you a visual way to
-refresh core large language model concepts without rereading long docs or
-tutorials. Each card explains one idea with a diagram and a short note, so the
-concept is easier to recall when you are answering technical questions.
+**[Browse all 211 free cards](https://llmsresearch.com/cards?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-top)**
+\| [Choose a study path](#study-paths)
 
-Public site: <https://llmsresearch.com/cards>
+Click a card to open its full-size image and explanation.
 
-This repository hosts the free visual library: 211 visual cards covering
-the core mechanics of modern LLM systems. The sequence starts with text becoming
-tokens and moves through transformers, training, inference, retrieval, agents,
-safety, evaluation, APIs, and production tradeoffs.
+<table>
+  <tr>
+    <td width="33%" align="center" valign="top">
+      <a href="https://llmsresearch.com/cards/token-vs-word-vs-character?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=visual_library&amp;utm_content=flashcards-readme-preview-token-vs-word-vs-character">
+        <img src="public/cards/32_tokenization.jpg" width="280" alt="Token vs Word vs Character: three ways to split the same sentence" />
+      </a>
+      <br /><strong>Token vs Word vs Character</strong>
+    </td>
+    <td width="33%" align="center" valign="top">
+      <a href="https://llmsresearch.com/cards/kv-cache?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=visual_library&amp;utm_content=flashcards-readme-preview-kv-cache">
+        <img src="public/cards/23_transformer.jpg" width="280" alt="KV Cache: reuse stored keys and values when generating the next token" />
+      </a>
+      <br /><strong>KV Cache</strong>
+    </td>
+    <td width="33%" align="center" valign="top">
+      <a href="https://llmsresearch.com/cards/what-is-an-llm-agent?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=visual_library&amp;utm_content=flashcards-readme-preview-what-is-an-llm-agent">
+        <img src="public/cards/96_agents.jpg" width="280" alt="What is an LLM Agent? A model calls tools and reads results in a loop" />
+      </a>
+      <br /><strong>What is an LLM Agent?</strong>
+    </td>
+  </tr>
+</table>
 
-## Who It Is For
+## Study paths
 
-This is for readers preparing for AI, ML, or LLM-heavy technical interviews who
-need a fast way to reconnect concepts before a screen or onsite:
+Read each row from left to right, or start with the concept you need.
 
-- developers building with LLM APIs
-- engineers moving into AI product or platform work
-- students and self-learners preparing for technical rounds
-- ML practitioners revising architecture, RAG, agents, or deployment concepts
-- product and research readers who need enough technical depth to speak clearly
+| Start here | Read in order |
+| --- | --- |
+| **Attention** | [Query, key, value](https://llmsresearch.com/cards/query-key-value-vectors?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-attention-qkv) → [Self-attention](https://llmsresearch.com/cards/self-attention-mechanism?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-attention-self-attention) → [Multi-head attention](https://llmsresearch.com/cards/multi-head-attention?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-attention-multi-head) → [KV cache](https://llmsresearch.com/cards/kv-cache?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-attention-kv-cache) |
+| **RAG** | [What is RAG?](https://llmsresearch.com/cards/what-is-rag?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-rag-overview) → [Embeddings for retrieval](https://llmsresearch.com/cards/embedding-for-retrieval?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-rag-embeddings) → [Chunking](https://llmsresearch.com/cards/chunking?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-rag-chunking) → [Reranking](https://llmsresearch.com/cards/reranking?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-rag-reranking) |
+| **Inference** | [Autoregressive generation](https://llmsresearch.com/cards/autoregressive-generation?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-inference-generation) → [KV cache](https://llmsresearch.com/cards/kv-cache?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-inference-kv-cache) → [Grouped-query attention](https://llmsresearch.com/cards/grouped-query-attention?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-inference-gqa) → [Quantization](https://llmsresearch.com/cards/what-is-quantization?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-inference-quantization) |
+| **Agents** | [What is an LLM agent?](https://llmsresearch.com/cards/what-is-an-llm-agent?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-agents-overview) → [The agent loop](https://llmsresearch.com/cards/agent-loop?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-agents-loop) → [Tool use](https://llmsresearch.com/cards/tool-use-function-calling?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-agents-tools) → [Stopping conditions](https://llmsresearch.com/cards/stopping-conditions?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-path-agents-stopping) |
 
-It is not meant to replace papers, docs, or textbooks. It is meant to give you a
-high-signal visual map when you need to revise quickly.
+New to LLMs? [Start with tokenization](https://llmsresearch.com/cards/what-is-tokenization?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-beginner)
+and follow the reader's next-card links through the collection.
 
-## How To Use It
+## Free cards and the complete collection
 
-Treat the map as your interview revision curriculum. Read it in order if you want
-the full system path: text becomes tokens, tokens become vectors, transformers
-process those vectors, training shapes the model, and inference turns the trained
-model into responses.
-
-Use it non-linearly when you need to refresh a specific gap. For RAG interviews,
-start with embeddings, vector search, chunking, reranking, and citation. For
-systems and production rounds, start with tokens, KV cache, quantization, rate
-limits, streaming, and latency.
-
-Visual frameworks are easier to recall than text blocks when you are explaining
-architecture tradeoffs out loud.
-
-## Free Foundation And Complete Collection
-
-The public site contains the free foundation: 211 cards that cover the core LLM
-concepts you should be able to discuss with confidence.
-
-The complete living collection on Gumroad contains 376 cards and keeps growing
-as new agentic workflows, model patterns, and LLM research become relevant. It
-includes lifetime updates, so it can stay useful as an interview and reference
-tool over time.
-
-Complete collection: <https://llmsresearch.com/flashcards>
-
-The root `llm-flashcards.apkg` is a separate 30-card sample. It is not the
-complete public web library or the paid deck.
+- **Free online:** all 211 public cards, with explanations and related concepts.
+- **Free Anki sample:** [download 30 cards](llm-flashcards.apkg). This is a separate sample, not the full public library or paid deck.
+- **Complete collection:** [376 cards](https://llmsresearch.com/flashcards?utm_source=github&utm_medium=referral&utm_campaign=visual_library&utm_content=flashcards-readme-complete), including the full Anki deck, printable PDF, individual images, and lifetime updates.
 
 ## What Is Inside
 
