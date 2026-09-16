@@ -1,11 +1,12 @@
 ---
 seq: 273
 title: "Tool Use / Function Calling"
+seoTitle: "LLM Function Calling: How Tool Requests Become Real Actions"
 part: "VIII. Agents"
 partNumber: 8
 chapter: "18. Agent Foundations"
 category: "Agents & Tools"
-summary: "The model emits a structured tool call with a name and arguments; the runtime executes the tool and returns the result; the model continues with that result in context. This is how an LLM reaches outside its weights."
+summary: "Follow an LLM function call from tool definition to arguments, execution and result. Learn which checks belong to the application, not the model."
 image: "/cards/97_agents.jpg"
 status: "done"
 related:
@@ -16,32 +17,30 @@ related:
   - "mcp-authorization"
 ---
 
-The card shows a request/response flow in three beats. First, the model receives a
-prompt that includes a list of available tools, each with a name, parameter schema, and
-short description. Second, instead of answering in plain text, the model emits a
-structured call: which tool to invoke and what arguments to pass. Third, the runtime
-runs that tool, appends the result to the conversation, and calls the model again so
-it can continue with real data in context.
+Function calling lets an LLM request a tool using a structured name and arguments. For an application-defined tool, your application receives that request, decides whether to execute it, and returns the result for the model to use.
 
-Mechanically, function calling is a convention layered on top of ordinary text
-generation. During training or fine-tuning, the model learns to output JSON or another
-structured format when a tool is appropriate. The API parses that output, validates it
-against the declared schema, executes the matching function, and injects the return
-value as a new message before the next generation pass. From the model's perspective,
-the tool result is just more text in the thread, but it arrived from a real external
-source rather than from the model's weights.
+## A complete call without magic
 
-This matters because a language model on its own has no reliable access to current
-facts, private data, or side effects in the world. Tool use is one of the main ways
-systems work around hallucination for factual queries: instead of guessing a stock
-price or a database row, the model asks a tool that returns the actual value. The same
-pattern extends to actions, sending an email, creating a calendar event, or running a
-query, as long as you expose those capabilities with clear schemas.
+Imagine a delivery assistant with a tool named `get_order_status`, which accepts an `order_id`. A customer asks where order A123 is.
 
-The design burden sits mostly on the integrator. Tool descriptions need to be precise
-enough that the model picks the right one and fills arguments correctly. Results need
-to be formatted so the model can interpret them without confusion. And every tool call
-is a trust boundary: the model is deciding to invoke code you wrote, so permissions,
-validation, and error handling belong in the runtime, not in the hope that the model
-will be careful. In an agent loop, tool use is the step where the model's judgment
-turns into real-world effect.
+1. The application supplies the conversation and the tool's description and parameter schema to the model.
+2. The model requests `get_order_status` with `order_id` set to `A123`.
+3. The application validates the request and checks that the signed-in customer may access that order.
+4. The application queries the order system and returns its result as a tool response.
+5. The model uses that response to explain the status to the customer.
+
+These are separate operations. Generating well-formed arguments does not itself run your function or prove that its input is authorized. Some providers also offer hosted tools whose execution they manage; that is a different execution arrangement.
+
+## What the schema can and cannot do
+
+A schema can describe required fields, types, and allowed values. Depending on the API and mode, constrained generation can help enforce that structure. It cannot establish that an order belongs to the current user, that a quoted price is still valid, or that a payment should be approved. Those checks require application state and policy.
+
+Tool descriptions should make the available operations and their limits clear. Separate reading an order from changing it. Give errors a form the model can understand, and avoid retrying an action blindly if it might already have succeeded.
+
+## Why this becomes an agent loop
+
+One result may lead to another request: look up an order, then look up its shipment. Repeating the model-request-execution-result cycle forms an [agent loop](/cards/agent-loop). The application still needs limits, permissions, and a stopping condition.
+
+Tool output is evidence to interpret, not automatic authority over the rest of the system. Retrieved text can be wrong or contain instructions that the assistant should not follow.
+
+**Read further:** [Anthropic's tool-use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview). For a different calling pattern, see [programmatic tool calling](/cards/programmatic-tool-calling).

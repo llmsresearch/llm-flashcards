@@ -1,11 +1,12 @@
 ---
 seq: 47
 title: "KV Cache"
+seoTitle: "KV Cache in LLMs: How It Works and How Much Memory It Uses"
 part: "II. The Transformer"
 partNumber: 2
 chapter: "4. Scaling Attention: Longer & Cheaper"
 category: "Transformer Architecture"
-summary: "During autoregressive generation the key and value vectors for past tokens never change, so they are computed once and stored. Reusing them turns per-step attention from quadratic to linear and is essential for practical decoding."
+summary: "Why decoder LLMs cache keys and values, what prefill and decoding do, and a worked calculation of KV cache memory with grouped-query attention."
 image: "/cards/23_transformer.jpg"
 status: "done"
 related:
@@ -15,31 +16,28 @@ related:
   - "semantic-vs-prefix-cache"
 ---
 
-Generation happens one token at a time, and a naive implementation redoes an
-enormous amount of work at every step. The KV cache is the observation that most of
-that work is identical from step to step, so it need only be done once.
+A KV cache stores the attention keys and values computed for earlier tokens. During ordinary causal decoding, adding a token does not change those earlier representations, so the model can reuse them instead of processing the entire prefix again.
 
-The key fact is at the top: during autoregressive generation, the key and value
-vectors for past tokens do not change. Token three's K and V are the same whether the
-sequence is three tokens long or three hundred. Only the newest token needs fresh K
-and V computed. The two columns contrast the options. Without the cache, every step
-recomputes K and V for the whole sequence, so each step costs on the order of N
-squared and the model redoes work it already did. With the cache, past K and V are
-stored and only the latest token's are computed, bringing the per-step cost down to
-order N.
+## Prefill first, then decode
 
-The lower box states the bookkeeping precisely. At step t, only token t needs a new
-query, key, and value; the keys and values from steps one through t minus one are
-saved. That saved store is literally the cache the technique is named for. The query
-is not cached, because each new token asks its own question of the stored keys and
-values; only K and V accumulate.
+During **prefill**, the model processes the prompt and creates cached keys and values at each attention layer. During **decoding**, it processes a newly generated token, computes that token's query, key, and value, and appends the new key and value to the cache.
 
-The bottom line is not an overstatement: this is essential for any practical
-decoder-only inference. Without it, generating a long response would repeat the full
-attention computation at every token and slow to a crawl. Every serving system keeps
-a KV cache.
+The new query still compares against the available cached keys. The resulting weights combine the corresponding values. Caching therefore removes repeated work; it does not make long-context attention free. With full attention, this attention work grows linearly with the cached length for each new token. Prefill has a different computation pattern.
 
-The cache is not free, though. It grows with sequence length and with the number of
-attention heads, and for long contexts it can dominate memory. That memory pressure
-is exactly what the next cards address: grouped-query and multi-query attention
-shrink the cache by sharing keys and values across heads.
+Why is this reuse valid? A causal mask prevents an earlier position from depending on later tokens. For the same model and unchanged prefix, its earlier keys and values are still usable. Editing the prefix can invalidate the affected cache entries.
+
+## Calculate the memory
+
+For a dense cache with equal-length sequences, the storage is approximately:
+
+`2 × layers × batch × cached tokens × KV heads × head dimension × bytes per element`
+
+The factor of two accounts for both keys and values. Consider 32 layers, one sequence, 8,192 cached tokens, eight KV heads, a head dimension of 128, and two-byte values. That is 1,073,741,824 bytes, or **1 GiB**, for the cache alone. A batch of four such sequences needs about 4 GiB.
+
+This excludes model weights, temporary tensors, allocator overhead, and any reserved capacity. Sliding windows, cache quantization, and other layouts change the calculation. Count **KV heads**, not query heads: [grouped-query attention](/cards/grouped-query-attention) makes that distinction important.
+
+## What the cache does not do
+
+It does not store a database of completed answers or give a model permanent memory. Reusing an identical prompt prefix across requests is another serving optimization; returning a cached answer is different again. See [semantic caching vs prefix caching](/cards/semantic-vs-prefix-cache).
+
+**Read further:** [Hugging Face's cache explanation](https://huggingface.co/docs/transformers/main/en/cache_explanation).

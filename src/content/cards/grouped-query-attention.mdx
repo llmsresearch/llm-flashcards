@@ -1,11 +1,12 @@
 ---
 seq: 48
 title: "Grouped Query Attention (GQA)"
+seoTitle: "Grouped-Query Attention (GQA): Fewer KV Heads, Less Cache Memory"
 part: "II. The Transformer"
 partNumber: 2
 chapter: "4. Scaling Attention: Longer & Cheaper"
 category: "Transformer Architecture"
-summary: "A middle ground between multi-head and multi-query attention. Query heads are split into groups, and each group shares one key and value head, which cuts KV cache memory at a small quality cost. It is standard in LLaMA-family models."
+summary: "Compare multi-head, grouped-query and multi-query attention. See how sharing KV heads saves memory without removing the separate query heads."
 image: "/cards/26_transformer.jpg"
 status: "done"
 related:
@@ -15,31 +16,26 @@ related:
   - "gpu-memory-budget"
 ---
 
-The KV cache grows with the number of attention heads, so one way to shrink it is to
-use fewer key and value heads than query heads. Grouped-query attention does exactly
-that, and it has become the default choice for balancing memory against quality.
+Grouped-query attention keeps separate query heads while letting groups of them share key and value heads. Its main practical attraction is a smaller KV cache and less cached data to read during decoding.
 
-The two diagrams show the change. On the left, standard multi-head attention gives
-each of the eight query heads its own key and value head, one Q per K/V. On the
-right, grouped-query attention with four groups pairs the eight query heads into four
-groups, and each group shares a single K/V head, so it is two Q per K/V. The queries
-stay fully independent; only the keys and values are shared within a group. The
-annotation reports the effect: roughly half the KV cache memory in this four-group
-example, since there are half as many K/V heads to store.
+## Read the diagram in head counts
 
-The reason this works with little damage is that the query heads, which do the actual
-distinguishing between what different heads look for, remain separate. Sharing keys
-and values reduces the diversity of what can be matched against, but empirically that
-loss is small on large models. The summary box frames it as a spectrum: multi-head
-attention gives max quality at max KV memory, GQA takes a small quality dip for much
-less memory, and multi-query attention, the next card, pushes to a single K/V head
-for all query heads as the most extreme point.
+The card compares eight query heads with two different arrangements. In ordinary multi-head attention, each query head has its own key and value head: eight of each. In the illustrated GQA arrangement, each pair of query heads shares one key and value head: eight query heads, four key heads, and four value heads.
 
-The annotation calling GQA the LLaMA-family default is the practical takeaway. When a
-recent open model reports its attention configuration, it is usually GQA with some
-number of groups, chosen to fit the KV cache within a memory budget while keeping
-quality close to full multi-head attention.
+Holding sequence length, head dimension, and data type fixed, that halves the key and value storage. Each query still computes its own attention weights. Sharing keys and values does not mean that both queries must attend to the same tokens with the same weights.
 
-The bottom line, groups of query heads share keys and values to shrink the cache, is
-the whole idea. The next card takes the same axis to its endpoint with multi-query
-attention.
+## MHA, GQA, and MQA are points on one axis
+
+- **Multi-head attention (MHA):** as many KV heads as query heads.
+- **Grouped-query attention (GQA):** several query heads share each KV head.
+- **Multi-query attention (MQA):** all query heads share one KV head.
+
+For a second example, reducing 32 KV heads to eight gives a fourfold reduction in the KV-head-dependent cache storage. It does **not** give a fourfold reduction in model weights, total GPU memory, or end-to-end latency. Those include other costs.
+
+## What is the trade-off?
+
+Fewer KV heads limit the distinct key and value representations available to queries. How this affects quality depends on the model, training procedure, and task. The GQA paper demonstrated configurations approaching multi-head quality while achieving decoding speed closer to multi-query attention. That result is evidence for a useful design choice, not a guarantee for every head count.
+
+GQA normally belongs to the model's architecture and training. Treating an arbitrary trained multi-head model as GQA by discarding heads is not an equivalent change. The paper also studies a procedure for converting and further training existing checkpoints.
+
+**Source:** [Ainslie et al., GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/abs/2305.13245). Use the [KV cache memory example](/cards/kv-cache) to see where head count enters the budget.

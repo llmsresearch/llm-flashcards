@@ -1,11 +1,12 @@
 ---
 seq: 24
 title: "Self-Attention Mechanism"
+seoTitle: "Self-Attention Explained: Weights, Values and the Causal Mask"
 part: "II. The Transformer"
 partNumber: 2
 chapter: "3. The Transformer Block"
 category: "Transformer Architecture"
-summary: "At each position the model builds a weighted average of every token in the sequence, where the weights come from learned similarity. This is how tokens gather context."
+summary: "See how self-attention mixes information between tokens, why attention weights sum to one, and how a causal mask changes what a token can see."
 image: "/cards/05_transformer.jpg"
 status: "done"
 related:
@@ -14,30 +15,26 @@ related:
   - "scaled-dot-product-attention"
 ---
 
-The position cards handled where tokens sit. This card is the operation that
-actually reads the sequence, and it is the heart of the transformer.
+Self-attention updates a token's representation using information from positions in the same sequence. An attention head scores the allowed positions, turns those scores into weights, and combines their value vectors.
 
-Self-attention works one position at a time, but each position looks everywhere.
-For a given token, the model produces a set of weights over all tokens in the
-sequence and then takes a weighted average of their vectors. The card walks
-through the word "sat": it attends most to "cat" with weight 0.55, gives 0.20 to
-itself, and spreads the rest thinly across "the", "on", and "mat". The output for
-"sat" is written out explicitly as 0.05 times The plus 0.55 times cat and so on,
-a weighted sum where the weights add to one.
+## Follow the weighted sum
 
-Two details matter. The weights are not fixed; they come from learned query-key
-similarity, which the next card unpacks. And the vectors being summed are the
-value vectors, again defined next card, not the raw embeddings. For now the shape
-of the idea is enough: similarity decides how much attention each token gets, and
-the value vectors are what get mixed.
+In the card's illustrative sentence, the position for “sat” assigns a large weight to “cat.” This is a demonstration of the operation, not a measurement from a trained model. The weights describe how much of each value vector goes into the output of one head at one position.
 
-The phrase at the bottom captures why this matters, every position mixes
-information from every position. In a single pass, each token pulls in context
-from the whole sequence, so the representation of "sat" can come to encode that
-its subject is "cat". Nothing is processed left to right one step at a time the
-way older recurrent models worked; the mixing happens for all positions at once.
+For a smaller example, imagine three value vectors: `[2, 0]`, `[0, 4]`, and `[2, 2]`. Weights of 0.5, 0.25, and 0.25 produce `[1.5, 1.5]`. Each coordinate is a weighted sum. The model mixes vectors; it does not select a single word and copy it.
 
-That all-to-all mixing is expressive and also expensive, since every token compares
-against every other. That cost is what a later chapter on scaling attention works
-to reduce. The next three cards stay on the mechanism, starting with the query,
-key, and value vectors the weights are built from.
+The weights come from comparing [queries and keys](/cards/query-key-value-vectors), scaling the scores, and applying softmax. Before attention dropout, softmax weights across the allowed positions sum to one. Different queries can produce different mixtures from the same set of values.
+
+## Which positions are allowed?
+
+The diagram illustrates attention over a whole sentence. In a bidirectional encoder, a position can use tokens on both sides. In a causal decoder, the position for “sat” cannot attend to words that follow it. A mask removes those future positions before the weights are calculated.
+
+This distinction matters during training: the full example may be present in memory, but the mask prevents the model from using the answer it is supposed to predict. Training can process many positions in parallel while still enforcing that rule. Ordinary generation must wait for each sampled token before continuing.
+
+## What one head cannot tell you
+
+A high weight is not proof that a word caused the final answer. Multiple heads, later layers, residual connections, and feed-forward networks all affect the result. An attention diagram shows one part of that computation.
+
+Full attention also compares many pairs of positions. That cost motivates the [KV cache](/cards/kv-cache) during decoding and other methods for handling long sequences.
+
+**Source:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762).

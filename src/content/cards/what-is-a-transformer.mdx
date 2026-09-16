@@ -1,52 +1,38 @@
 ---
 seq: 17
 title: "What is a Transformer?"
+seoTitle: "Transformer Architecture Explained: Attention, Layers and Generation"
 part: "II. The Transformer"
 partNumber: 2
 chapter: "3. The Transformer Block"
 category: "Transformer Architecture"
-summary: "The transformer is a sequence architecture built from stacked, identical blocks of self-attention and a feed-forward network, with residual connections and normalization."
+summary: "Follow a token through a transformer block, from attention to the feed-forward network, and understand how decoder LLMs differ from the original model."
 image: "/cards/01_transformer.jpg"
 status: "done"
 related:
   - "autoregressive-generation"
 ---
 
-Before 2017, sequence models read text the way you might read it out loud: one
-token after another, carrying a running memory forward. That memory was the
-bottleneck. It forced the computation to be sequential, and long-range
-connections had to survive a long chain of updates to matter. The transformer
-removed the chain. Instead of passing information along step by step, it lets
-every position look at every other position directly, in one operation.
+A transformer processes sequences through layers that combine attention with a feed-forward network. Attention moves information between positions; the feed-forward network transforms the representation at each position separately.
 
-That operation is self-attention, and it is the only place in the block where
-tokens exchange information. The diagram is worth reading closely, because the
-whole architecture is just two moves repeated:
+## Follow a token through one block
 
-- **Self-attention** mixes information across positions. Each token builds its
-  new representation by pulling from the other tokens it finds relevant, which is
-  how a pronoun can reach back to the noun it refers to regardless of distance.
-- **The feed-forward network** processes each position on its own. It never looks
-  sideways. This is where most of the model's parameters live and where a lot of
-  the stored knowledge seems to sit.
+Start with a vector representing a token at its position. The attention operation uses that vector to gather information from other allowed positions. A residual connection adds the attention result to the existing representation, rather than replacing it entirely.
 
-Wrapped around both are the two supporting pieces labelled `add & norm`. The
-"add" is a residual connection: the block's output is added back to its input, so
-each layer only has to learn an adjustment rather than rebuild the signal from
-nothing. This is what makes it safe to stack the block dozens of times without
-the signal degrading. The "norm" keeps the numbers in a stable range so training
-does not diverge.
+A feed-forward network then transforms each position's vector. Its weights are shared across positions within the layer, but its computation at one position does not read neighboring positions directly. Another residual connection carries the result forward. Normalization helps control the scale of the intermediate values. Its placement differs across transformer designs; the card shows one common block diagram.
 
-## Why stacking identical blocks works
+Stacking blocks repeats this process. The blocks have similar structure, but they do **not** normally share the same learned weights. Later layers receive representations that already contain information mixed by earlier layers.
 
-The block is deliberately uniform, and depth comes from repetition rather than
-from a sequence of specialized stages. Stack it N times and each layer refines
-what the last one produced. Earlier layers tend to capture local, surface
-patterns; later layers compose those into something closer to meaning. Nothing in
-the design assigns these roles. They emerge from training.
+## The original transformer and a decoder LLM
 
-The practical payoff is the phrase along the bottom of the card. Because
-attention handles all positions at once, the work is parallelizable, which is
-exactly what modern hardware is good at. That single property is most of the
-reason transformers scaled when earlier architectures stalled. How they are
-trained to use this capacity is the next question.
+The 2017 transformer was an encoder-decoder model for tasks such as translation. The encoder processed the input, and the decoder used both causal self-attention and attention to encoder outputs.
+
+Many generative LLMs instead use a decoder-only stack. A causal mask prevents each position from attending to future tokens. The final representation feeds an output projection that produces scores over the vocabulary. Sampling or another selection rule chooses the next token from those scores.
+
+## Parallel training does not mean parallel generation
+
+During training, the target sequence is already known. The model can calculate predictions for many positions in parallel while the mask hides future information. During ordinary autoregressive generation, the next input depends on the token just selected. That creates a sequential loop.
+
+The [KV cache](/cards/kv-cache) saves intermediate keys and values so the decoder can reuse earlier work inside that loop. It changes the work required per step, not the fact that ordinary decoding produces tokens sequentially.
+
+**Source:** [Vaswani et al., Attention Is All You Need](https://arxiv.org/abs/1706.03762). For the component calculations, start with [query, key, and value vectors](/cards/query-key-value-vectors) and [self-attention](/cards/self-attention-mechanism).

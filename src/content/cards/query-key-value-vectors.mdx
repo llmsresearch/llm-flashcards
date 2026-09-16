@@ -1,11 +1,12 @@
 ---
 seq: 25
 title: "Query, Key, Value Vectors"
+seoTitle: "Query, Key and Value in Attention: A Worked Example"
 part: "II. The Transformer"
 partNumber: 2
 chapter: "3. The Transformer Block"
 category: "Transformer Architecture"
-summary: "Each token's vector is projected through three learned matrices into a query, a key, and a value. Queries and keys decide where to look; values decide what gets passed along."
+summary: "What Q, K and V mean in transformer attention, how learned projections create them, and a small numerical example of matching keys and mixing values."
 image: "/cards/06_transformer.jpg"
 status: "done"
 related:
@@ -14,31 +15,26 @@ related:
   - "multi-head-attention"
 ---
 
-The previous card leaned on "learned similarity" and "value vectors" without
-saying where they come from. This card is that source. Every token's hidden
-vector is turned into three separate vectors, and the three roles are the whole
-trick behind attention.
+Queries and keys determine the attention weights. Values are the vectors those weights combine. Separating these jobs lets an attention head choose where to get information independently of what information it passes along.
 
-The token's hidden vector, written h on the card, is multiplied by three learned
-matrices, W_Q, W_K, and W_V, producing a query Q, a key K, and a value V. These
-matrices are trained; the model discovers during training what each projection
-should extract. The card gives each vector a plain-language role. The query asks
-"what am I looking for?" The key answers "what do I represent?" The value carries
-"what info do I carry?"
+## Three views of the same input
 
-The way they combine is the part worth holding onto. A token's query is compared
-against every token's key by a dot product, and that comparison produces the
-attention weights, the same weights the self-attention card summed with. Then
-those weights are applied to the value vectors, and the weighted sum of values is
-the output. The card states it compactly: attention of Q and K gives weights via
-dot-product, and output equals weights times V.
+For a token's current hidden vector `h`, learned projections produce `q = hWq`, `k = hWk`, and `v = hWv`. The projection weights are shared across positions within a layer, but different input vectors produce different queries, keys, and values. Each layer learns its own projections.
 
-Splitting a token into three views is what lets attention separate two questions
-that would otherwise be tangled. Where should I look is answered by queries and
-keys. What should I take from the places I look is answered by values. A token can
-be a strong match to look at, through its key, while carrying different content to
-pass on, through its value.
+“What am I looking for?” is a useful description of a query, but it is an analogy. The query is a numeric vector, not a question written in language. A key is another numeric vector against which it can be compared.
 
-These three vectors feed straight into the exact formula on the next card, which
-puts the dot product, the scaling, the softmax, and the weighted sum together in
-one line.
+## A numerical example
+
+Suppose a query can attend to two positions. After dot products and scaling, its scores are 2 and 1. Softmax turns those into weights of about 0.73 and 0.27.
+
+If the value vectors are `[10, 0]` and `[0, 10]`, the output of this head at that position is approximately `[7.3, 2.7]`. The first position contributed more because its key matched the query more strongly. Its value supplied the content that was mixed into the output.
+
+Changing a key can change the mixture proportions. Changing a value while keeping queries and keys fixed changes the content of the mixture without changing those proportions. That is the reason for having separate projections.
+
+## Where the mask fits
+
+A causal attention mask excludes future positions before softmax. Their values cannot contribute, regardless of how well their keys might match. In self-attention, Q, K, and V come from the same sequence; in cross-attention, queries can come from one sequence while keys and values come from another.
+
+During token-by-token generation, a new query uses earlier keys and values saved in the [KV cache](/cards/kv-cache). The previous queries are not needed for this step.
+
+**Source:** [Attention Is All You Need, section 3.2](https://arxiv.org/abs/1706.03762). Continue with [self-attention and masking](/cards/self-attention-mechanism).

@@ -1,53 +1,36 @@
 ---
 seq: 1
 title: "What is Tokenization?"
+seoTitle: "LLM Tokenization: How Text Becomes Tokens and IDs"
 part: "I. Representing Language"
 partNumber: 1
 chapter: "1. Tokenization: Text into Tokens"
 category: "Tokenization"
-summary: "Tokenization splits raw text into integer IDs from a fixed vocabulary. Common words map to a single token, rare words break into subword pieces."
+summary: "How an LLM tokenizer turns text into token IDs, why spaces and rare words matter, and why the same sentence can have different token counts across models."
 image: "/cards/28_tokenization.jpg"
 status: "done"
 related:
   - "language-modeling-objective"
 ---
 
-A model never sees your text. It sees numbers. Tokenization is the step that
-turns a string into the sequence of integers the network actually reads, and
-every other part of an LLM sits downstream of the choices made here.
+An LLM tokenizer converts text into a sequence of token IDs. A token might represent a whole word, part of a word, punctuation, or a piece of whitespace. The model then looks up a learned vector for each ID before processing the sequence.
 
-The vocabulary is fixed before training starts. It is a list of maybe thirty to
-two hundred thousand pieces, each with an integer ID. Frequent words like "the"
-usually earn a slot of their own. Rarer words get assembled from smaller pieces
-the tokenizer already knows, which is why "unbelievable" can come back as `un`
-plus `believable`. Nothing is ever truly out of vocabulary, because in the worst
-case a word decomposes all the way down to single characters.
+## Follow one word through the process
 
-## Why subwords, and not just words
+Imagine a tokenizer splitting `unbelievable` into `un` and `believable`. It looks up each piece in its vocabulary and returns two integers. Those integers identify entries; a larger ID does not mean a longer word or a more important concept.
 
-The card frames this as a compromise, and it is worth sitting with why. A
-character vocabulary is tiny and can spell anything, but a single character
-carries almost no meaning and sequences become very long. A word vocabulary is
-the opposite: each token is meaningful, but the list can never be complete, and
-the first genuinely new word breaks it. Subwords land in between. They keep
-sequences short enough to be practical while still handling names, typos, and
-words that did not exist when the tokenizer was built.
+This split is illustrative. A different tokenizer might keep the word whole or divide it differently. Even adding a leading space can change the result. To count a real prompt, use the tokenizer for the model that will receive it.
 
-## Where it leaks into everything else
+## Why not give every word an ID?
 
-Because the model reasons over tokens rather than letters, some tasks that look
-trivial to us are genuinely hard for it. Counting the letters in a word, or
-reversing a string, runs against the grain of a system that only sees `un` and
-`believable`. A space is often part of the token that follows it, so `transform`
-at the start of a sentence and ` transform` mid-sentence can be different IDs
-entirely.
+A word list cannot anticipate every name, spelling mistake, product code, or newly coined term. Subword tokenizers reuse smaller pieces, so they do not need a separate entry for every possible word. Some tokenizers work with bytes or use byte fallback; others can produce an unknown-token marker. Handling every input is a property of the particular tokenizer, not a promise made by the word “subword.”
 
-Tokenization also decides what you pay for. Pricing and context limits are
-counted in tokens, not words, and the ratio is not fixed: dense English runs
-around three-quarters of a word per token, while code, rare names, and other
-languages can cost far more. Two prompts that look the same length to you can
-differ by a wide margin once they are tokenized.
+The vocabulary and tokenization rules are normally fixed when a model is deployed. Typing a new word does not add a new vocabulary entry. See the [BPE example](/cards/bpe-byte-pair-encoding) for how one common algorithm learns its pieces.
 
-Every model ships its own tokenizer, and the IDs are not portable between them.
-Once the text is a list of integers, the next question is what the model is
-actually trained to do with them.
+## Why this matters when using a model
+
+Context windows and text API usage are usually measured in tokens. A short-looking identifier can occupy more tokens than a longer, familiar phrase. Languages, code, and punctuation have different token-to-character ratios, so a word count is only a rough budgeting tool.
+
+Token boundaries also help explain why apparently simple spelling tasks can be awkward: a model may receive a word as one unit rather than as individual letters. Tokenization is only part of that explanation; it does not determine whether a particular model will succeed.
+
+**Read further:** [Hugging Face's tokenizer overview](https://huggingface.co/docs/transformers/main/en/tokenizer_summary). Compare [tokens, words, and characters](/cards/token-vs-word-vs-character) on the next card.

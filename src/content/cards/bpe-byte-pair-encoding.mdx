@@ -1,11 +1,12 @@
 ---
 seq: 3
 title: "BPE (Byte Pair Encoding)"
+seoTitle: "Byte Pair Encoding (BPE): A Worked Tokenization Example"
 part: "I. Representing Language"
 partNumber: 1
 chapter: "1. Tokenization: Text into Tokens"
 category: "Tokenization"
-summary: "The standard algorithm for building a subword vocabulary. It starts from characters and repeatedly merges the most frequent adjacent pair into a new token."
+summary: "Learn how BPE builds a subword vocabulary by merging frequent pairs, with a worked example and the distinction between tokenizer training and encoding."
 image: "/cards/29_tokenization.jpg"
 status: "done"
 related:
@@ -13,31 +14,27 @@ related:
   - "vocabulary-size-tradeoffs"
 ---
 
-The previous card said subwords are the right granularity. BPE is how you
-actually find them. It is worth knowing because it is not a clever linguistic
-model, just a counting loop, and yet it produces the vocabulary almost every
-major LLM uses.
+Byte pair encoding, or BPE, builds a vocabulary by repeatedly merging frequent adjacent pieces. Training the tokenizer learns the merges. Encoding a new prompt applies the learned rules without retraining them.
 
-The card runs the algorithm on a tiny corpus, "low, lower, lowest". Start by
-breaking everything into individual characters. Count how often each adjacent
-pair appears across the corpus. Merge the single most frequent pair into one new
-token, add it to the vocabulary, and rewrite the corpus with that merge applied.
-Then repeat. In the example, `l` and `o` merge first because they co-occur most,
-producing `lo`; next `lo` and `w` merge into `low`; then `e` and `r` into `er`.
-Each pass adds exactly one token to the vocabulary.
+## A small example you can count
 
-The rule box states the loop plainly: count pair frequencies, merge the top pair,
-repeat until the vocabulary reaches its target size. That target is the only real
-knob. Stop early and you get a small vocabulary of short pieces; run longer and
-common words get absorbed into single tokens.
+Suppose our entire training set contains `low` five times and `lower` twice. Start with characters and keep words separate. For simplicity, this example omits boundary markers.
 
-What makes this work is what the frequency counting implies. Pieces that appear
-constantly, like `low` or `ing` or `the`, get merged early and end up as whole
-tokens, so ordinary text is compact. Pieces that are rare never accumulate enough
-count to merge, so an unusual word stays broken into smaller known parts rather
-than failing outright. That is the property the earlier cards promised: common
-words become single tokens, rare words stay decomposable, and it falls directly
-out of merging by frequency.
+- The pair `l o` appears seven times. So does `o w`.
+- Break the tie by choosing `l o`. Our words become `lo w` and `lo w e r`.
+- Now `lo w` appears seven times. Merge it to produce `low`.
+- `e r` appears twice. A later merge can produce `er`, leaving `low er` for the longer word.
 
-The merge list learned here is fixed at training time and shipped with the model.
-Tokenizing new text just means replaying those same merges in order.
+Ties can lead to different merge sequences. The point is to count pairs in the current representation, apply one merge, then count again. BPE is learning frequently useful pieces, not looking up grammatical word roots.
+
+## What happens to a new word?
+
+At inference time, the tokenizer uses its saved vocabulary and merge priorities. It does not recalculate frequencies from your prompt. If `lowest` was absent from training, it might still use the learned `low` piece followed by smaller pieces for the rest. The exact output depends on the remaining vocabulary and rules.
+
+Vocabulary size is one choice, but normalization, word boundaries, special tokens, and the initial alphabet matter too. Character-based BPE and byte-level BPE do not start from the same units. Byte-level approaches can represent text through its bytes, including characters that were not common in the training set.
+
+## Why engineers care
+
+Tokenization affects sequence length, which affects context usage and computation. It also explains why small edits to text sometimes change the token count unexpectedly. A merge rule can combine one spelling efficiently while leaving a slightly different spelling in several pieces.
+
+**Source:** [Sennrich, Haddow and Birch on subword units for rare words](https://aclanthology.org/P16-1162/). For the practical comparison, read [token vs word vs character](/cards/token-vs-word-vs-character).
